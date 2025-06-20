@@ -1,9 +1,9 @@
 import 'package:algarve_house_hunters_system/assets_controller.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_password_text_form_field.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_filed.dart';
-import 'package:algarve_house_hunters_system/global_widgets/global_widgets.dart';
 import 'package:algarve_house_hunters_system/global_widgets/submit_button.dart';
 import 'package:algarve_house_hunters_system/login_screen/widgets/already_have_account_widget.dart';
+import 'package:algarve_house_hunters_system/login_screen/widgets/testimonals_carousel_widget.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -83,8 +83,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           Container(
-            decoration: const BoxDecoration(color: Colors.green),
             width: MediaQuery.of(context).size.width / 2,
+            height: MediaQuery.of(context).size.height,
+            child: const TestimonialCarousel(),
           ),
         ],
       ),

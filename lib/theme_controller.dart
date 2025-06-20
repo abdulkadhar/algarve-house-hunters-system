@@ -8,6 +8,7 @@ class ThemeController {
   static const double textFieldBorderWidth = 1.0;
   static const double textFieldBorderRadius = 10;
   static const Color buttonColor = Colors.black;
+  static const Color iconPrimaryColor = Colors.white;
 
   static BorderSide getTextFieldBorderStyle({
     borderColor = enabledTextFieldBorderColor,
