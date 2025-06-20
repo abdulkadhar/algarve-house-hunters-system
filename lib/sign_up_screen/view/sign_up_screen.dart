@@ -75,7 +75,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 50,
                   ),
                   SubmitButton(
-                    onButtonPress: () {},
+                    onButtonPress: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/otp-screen',
+                      );
+                    },
                     buttonLabel: 'Submit',
                   ),
                   const SizedBox(

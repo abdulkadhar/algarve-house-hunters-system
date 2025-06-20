@@ -3,12 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ThemeController {
   static Color pageBackgroundColor = Colors.white;
+  static Color pageBackgroundSecondaryColor = const Color(0xFFf5f9fa);
   static const Color enabledTextFieldBorderColor = Colors.black;
   static const Color disableTextFieldBorderColor = Colors.grey;
   static const double textFieldBorderWidth = 1.0;
   static const double textFieldBorderRadius = 10;
   static const Color buttonColor = Colors.black;
   static const Color iconPrimaryColor = Colors.white;
+  static const Color textSecondaryColor = Colors.grey;
 
   static BorderSide getTextFieldBorderStyle({
     borderColor = enabledTextFieldBorderColor,
