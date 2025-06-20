@@ -1,4 +1,5 @@
 import 'package:algarve_house_hunters_system/login_screen/view/login_screen.dart';
+import 'package:algarve_house_hunters_system/sign_up_screen/view/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,6 +13,11 @@ class AlgarveHouseHuntersSystem extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Algarve House Hunters',
+      initialRoute: '/login-screen',
+      routes: {
+        '/log-in': (context) => const LoginScreen(),
+        '/sign-up': (context) => const SignUpScreen(),
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
