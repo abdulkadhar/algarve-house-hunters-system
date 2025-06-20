@@ -7,14 +7,14 @@ import 'package:algarve_house_hunters_system/login_screen/widgets/testimonals_ca
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,6 +65,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     placeholderText: '',
                   ),
                   const SizedBox(
+                    height: 20,
+                  ),
+                  const CustomPasswordTextField(
+                    labelName: 'Confirm Password',
+                    placeholderText: '',
+                  ),
+                  const SizedBox(
                     height: 50,
                   ),
                   SubmitButton(
@@ -75,10 +82,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 20,
                   ),
                   AlreadyHaveAccountWidget(
-                    prefixText: "Don't have an account? ",
-                    actionName: "Sign Up",
+                    prefixText: "Already have an account?",
+                    actionName: "Log in",
                     onClick: () {
-                      Navigator.pushNamed(context, '/sign-up');
+                      Navigator.pushNamed(context, '/log-in');
                     },
                   )
                 ],

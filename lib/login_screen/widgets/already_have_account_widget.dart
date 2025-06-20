@@ -2,10 +2,12 @@ import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
 class AlreadyHaveAccountWidget extends StatelessWidget {
+  final String prefixText;
   final String actionName;
   final VoidCallback onClick;
   const AlreadyHaveAccountWidget({
     super.key,
+    required this.prefixText,
     required this.actionName,
     required this.onClick,
   });
@@ -16,7 +18,7 @@ class AlreadyHaveAccountWidget extends StatelessWidget {
       onTap: onClick,
       child: RichText(
         text: TextSpan(
-          text: "Already have an account? ",
+          text: "$prefixText ",
           style: ThemeController.smallTextStyle(),
           children: <TextSpan>[
             TextSpan(
