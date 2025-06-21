@@ -4,8 +4,7 @@ import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/age
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/action_container_widget.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_action_widget.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_info_container.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_info_widget.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_status_widget.dart';
+import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/gallery_grid_widget.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_user_info_widget.dart';
@@ -177,8 +176,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                               ),
                               fit: BoxFit.cover,
                             ),
-                            color: Colors.green,
-                            borderRadius: BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(40),
                               topRight: Radius.circular(40),
                               bottomLeft: Radius.circular(20),
@@ -208,8 +206,15 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   Container(
                     width: MediaQuery.of(context).size.width * 0.5,
                     height: MediaQuery.of(context).size.height * 0.86,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          GalleryGridWidget(
+                            imagePaths: CustomerDashboardScreenController
+                                .propertyImagePaths,
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ],
