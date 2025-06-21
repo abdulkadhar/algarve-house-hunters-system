@@ -1,3 +1,4 @@
+import 'package:algarve_house_hunters_system/customer_dashboard_screen/view/customer_dashboard_screen.dart';
 import 'package:algarve_house_hunters_system/login_screen/view/login_screen.dart';
 import 'package:algarve_house_hunters_system/otp_screen/view/otp_screen.dart';
 import 'package:algarve_house_hunters_system/sign_up_screen/view/sign_up_screen.dart';
@@ -14,13 +15,15 @@ class AlgarveHouseHuntersSystem extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Algarve House Hunters',
-      initialRoute: '/otp-screen',
+      initialRoute: '/customer_dashboard_screen',
       routes: {
         '/log-in': (context) => const LoginScreen(),
         '/sign-up': (context) => const SignUpScreen(),
         '/otp-screen': (context) => const OtpScreen(
               emailAddress: 's.abdulkadhar11@gmail.com',
             ),
+        '/customer_dashboard_screen': (context) =>
+            const CustomerDashboardScreen(),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
