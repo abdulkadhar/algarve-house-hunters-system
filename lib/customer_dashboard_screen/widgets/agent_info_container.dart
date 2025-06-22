@@ -19,7 +19,7 @@ class AgentInfoContainer extends StatelessWidget {
       height: (MediaQuery.of(context).size.height * 0.86) * 0.3,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Colors.blue, Colors.purple],
+          colors: [Colors.black26, Colors.black],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

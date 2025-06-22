@@ -64,6 +64,9 @@ class PropertyInfoSection extends StatelessWidget {
             PropertyInfoLabelWidget(
               iconData: Icons.bar_chart,
               labelValue: 'Property M2: ${propertyData.listingRef}',
+              bgColor: const Color(0xFFE5EDF7),
+              avatarBgColor: const Color(0xFF9ABAEA),
+              avatarBorderColor: const Color(0xFF9ABAEA),
             ),
           ],
         ),
