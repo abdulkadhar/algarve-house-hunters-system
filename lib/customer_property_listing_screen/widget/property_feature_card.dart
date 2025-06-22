@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 class PropertyFeatureCard extends StatelessWidget {
   final String featureName;
   final String featureValue;
+  final Color bgColor;
   const PropertyFeatureCard({
     super.key,
     required this.featureName,
     required this.featureValue,
+    this.bgColor = const Color(0xFFf5f9fa),
   });
 
   @override
@@ -19,8 +21,9 @@ class PropertyFeatureCard extends StatelessWidget {
         horizontal: 10,
       ),
       decoration: BoxDecoration(
-          color: ThemeController.pageBackgroundSecondaryColor,
-          borderRadius: BorderRadius.circular(100)),
+        color: bgColor,
+        borderRadius: BorderRadius.circular(100),
+      ),
       child: Text(
         '$featureName: $featureValue',
         style: ThemeController.smallTextStyle(

@@ -70,13 +70,13 @@ class _CustomerPropertyListingScreenState
                         width: 20,
                       ),
                       DashboardOptionSelector(
-                        isEnabled:
-                            dashboardOption == CustomerDashboardOption.feedback,
+                        isEnabled: dashboardOption ==
+                            CustomerDashboardOption.favorites,
                         iconData: Icons.assignment,
-                        optionLabel: 'Feedback',
+                        optionLabel: 'Favorites',
                         onTap: () {
                           changeDashboardOption(
-                            CustomerDashboardOption.feedback,
+                            CustomerDashboardOption.favorites,
                           );
                         },
                       ),

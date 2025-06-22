@@ -1,12 +1,15 @@
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/action_model.dart';
+import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/agent_model.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/dashboard_user_info_model.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/property_model.dart';
+import 'package:algarve_house_hunters_system/unit_property_info_screen/model/home_tour_request_model.dart';
+import 'package:algarve_house_hunters_system/unit_property_info_screen/widget/home_tour_request_section.dart';
 import 'package:flutter/material.dart';
 
 enum CustomerDashboardOption {
   dashboard,
   listings,
-  feedback,
+  favorites,
 }
 
 enum ActionStatus {
@@ -22,6 +25,21 @@ enum AgentStatus {
 }
 
 class CustomerDashboardScreenController {
+  static HomeTourRequestModel getSampleHomeTourRequestModel() =>
+      HomeTourRequestModel(
+        contact: 's.abdulkadhar1@gmail.com',
+        date: 'October 21, 2025',
+        message: 'Thsi is a smaple message.',
+        name: 'Abdul Kadhar',
+        time: '11:00 PM',
+      );
+  static AgentModel getSampleAgentModel() => AgentModel(
+        agentName: 'Joseph',
+        agentDesignation: 'Basic',
+        status: AgentStatus.available,
+        agentDescription: 'One of the most polite agent of all time',
+        profileImgPath: 'https://randomuser.me/api/portraits/women/26.jpg',
+      );
   static List<String> propertyImagePaths = [
     'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     'https://plus.unsplash.com/premium_photo-1686090449192-4ab1d00cb735?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',

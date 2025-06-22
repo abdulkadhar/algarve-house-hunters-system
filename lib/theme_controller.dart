@@ -27,11 +27,15 @@ class ThemeController {
         color: borderColor,
         width: borderWidth,
       );
-  static TextStyle titleTextStyle({size = 24, color = Colors.black}) =>
+  static TextStyle titleTextStyle({
+    size = 24,
+    color = Colors.black,
+    fontWeight = FontWeight.w600,
+  }) =>
       GoogleFonts.lato(
         fontSize: size,
         color: color,
-        fontWeight: FontWeight.w600,
+        fontWeight: fontWeight,
       );
   static TextStyle normalTextStyle(
           {color = Colors.black, fontWeight = FontWeight.w500, size = 16}) =>
