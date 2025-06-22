@@ -10,7 +10,14 @@ class ThemeController {
   static const double textFieldBorderRadius = 10;
   static const Color buttonColor = Colors.black;
   static const Color iconPrimaryColor = Colors.white;
+  static const Color iconSecondaryColor = Colors.black;
   static const Color textSecondaryColor = Colors.grey;
+  static const Color textPrimaryColor = Colors.black;
+  static const Color textTertiaryColor = Colors.white;
+  static const Color containerPrimaryColor = Colors.black;
+  static const Color containerSecondaryColor = Color(0xFFe7f5ec);
+  static const Color containerPrimaryBorderColor = Color(0xFF9DE58D);
+  static const Color avatarPrimaryColor = Color(0xFF9DE58D);
 
   static BorderSide getTextFieldBorderStyle({
     borderColor = enabledTextFieldBorderColor,
@@ -25,19 +32,17 @@ class ThemeController {
         color: color,
         fontWeight: FontWeight.w600,
       );
-  static TextStyle normalTextStyle({
-    color = Colors.black,
-    fontWeight = FontWeight.w500,
-  }) =>
+  static TextStyle normalTextStyle(
+          {color = Colors.black, fontWeight = FontWeight.w500, size = 16}) =>
       GoogleFonts.lato(
-        fontSize: 16,
+        fontSize: size,
         color: color,
         fontWeight: fontWeight,
       );
   static TextStyle smallTextStyle(
-          {color = Colors.black, fontWeight = FontWeight.w500}) =>
+          {color = Colors.black, fontWeight = FontWeight.w500, size = 14}) =>
       GoogleFonts.lato(
-        fontSize: 14,
+        fontSize: size,
         color: color,
         fontWeight: fontWeight,
       );
