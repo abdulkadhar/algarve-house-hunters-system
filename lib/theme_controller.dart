@@ -27,8 +27,9 @@ class ThemeController {
         color: borderColor,
         width: borderWidth,
       );
-  static TextStyle titleTextStyle({color = Colors.black}) => GoogleFonts.lato(
-        fontSize: 24,
+  static TextStyle titleTextStyle({size = 24, color = Colors.black}) =>
+      GoogleFonts.lato(
+        fontSize: size,
         color: color,
         fontWeight: FontWeight.w600,
       );
