@@ -1,5 +1,6 @@
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/action_model.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/dashboard_user_info_model.dart';
+import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/property_model.dart';
 import 'package:flutter/material.dart';
 
 enum CustomerDashboardOption {
@@ -29,6 +30,23 @@ class CustomerDashboardScreenController {
     'https://images.unsplash.com/photo-1516156008625-3a9d6067fab5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     'https://images.unsplash.com/photo-1498373419901-52eba931dc4f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     'https://images.unsplash.com/photo-1472224371017-08207f84aaae?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  ];
+
+  static List<PropertyModel> getSamplePropertyData = [
+    PropertyModel(
+      ourRef: 'https://infocasa.pt/realestates/7155424',
+      listingRef: '322/M/02128',
+      contactEmail: 'vrsa@era.pt',
+      price: 159900,
+      propertyM2: 112,
+      clientLink: 'https://url.infocasa.pt/cvwd3a30',
+      location: 'Ribeira da Gafa',
+      bedsNumber: 2,
+      bathsNumber: 3,
+      plotNumber: 515,
+      distanceFromCoast: 12,
+      googleMapLink: 'https://maps.app.goo.gl/jxNqTsRPYpVd9uTu9',
+    )
   ];
   static DashboardUserInfoModel getCurrentUserInfoModel() =>
       DashboardUserInfoModel(

@@ -15,6 +15,9 @@ class ThemeController {
   static const Color textPrimaryColor = Colors.black;
   static const Color textTertiaryColor = Colors.white;
   static const Color containerPrimaryColor = Colors.black;
+  static const Color containerSecondaryColor = Color(0xFFe7f5ec);
+  static const Color containerPrimaryBorderColor = Color(0xFF9DE58D);
+  static const Color avatarPrimaryColor = Color(0xFF9DE58D);
 
   static BorderSide getTextFieldBorderStyle({
     borderColor = enabledTextFieldBorderColor,

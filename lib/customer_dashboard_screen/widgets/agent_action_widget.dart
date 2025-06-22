@@ -1,3 +1,4 @@
+import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/list_item_avatar.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -31,21 +32,8 @@ class AgentActionWidget extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: ThemeController.pageBackgroundColor,
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 3,
-                ),
-              ),
-              child: Icon(
-                iconData,
-                color: Colors.grey,
-              ),
+            ListItemAvatar(
+              iconData: iconData,
             ),
             const SizedBox(
               width: 10,

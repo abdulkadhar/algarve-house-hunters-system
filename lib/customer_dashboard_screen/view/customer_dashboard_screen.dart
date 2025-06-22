@@ -5,6 +5,7 @@ import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/a
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_action_widget.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_info_container.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/gallery_grid_widget.dart';
+import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/property_info_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_user_info_widget.dart';
@@ -208,10 +209,18 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                     height: MediaQuery.of(context).size.height * 0.86,
                     child: SingleChildScrollView(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           GalleryGridWidget(
                             imagePaths: CustomerDashboardScreenController
                                 .propertyImagePaths,
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          PropertyInfoSection(
+                            propertyData: CustomerDashboardScreenController
+                                .getSamplePropertyData.first,
                           )
                         ],
                       ),
