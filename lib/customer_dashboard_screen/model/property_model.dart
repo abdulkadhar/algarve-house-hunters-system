@@ -11,6 +11,9 @@ class PropertyModel {
   final int plotNumber;
   final double distanceFromCoast;
   final String googleMapLink;
+  final List<String> propertyImages;
+  final String propertyName;
+  final String propertyDescription;
 
   PropertyModel({
     required this.ourRef,
@@ -25,5 +28,8 @@ class PropertyModel {
     required this.plotNumber,
     required this.distanceFromCoast,
     required this.googleMapLink,
+    required this.propertyImages,
+    required this.propertyName,
+    required this.propertyDescription,
   });
 }

@@ -46,6 +46,9 @@ class CustomerDashboardScreenController {
       plotNumber: 515,
       distanceFromCoast: 12,
       googleMapLink: 'https://maps.app.goo.gl/jxNqTsRPYpVd9uTu9',
+      propertyDescription: "This the sample property description",
+      propertyImages: CustomerDashboardScreenController.propertyImagePaths,
+      propertyName: 'sample property name',
     )
   ];
   static DashboardUserInfoModel getCurrentUserInfoModel() =>

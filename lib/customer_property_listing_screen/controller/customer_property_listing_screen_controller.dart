@@ -1,0 +1,58 @@
+import 'package:algarve_house_hunters_system/customer_dashboard_screen/controller/customer_dashboard_screen_controller.dart';
+import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/property_model.dart';
+
+class CustomerPropertyListingScreenController {
+  static List<PropertyModel> recentlyAddedProperty = [
+    PropertyModel(
+      ourRef: 'https://infocasa.pt/realestates/7155424',
+      listingRef: '322/M/02127',
+      contactEmail: 'vrsa@era.pt',
+      price: 159900,
+      propertyM2: 112,
+      clientLink: 'https://url.infocasa.pt/cvwd3a30',
+      location: 'Ribeira da Gafa',
+      bedsNumber: 2,
+      bathsNumber: 3,
+      plotNumber: 515,
+      distanceFromCoast: 12,
+      googleMapLink: 'https://maps.app.goo.gl/jxNqTsRPYpVd9uTu9',
+      propertyDescription: "This the sample property description",
+      propertyImages: CustomerDashboardScreenController.propertyImagePaths,
+      propertyName: 'Recently added property 1',
+    ),
+    PropertyModel(
+      ourRef: 'https://infocasa.pt/realestates/7155424',
+      listingRef: '322/M/02128',
+      contactEmail: 'vrsa@era.pt',
+      price: 159900,
+      propertyM2: 112,
+      clientLink: 'https://url.infocasa.pt/cvwd3a30',
+      location: 'Ribeira da Gafa',
+      bedsNumber: 2,
+      bathsNumber: 3,
+      plotNumber: 515,
+      distanceFromCoast: 12,
+      googleMapLink: 'https://maps.app.goo.gl/jxNqTsRPYpVd9uTu9',
+      propertyDescription: "This the sample property description",
+      propertyImages: CustomerDashboardScreenController.propertyImagePaths,
+      propertyName: 'Recently added property 8',
+    ),
+    PropertyModel(
+      ourRef: 'https://infocasa.pt/realestates/7155424',
+      listingRef: '322/M/02129',
+      contactEmail: 'vrsa@era.pt',
+      price: 159900,
+      propertyM2: 112,
+      clientLink: 'https://url.infocasa.pt/cvwd3a30',
+      location: 'Ribeira da Gafa',
+      bedsNumber: 2,
+      bathsNumber: 3,
+      plotNumber: 515,
+      distanceFromCoast: 12,
+      googleMapLink: 'https://maps.app.goo.gl/jxNqTsRPYpVd9uTu9',
+      propertyDescription: "This the sample property description",
+      propertyImages: CustomerDashboardScreenController.propertyImagePaths,
+      propertyName: 'Recently added property 3',
+    )
+  ];
+}
