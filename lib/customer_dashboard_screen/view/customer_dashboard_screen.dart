@@ -76,13 +76,13 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                         width: 20,
                       ),
                       DashboardOptionSelector(
-                        isEnabled:
-                            dashboardOption == CustomerDashboardOption.feedback,
+                        isEnabled: dashboardOption ==
+                            CustomerDashboardOption.favorites,
                         iconData: Icons.assignment,
-                        optionLabel: 'Feedback',
+                        optionLabel: 'Favorites',
                         onTap: () {
                           changeDashboardOption(
-                            CustomerDashboardOption.feedback,
+                            CustomerDashboardOption.favorites,
                           );
                         },
                       ),
@@ -133,11 +133,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                       children: [
                         // NOTE Agent Info
                         AgentInfoContainer(
-                          agentData: AgentModel(
-                            agentName: 'Abdul',
-                            agentDesignation: 'Agent',
-                            status: AgentStatus.available,
-                          ),
+                          agentData: CustomerDashboardScreenController
+                              .getSampleAgentModel(),
                           onCallPress: () {},
                         ),
                         const SizedBox(

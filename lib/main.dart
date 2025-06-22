@@ -3,6 +3,7 @@ import 'package:algarve_house_hunters_system/customer_property_listing_screen/vi
 import 'package:algarve_house_hunters_system/login_screen/view/login_screen.dart';
 import 'package:algarve_house_hunters_system/otp_screen/view/otp_screen.dart';
 import 'package:algarve_house_hunters_system/sign_up_screen/view/sign_up_screen.dart';
+import 'package:algarve_house_hunters_system/unit_property_info_screen/view/unit_property_info_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +17,7 @@ class AlgarveHouseHuntersSystem extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Algarve House Hunters',
-      initialRoute: '/customer_property_listing_screen',
+      initialRoute: '/',
       routes: {
         '/log-in': (context) => const LoginScreen(),
         '/sign-up': (context) => const SignUpScreen(),
@@ -25,7 +26,7 @@ class AlgarveHouseHuntersSystem extends StatelessWidget {
             ),
         '/customer_dashboard_screen': (context) =>
             const CustomerDashboardScreen(),
-        '/customer_property_listing_screen': (context) =>
+        '/customer-property-listing-screen': (context) =>
             const CustomerPropertyListingScreen(),
       },
       theme: ThemeData(

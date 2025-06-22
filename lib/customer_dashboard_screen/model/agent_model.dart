@@ -4,10 +4,14 @@ class AgentModel {
   final String agentName;
   final String agentDesignation;
   final AgentStatus status;
+  final String profileImgPath;
+  final String agentDescription;
 
   AgentModel({
     required this.agentName,
     required this.agentDesignation,
     required this.status,
+    required this.agentDescription,
+    required this.profileImgPath,
   });
 }
