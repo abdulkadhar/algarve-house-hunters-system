@@ -240,6 +240,10 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                       ),
                     ),
                   ),
+                  // NOTE
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.01,
+                  ),
                 ],
               )
             ],
