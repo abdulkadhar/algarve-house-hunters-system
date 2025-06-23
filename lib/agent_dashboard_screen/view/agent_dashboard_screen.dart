@@ -148,6 +148,11 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                             (index) => ClientQuickActionWidget(
                               userData: AgentDashboardScreenController
                                   .getSampleAssignedUserModel()[index],
+                              isSelected: AgentDashboardScreenController
+                                          .getSampleAssignedUserModel()[index]
+                                      .basicData
+                                      .userId ==
+                                  selectedUserData.basicData.userId,
                               onProfilePress: () {
                                 selectedUserData =
                                     AgentDashboardScreenController

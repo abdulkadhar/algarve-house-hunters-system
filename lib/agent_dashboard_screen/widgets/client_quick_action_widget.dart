@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 class ClientQuickActionWidget extends StatelessWidget {
   final CustomerDataModel userData;
   final VoidCallback onProfilePress;
+  final bool isSelected;
   const ClientQuickActionWidget({
     super.key,
     required this.userData,
     required this.onProfilePress,
+    this.isSelected = false,
   });
 
   @override
@@ -20,7 +22,7 @@ class ClientQuickActionWidget extends StatelessWidget {
           onTap: onProfilePress,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isSelected ? Colors.black : Colors.white,
               borderRadius: BorderRadius.circular(100),
             ),
             padding: const EdgeInsets.symmetric(
@@ -50,6 +52,7 @@ class ClientQuickActionWidget extends StatelessWidget {
                       style: ThemeController.normalTextStyle(
                         fontWeight: FontWeight.w800,
                         size: 14,
+                        color: isSelected ? Colors.white : Colors.black,
                       ),
                     ),
                     Text(
@@ -57,6 +60,7 @@ class ClientQuickActionWidget extends StatelessWidget {
                       style: ThemeController.normalTextStyle(
                         fontWeight: FontWeight.w400,
                         size: 13,
+                        color: isSelected ? Colors.white : Colors.black,
                       ),
                     ),
                   ],
