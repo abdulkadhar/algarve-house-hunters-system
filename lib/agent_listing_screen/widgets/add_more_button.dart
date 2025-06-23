@@ -5,11 +5,13 @@ class AddMoreButton extends StatelessWidget {
   final VoidCallback onButtonPress;
   final String buttonLabel;
   final IconData iconData;
+  final double height;
   const AddMoreButton({
     super.key,
     required this.onButtonPress,
     required this.buttonLabel,
     this.iconData = Icons.add,
+    this.height = 45,
   });
 
   @override
@@ -19,7 +21,7 @@ class AddMoreButton extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(10),
         alignment: Alignment.center,
-        height: 45,
+        height: height,
         width: 200,
         decoration: BoxDecoration(
           color: ThemeController.buttonColor,
