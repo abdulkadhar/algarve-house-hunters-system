@@ -1,3 +1,4 @@
+import 'package:algarve_house_hunters_system/agent_dashboard_screen/view/agent_dashboard_screen.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/view/customer_dashboard_screen.dart';
 import 'package:algarve_house_hunters_system/customer_property_listing_screen/view/customer_property_listing_screen.dart';
 import 'package:algarve_house_hunters_system/login_screen/view/login_screen.dart';
@@ -17,7 +18,7 @@ class AlgarveHouseHuntersSystem extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Algarve House Hunters',
-      initialRoute: '/',
+      initialRoute: '/agent-dashboard-screen',
       routes: {
         '/log-in': (context) => const LoginScreen(),
         '/sign-up': (context) => const SignUpScreen(),
@@ -28,6 +29,7 @@ class AlgarveHouseHuntersSystem extends StatelessWidget {
             const CustomerDashboardScreen(),
         '/customer-property-listing-screen': (context) =>
             const CustomerPropertyListingScreen(),
+        '/agent-dashboard-screen': (context) => const AgentDashboardScreen()
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

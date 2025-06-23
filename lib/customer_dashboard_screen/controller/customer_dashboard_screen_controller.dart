@@ -74,6 +74,7 @@ class CustomerDashboardScreenController {
         designation: 'Sr Software Engineer',
         userName: 'Abdul Kadhar',
         profileImg: 'https://randomuser.me/api/portraits/women/26.jpg',
+        userId: 'sample_id',
       );
 
   static ActionModel getSampleActionModel() => ActionModel(
@@ -113,6 +114,17 @@ class CustomerDashboardScreenController {
         return Colors.grey;
       case AgentStatus.away:
         return Colors.amber;
+    }
+  }
+
+  static String getAgentLabelString(AgentStatus status) {
+    switch (status) {
+      case AgentStatus.available:
+        return 'Available';
+      case AgentStatus.offline:
+        return 'Offline';
+      case AgentStatus.away:
+        return 'Away';
     }
   }
 }

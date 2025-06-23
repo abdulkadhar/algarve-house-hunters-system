@@ -46,11 +46,16 @@ class AgentActionWidget extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            Text(
-              actionValue,
-              style: ThemeController.normalTextStyle(
-                size: 14,
-                fontWeight: FontWeight.w800,
+            SizedBox(
+              width: 150,
+              child: Text(
+                actionValue,
+                style: ThemeController.normalTextStyle(
+                  size: 14,
+                  fontWeight: FontWeight.w800,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
