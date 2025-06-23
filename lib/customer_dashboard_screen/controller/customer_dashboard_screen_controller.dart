@@ -67,6 +67,7 @@ class CustomerDashboardScreenController {
       propertyDescription: "This the sample property description",
       propertyImages: CustomerDashboardScreenController.propertyImagePaths,
       propertyName: 'sample property name',
+      propertyId: 'sgbsjbajsa12',
     )
   ];
   static DashboardUserInfoModel getCurrentUserInfoModel() =>

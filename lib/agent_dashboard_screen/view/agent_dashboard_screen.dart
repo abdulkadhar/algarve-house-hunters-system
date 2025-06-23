@@ -1,20 +1,15 @@
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/agent_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_info_section.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_quick_action_widget.dart';
-import 'package:algarve_house_hunters_system/assets_controller.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/controller/customer_dashboard_screen_controller.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/action_container_widget.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_action_widget.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_info_container.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/gallery_grid_widget.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/property_info_section.dart';
 import 'package:algarve_house_hunters_system/global_model/customer_data_model.dart';
 import 'package:algarve_house_hunters_system/global_widgets/agent_user_info_widget.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
-import 'package:algarve_house_hunters_system/global_widgets/dashboard_user_info_widget.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
-import 'package:algarve_house_hunters_system/unit_property_info_screen/widget/agent_info_sectIon.dart';
 import 'package:flutter/material.dart';
 
 class AgentDashboardScreen extends StatefulWidget {
