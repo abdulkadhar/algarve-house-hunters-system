@@ -1,12 +1,11 @@
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/controller/customer_dashboard_screen_controller.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/agent_model.dart';
 import 'package:flutter/material.dart';
 
 class AgentStatusWidget extends StatelessWidget {
-  final AgentModel agentData;
+  final AgentStatus status;
   const AgentStatusWidget({
     super.key,
-    required this.agentData,
+    required this.status,
   });
 
   @override
@@ -15,7 +14,7 @@ class AgentStatusWidget extends StatelessWidget {
       alignment: Alignment.topRight,
       child: CircleAvatar(
         backgroundColor: CustomerDashboardScreenController.getAgentStatusColor(
-          agentData.status,
+          status,
         ),
         radius: 8,
       ),

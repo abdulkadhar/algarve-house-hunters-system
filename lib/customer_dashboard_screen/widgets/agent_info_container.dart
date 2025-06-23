@@ -39,7 +39,7 @@ class AgentInfoContainer extends StatelessWidget {
             agentData: agentData,
           ),
           AgentStatusWidget(
-            agentData: agentData,
+            status: agentData.status,
           )
         ],
       ),
