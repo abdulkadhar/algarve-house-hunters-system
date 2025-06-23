@@ -1,3 +1,4 @@
+import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/model/unit_agent_checklist_model.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/model/customer_preference_model.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/dashboard_user_info_model.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/property_model.dart';
@@ -10,6 +11,83 @@ enum PropertyAllocationOption {
 }
 
 class AgentControllerPropertyAllocationController {
+  static List<UnitAgentChecklistModel> getSampleCheckListItems() => [
+        UnitAgentChecklistModel(
+          title: 'Client Completed JotForm',
+          description: 'Ensure onboarding form is completed by client.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'First Call Confirmed',
+          description: 'Confirm first call with client and mark as scheduled.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Has Fiscal',
+          description: 'Confirm the client has fiscal details (e.g., budget).',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Has Lawyer',
+          description:
+              'Confirm that the client has a lawyer or refer them to one.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Search Started',
+          description: 'Confirm that property search process has started.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Viewings Confirmed',
+          description: 'Confirm viewing appointments are set with the client.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Viewings Booked',
+          description: 'Confirm viewings are officially booked with agencies.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Property Found',
+          description: 'Confirm that the client has found a suitable property.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Offer Made',
+          description: 'Confirm an offer has been made on the property.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Offer Confirmed',
+          description: 'Confirm the offer has been accepted by the seller.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'CPCV Booked',
+          description:
+              'Confirm that the Contract of Purchase and Completion (CPCV) has been booked.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'KYC Requested',
+          description:
+              'Request and confirm that Know Your Customer (KYC) documents have been requested.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Review Requested',
+          description:
+              'Ask client to review and give feedback on the process and property search.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'All Docs Received',
+          description: 'Confirm all necessary documentation has been received.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Deed Booked',
+          description:
+              'Confirm that the deed has been booked for the property transfer.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'Sale Completed',
+          description: 'Confirm that the property sale has been completed.',
+        ),
+        UnitAgentChecklistModel(
+          title: 'After Care Required?',
+          description:
+              'Confirm if any after-care services are required post-sale (e.g., moving support, additional advice).',
+        ),
+      ];
+
   static List<PropertyModel> getSampleSelectedPropertyList() => [
         PropertyModel(
           ourRef: 'https://infocasa.pt/realestates/7155424',

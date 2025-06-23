@@ -1,7 +1,9 @@
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/controller/agent_controller_property_allocation_controller.dart';
+import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/model/unit_agent_checklist_model.dart';
+import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/check_list_unit_widget.dart';
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/option_label_selector_widget.dart';
-import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/property_info_container.dart';
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/property_unit_info_widget.dart';
+import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/toggle_switch_widget.dart';
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/user_preference_widget.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/agent_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_quick_action_widget.dart';
@@ -32,13 +34,16 @@ class _AgentCustomerPropertyAllocationScreenState
     setState(() {});
   }
 
-  PropertyAllocationOption optionsData =
-      PropertyAllocationOption.assignProperty;
+  PropertyAllocationOption optionsData = PropertyAllocationOption.checklist;
 
   void changePropertyAllocationOption(PropertyAllocationOption data) {
     optionsData = data;
     setState(() {});
   }
+
+  UnitAgentChecklistModel unitData =
+      AgentControllerPropertyAllocationController.getSampleCheckListItems()
+          .first;
 
   @override
   Widget build(BuildContext context) {
@@ -271,47 +276,76 @@ class _AgentCustomerPropertyAllocationScreenState
                                 ),
                               ],
                             ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Listed Property',
-                                style: ThemeController.smallTextStyle(
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              SizedBox(
-                                child: GridView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: AgentListingScreenController
-                                          .getSampleMyPropertyList()
-                                      .length,
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 4, // 2 columns
-                                    crossAxisSpacing: 12,
-                                    mainAxisSpacing: 12,
-                                    childAspectRatio: 0.85,
+                          if (optionsData ==
+                              PropertyAllocationOption.assignProperty)
+                            const SizedBox(
+                              height: 20,
+                            ),
+                          if (optionsData ==
+                              PropertyAllocationOption.assignProperty)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Listed Property',
+                                  style: ThemeController.smallTextStyle(
+                                    fontWeight: FontWeight.w900,
                                   ),
-                                  itemBuilder: (context, index) {
-                                    return PropertyUnitInfoWidget(
-                                      propertyData:
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                SizedBox(
+                                  child: GridView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: AgentListingScreenController
+                                            .getSampleMyPropertyList()
+                                        .length,
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 4, // 2 columns
+                                      crossAxisSpacing: 12,
+                                      mainAxisSpacing: 12,
+                                      childAspectRatio: 0.85,
+                                    ),
+                                    itemBuilder: (context, index) {
+                                      return PropertyUnitInfoWidget(
+                                        propertyData:
+                                            AgentControllerPropertyAllocationController
+                                                    .getSampleSelectedPropertyList()[
+                                                index],
+                                        isAssignButton: true,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          if (optionsData == PropertyAllocationOption.checklist)
+                            const SizedBox(
+                              height: 20,
+                            ),
+                          if (optionsData == PropertyAllocationOption.checklist)
+                            Column(
+                              children: List.generate(
+                                AgentControllerPropertyAllocationController
+                                        .getSampleCheckListItems()
+                                    .length,
+                                (index) => Column(
+                                  children: [
+                                    CheckListUnitWidget(
+                                      onTogglePress: (toggleData) {},
+                                      checkUnitData:
                                           AgentControllerPropertyAllocationController
-                                                  .getSampleSelectedPropertyList()[
-                                              index],
-                                      isAssignButton: true,
-                                    );
-                                  },
+                                              .getSampleCheckListItems()[index],
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            )
                         ],
                       ),
                     ),
