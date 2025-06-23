@@ -14,6 +14,7 @@ class PropertyModel {
   final List<String> propertyImages;
   final String propertyName;
   final String propertyDescription;
+  final String propertyId;
 
   PropertyModel({
     required this.ourRef,
@@ -31,5 +32,6 @@ class PropertyModel {
     required this.propertyImages,
     required this.propertyName,
     required this.propertyDescription,
+    required this.propertyId,
   });
 }

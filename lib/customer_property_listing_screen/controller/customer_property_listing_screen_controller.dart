@@ -19,6 +19,7 @@ class CustomerPropertyListingScreenController {
       propertyDescription: "This the sample property description",
       propertyImages: CustomerDashboardScreenController.propertyImagePaths,
       propertyName: 'Recently added property 1',
+      propertyId: 'afshghgshagsh2',
     ),
     PropertyModel(
       ourRef: 'https://infocasa.pt/realestates/7155424',
@@ -36,6 +37,7 @@ class CustomerPropertyListingScreenController {
       propertyDescription: "This the sample property description",
       propertyImages: CustomerDashboardScreenController.propertyImagePaths,
       propertyName: 'Recently added property 8',
+      propertyId: 'afshghgshagsh',
     ),
     PropertyModel(
       ourRef: 'https://infocasa.pt/realestates/7155424',
@@ -53,6 +55,7 @@ class CustomerPropertyListingScreenController {
       propertyDescription: "This the sample property description",
       propertyImages: CustomerDashboardScreenController.propertyImagePaths,
       propertyName: 'Recently added property 3',
+      propertyId: 'afshghgshagsh1',
     )
   ];
 }
