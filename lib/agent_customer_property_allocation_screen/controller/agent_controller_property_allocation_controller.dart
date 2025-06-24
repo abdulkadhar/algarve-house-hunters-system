@@ -10,6 +10,11 @@ enum PropertyAllocationOption {
   checklist,
 }
 
+enum AssignmentStatus {
+  unassign,
+  assign,
+}
+
 class AgentControllerPropertyAllocationController {
   static List<UnitAgentChecklistModel> getSampleCheckListItems() => [
         UnitAgentChecklistModel(

@@ -6,12 +6,14 @@ class GetInTouchButton extends StatelessWidget {
   final String btnLabel;
   final Color bgColor;
   final Color labelColor;
+  final Color borderColor;
   const GetInTouchButton({
     super.key,
     required this.onBtnPress,
     required this.btnLabel,
     this.bgColor = Colors.black,
     this.labelColor = Colors.white,
+    this.borderColor = Colors.transparent,
   });
 
   @override
@@ -20,9 +22,12 @@ class GetInTouchButton extends StatelessWidget {
       onTap: onBtnPress,
       child: Container(
         decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(100),
-        ),
+            color: bgColor,
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(
+              color: borderColor,
+              width: 1,
+            )),
         padding: const EdgeInsets.all(10),
         child: Text(
           btnLabel,
