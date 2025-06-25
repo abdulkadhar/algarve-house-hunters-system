@@ -141,8 +141,9 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                                     .getSampleAssignedUserModel()
                                 .length,
                             (index) => ClientQuickActionWidget(
-                              userData: AgentDashboardScreenController
-                                  .getSampleAssignedUserModel()[index],
+                              userData: {},
+                              // userData: AgentDashboardScreenController
+                              //     .getSampleAssignedUserModel()[index],
                               isSelected: AgentDashboardScreenController
                                           .getSampleAssignedUserModel()[index]
                                       .basicData
@@ -235,8 +236,9 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                             height: 30,
                           ),
                           PropertyInfoSection(
-                            propertyData: CustomerDashboardScreenController
-                                .getSamplePropertyData.first,
+                            // propertyData: CustomerDashboardScreenController
+                            //     .getSamplePropertyData.first,
+                            propertyData: {},
                           )
                         ],
                       ),

@@ -6,11 +6,15 @@ class CustomPasswordTextField extends StatefulWidget {
   final String labelName;
   final bool isMandatory;
   final String placeholderText;
+  final Function(String?)? onChanged;
+  final String? errorText;
   const CustomPasswordTextField({
     super.key,
     required this.labelName,
     this.isMandatory = false,
     this.placeholderText = '',
+    this.onChanged,
+    this.errorText,
   });
 
   @override
@@ -34,6 +38,7 @@ class _CustomPasswordTextFieldState extends State<CustomPasswordTextField> {
           height: 8,
         ),
         TextFormField(
+          onChanged: widget.onChanged,
           obscureText: _obscureText,
           decoration: InputDecoration(
             labelText: widget.placeholderText,
@@ -72,6 +77,17 @@ class _CustomPasswordTextFieldState extends State<CustomPasswordTextField> {
             ),
           ),
         ),
+        if (widget.errorText != null)
+          const SizedBox(
+            height: 4,
+          ),
+        if (widget.errorText != null)
+          Text(
+            widget.errorText!,
+            style: ThemeController.smallTextStyle(
+              color: Colors.red,
+            ),
+          )
       ],
     );
   }

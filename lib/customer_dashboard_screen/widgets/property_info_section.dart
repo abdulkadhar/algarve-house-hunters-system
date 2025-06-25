@@ -6,7 +6,7 @@ import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
 class PropertyInfoSection extends StatelessWidget {
-  final PropertyModel propertyData;
+  final Map<String, dynamic> propertyData;
   const PropertyInfoSection({
     super.key,
     required this.propertyData,
@@ -25,7 +25,7 @@ class PropertyInfoSection extends StatelessWidget {
               width: 10,
             ),
             Text(
-              propertyData.location,
+              propertyData["propertyLocationName"],
               style: ThemeController.normalTextStyle(),
             ),
             const SizedBox(
@@ -42,7 +42,7 @@ class PropertyInfoSection extends StatelessWidget {
             ),
             const Spacer(),
             Text(
-              '€${propertyData.price}',
+              '€${propertyData["propertyPrice"]}',
               style: ThemeController.normalTextStyle(
                 fontWeight: FontWeight.w800,
               ),
@@ -56,14 +56,14 @@ class PropertyInfoSection extends StatelessWidget {
           children: [
             PropertyInfoLabelWidget(
               iconData: Icons.bar_chart,
-              labelValue: 'Listing Ref: ${propertyData.listingRef}',
+              labelValue: 'Listing Ref: ${propertyData["listingRef"]}',
             ),
             const SizedBox(
               width: 10,
             ),
             PropertyInfoLabelWidget(
               iconData: Icons.bar_chart,
-              labelValue: 'Property M2: ${propertyData.listingRef}',
+              labelValue: 'Property M2: ${propertyData["propertyM2"]}',
               bgColor: const Color(0xFFE5EDF7),
               avatarBgColor: const Color(0xFF9ABAEA),
               avatarBorderColor: const Color(0xFF9ABAEA),
@@ -104,7 +104,7 @@ class PropertyInfoSection extends StatelessWidget {
             PropertyInfoWidget(
               iconData: Icons.bed,
               infoLabel: 'Bedroom',
-              infoValue: propertyData.bedsNumber.toString(),
+              infoValue: propertyData["bedsNumber"].toString(),
             ),
             const SizedBox(
               width: 20,
@@ -112,7 +112,7 @@ class PropertyInfoSection extends StatelessWidget {
             PropertyInfoWidget(
               iconData: Icons.bed,
               infoLabel: 'Baths',
-              infoValue: propertyData.bathsNumber.toString(),
+              infoValue: propertyData["bathsNumber"].toString(),
             ),
             const SizedBox(
               width: 20,
@@ -120,7 +120,7 @@ class PropertyInfoSection extends StatelessWidget {
             PropertyInfoWidget(
               iconData: Icons.bathroom,
               infoLabel: 'Plot number',
-              infoValue: propertyData.plotNumber.toString(),
+              infoValue: propertyData["plotNumber"].toString(),
             ),
             const SizedBox(
               width: 20,
@@ -128,7 +128,7 @@ class PropertyInfoSection extends StatelessWidget {
             PropertyInfoWidget(
               iconData: Icons.beach_access,
               infoLabel: 'Coast distance',
-              infoValue: propertyData.distanceFromCoast.toString(),
+              infoValue: propertyData["distanceFromCoast"].toString(),
             ),
           ],
         ),
@@ -141,7 +141,7 @@ class PropertyInfoSection extends StatelessWidget {
             PropertyInfoWidget(
               iconData: Icons.price_change,
               infoLabel: 'Price',
-              infoValue: propertyData.price.toString(),
+              infoValue: propertyData["propertyPrice"],
             ),
             const SizedBox(
               width: 20,
@@ -149,7 +149,7 @@ class PropertyInfoSection extends StatelessWidget {
             PropertyInfoWidget(
               iconData: Icons.list,
               infoLabel: 'Listing Ref',
-              infoValue: propertyData.bathsNumber.toString(),
+              infoValue: propertyData["listingRef"],
             ),
             const SizedBox(
               width: 20,
@@ -157,7 +157,7 @@ class PropertyInfoSection extends StatelessWidget {
             PropertyInfoWidget(
               iconData: Icons.bathroom,
               infoLabel: 'Property M2',
-              infoValue: propertyData.propertyM2.toString(),
+              infoValue: propertyData["propertyM2"].toString(),
             ),
             const SizedBox(
               width: 20,
@@ -165,7 +165,7 @@ class PropertyInfoSection extends StatelessWidget {
             PropertyInfoWidget(
               iconData: Icons.beach_access,
               infoLabel: 'Coast distance',
-              infoValue: propertyData.distanceFromCoast.toString(),
+              infoValue: propertyData["distanceFromCoast"].toString(),
             ),
           ],
         ),

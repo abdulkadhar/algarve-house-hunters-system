@@ -2,8 +2,13 @@ import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
 class GalleryGridCountContainer extends StatelessWidget {
-  final List<String> imagePaths;
-  const GalleryGridCountContainer({super.key, required this.imagePaths});
+  final String imagePaths;
+  final int count;
+  const GalleryGridCountContainer({
+    super.key,
+    required this.imagePaths,
+    required this.count,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +24,7 @@ class GalleryGridCountContainer extends StatelessWidget {
           children: [
             Positioned.fill(
               child: Image.network(
-                imagePaths[2],
+                imagePaths,
                 fit: BoxFit.cover,
               ),
             ),
@@ -36,7 +41,7 @@ class GalleryGridCountContainer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
-                  '+${(imagePaths.length - 2).toString()}',
+                  '+${(count - 2).toString()}',
                   style: ThemeController.smallTextStyle(
                     fontWeight: FontWeight.w900,
                   ),
