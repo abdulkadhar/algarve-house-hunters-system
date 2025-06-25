@@ -95,12 +95,6 @@ class CustomerInfoSection extends StatelessWidget {
                 ),
               ],
             )
-            // Center(
-            //   child: GetInTouchButton(
-            //     btnLabel: 'Get in touch',
-            //     onBtnPress: onPress,
-            //   ),
-            // )
           ],
         ),
       ),

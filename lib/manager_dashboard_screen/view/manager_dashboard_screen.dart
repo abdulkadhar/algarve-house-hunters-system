@@ -1,30 +1,26 @@
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/agent_dashboard_screen_controller.dart';
-import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_info_section.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/controller/customer_dashboard_screen_controller.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_action_widget.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/gallery_grid_widget.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/property_info_section.dart';
-import 'package:algarve_house_hunters_system/global_model/customer_data_model.dart';
 import 'package:algarve_house_hunters_system/global_widgets/agent_user_info_widget.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
+import 'package:algarve_house_hunters_system/manager_dashboard_screen/controller/manager_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
-class AgentDashboardScreen extends StatefulWidget {
-  const AgentDashboardScreen({super.key});
+class ManagerDashboardScreen extends StatefulWidget {
+  const ManagerDashboardScreen({super.key});
 
   @override
-  State<AgentDashboardScreen> createState() => _AgentDashboardScreenState();
+  State<ManagerDashboardScreen> createState() => _ManagerDashboardScreenState();
 }
 
-class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
-  AgentDashboardOption dashboardOption = AgentDashboardOption.dashboard;
-  CustomerDataModel selectedUserData =
-      AgentDashboardScreenController.getSampleAssignedUserModel().first;
+class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
+  ManagerDashboardOption dashboardOption = ManagerDashboardOption.dashboard;
 
-  void changeDashboardOption(AgentDashboardOption option) {
+  void changeDashboardOption(ManagerDashboardOption option) {
     dashboardOption = option;
     setState(() {});
   }
@@ -50,12 +46,12 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                     children: [
                       DashboardOptionSelector(
                         isEnabled:
-                            dashboardOption == AgentDashboardOption.dashboard,
+                            dashboardOption == ManagerDashboardOption.dashboard,
                         iconData: Icons.dashboard,
                         optionLabel: 'Dashboard',
                         onTap: () {
                           changeDashboardOption(
-                            AgentDashboardOption.dashboard,
+                            ManagerDashboardOption.dashboard,
                           );
                         },
                       ),
@@ -64,12 +60,12 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                       ),
                       DashboardOptionSelector(
                         isEnabled:
-                            dashboardOption == AgentDashboardOption.listings,
+                            dashboardOption == ManagerDashboardOption.listings,
                         iconData: Icons.list,
                         optionLabel: 'Listings',
                         onTap: () {
                           changeDashboardOption(
-                            AgentDashboardOption.listings,
+                            ManagerDashboardOption.listings,
                           );
                         },
                       ),
@@ -78,12 +74,12 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                       ),
                       DashboardOptionSelector(
                         isEnabled:
-                            dashboardOption == AgentDashboardOption.calendar,
-                        iconData: Icons.calendar_month,
-                        optionLabel: 'Calendar',
+                            dashboardOption == ManagerDashboardOption.agents,
+                        iconData: Icons.support_agent,
+                        optionLabel: 'Agents',
                         onTap: () {
                           changeDashboardOption(
-                            AgentDashboardOption.calendar,
+                            ManagerDashboardOption.agents,
                           );
                         },
                       ),
@@ -92,12 +88,12 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                       ),
                       DashboardOptionSelector(
                         isEnabled:
-                            dashboardOption == AgentDashboardOption.customer,
+                            dashboardOption == ManagerDashboardOption.clients,
                         iconData: Icons.dashboard_customize_rounded,
-                        optionLabel: 'Customer',
+                        optionLabel: 'Clients',
                         onTap: () {
                           changeDashboardOption(
-                            AgentDashboardOption.customer,
+                            ManagerDashboardOption.clients,
                           );
                         },
                       ),
@@ -105,8 +101,8 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                   ),
                   const Spacer(),
                   AgentUserInfoWidget(
-                    agentData:
-                        AgentDashboardScreenController.getSampleAgentModel(),
+                    agentData: ManagerDashboardScreenController
+                        .getSampleManagerModel(),
                     onProfilePress: () {},
                   ),
                 ],
@@ -114,7 +110,6 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
               const SizedBox(
                 height: 10,
               ),
-              // NOTE Dashboard Main Section
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -129,11 +124,22 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                     child: ListView(
                       padding: const EdgeInsets.all(15),
                       children: [
-                        Text(
-                          'Assigned Clients',
-                          style: ThemeController.normalTextStyle(
-                            fontWeight: FontWeight.w900,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              'Clients',
+                              style: ThemeController.normalTextStyle(
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () {},
+                              child: const Icon(
+                                Icons.add,
+                              ),
+                            )
+                          ],
                         ),
                         Column(
                           children: List.generate(
@@ -143,17 +149,8 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                             (index) => ClientQuickActionWidget(
                               userData: AgentDashboardScreenController
                                   .getSampleAssignedUserModel()[index],
-                              isSelected: AgentDashboardScreenController
-                                          .getSampleAssignedUserModel()[index]
-                                      .basicData
-                                      .userId ==
-                                  selectedUserData.basicData.userId,
-                              onProfilePress: () {
-                                selectedUserData =
-                                    AgentDashboardScreenController
-                                        .getSampleAssignedUserModel()[index];
-                                setState(() {});
-                              },
+                              isSelected: false,
+                              onProfilePress: () {},
                             ),
                           ),
                         )
@@ -164,54 +161,47 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.01,
                   ),
-                  // NOTE Client Info Section
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.25,
-                    child: Column(
+                  // NOTE Agents Sections
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    height: MediaQuery.of(context).size.height * 0.86,
+                    decoration: BoxDecoration(
+                      color: ThemeController.pageBackgroundSecondaryColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: ListView(
+                      padding: const EdgeInsets.all(15),
                       children: [
-                        // NOTE Agent Info
-                        ClientInfoSection(
-                          customerData: selectedUserData,
+                        Row(
+                          children: [
+                            Text(
+                              'Agents',
+                              style: ThemeController.normalTextStyle(
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () {},
+                              child: const Icon(
+                                Icons.add,
+                              ),
+                            )
+                          ],
                         ),
-                        const SizedBox(
-                          height: 25,
-                        ),
-
-                        AgentActionWidget(
-                          actionName: 'Amount Pref',
-                          iconData: Icons.account_balance,
-                          actionValue: selectedUserData
-                              .preferenceData.valueSpendPreference
-                              .toString(),
-                          onActionPress: () {},
-                        ),
-                        AgentActionWidget(
-                          actionName: 'Email',
-                          iconData: Icons.mail,
-                          actionValue: selectedUserData.preferenceData.email,
-                          onActionPress: () {},
-                        ),
-                        AgentActionWidget(
-                          actionName: 'Phone',
-                          iconData: Icons.phone,
-                          actionValue:
-                              selectedUserData.preferenceData.phoneNumber,
-                          onActionPress: () {},
-                        ),
-                        AgentActionWidget(
-                          actionName: 'Agent status',
-                          iconData: Icons.support_agent,
-                          actionValue:
-                              selectedUserData.preferenceData.otherAgentsStatus,
-                          onActionPress: () {},
-                        ),
-                        AgentActionWidget(
-                          actionName: 'Bank Status',
-                          iconData: Icons.account_balance_wallet,
-                          actionValue:
-                              selectedUserData.preferenceData.bankStatus,
-                          onActionPress: () {},
-                        ),
+                        Column(
+                          children: List.generate(
+                            AgentDashboardScreenController
+                                    .getSampleAssignedUserModel()
+                                .length,
+                            (index) => ClientQuickActionWidget(
+                              userData: AgentDashboardScreenController
+                                  .getSampleAssignedUserModel()[index],
+                              isSelected: false,
+                              onProfilePress: () {},
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -219,7 +209,7 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                     width: MediaQuery.of(context).size.width * 0.01,
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.5,
+                    width: MediaQuery.of(context).size.width * 0.54,
                     height: MediaQuery.of(context).size.height * 0.86,
                     child: SingleChildScrollView(
                       child: Column(
@@ -228,8 +218,8 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                           GalleryGridWidget(
                             imagePaths: CustomerDashboardScreenController
                                 .propertyImagePaths,
-                            width:
-                                (MediaQuery.of(context).size.width * 0.5) * 0.7,
+                            width: (MediaQuery.of(context).size.width * 0.5) *
+                                0.79,
                           ),
                           const SizedBox(
                             height: 30,

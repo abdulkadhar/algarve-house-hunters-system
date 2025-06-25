@@ -17,7 +17,7 @@ class ClientQuickActionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 10),
+        const SizedBox(height: 5),
         InkWell(
           onTap: onProfilePress,
           child: Container(
@@ -69,7 +69,7 @@ class ClientQuickActionWidget extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 5),
       ],
     );
   }
