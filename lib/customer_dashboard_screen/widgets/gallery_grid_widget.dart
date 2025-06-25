@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 
 class GalleryGridWidget extends StatelessWidget {
   final List<String> imagePaths;
+  final double width;
   const GalleryGridWidget({
     super.key,
     required this.imagePaths,
+    required this.width,
   });
 
   @override
@@ -16,6 +18,7 @@ class GalleryGridWidget extends StatelessWidget {
       children: [
         GalleryGridMainImageContainer(
           imagePath: imagePaths.first,
+          width: width,
         ),
         const SizedBox(
           width: 10,

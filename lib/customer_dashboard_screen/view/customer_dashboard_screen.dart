@@ -211,6 +211,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                           GalleryGridWidget(
                             imagePaths: CustomerDashboardScreenController
                                 .propertyImagePaths,
+                            width:
+                                (MediaQuery.of(context).size.width * 0.5) * 0.7,
                           ),
                           const SizedBox(
                             height: 30,
