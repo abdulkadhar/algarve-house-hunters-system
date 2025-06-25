@@ -1,12 +1,14 @@
-import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/agent_dashboard_screen_controller.dart';
+import 'dart:convert';
+import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/agent_quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_quick_action_widget.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/controller/customer_dashboard_screen_controller.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/gallery_grid_widget.dart';
+import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/manager_gallery_widget.dart';
+import 'package:algarve_house_hunters_system/agent_onboarding_screen/view/agent_onboarding_screen.dart';
+import 'package:algarve_house_hunters_system/api_controller.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/property_info_section.dart';
-import 'package:algarve_house_hunters_system/global_widgets/agent_user_info_widget.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/controller/manager_dashboard_screen_controller.dart';
+import 'package:algarve_house_hunters_system/manager_dashboard_screen/widgets/manager_info_widget.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -19,10 +21,56 @@ class ManagerDashboardScreen extends StatefulWidget {
 
 class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   ManagerDashboardOption dashboardOption = ManagerDashboardOption.dashboard;
+  List<dynamic>? clientData;
+  List<dynamic>? agentData;
+  Map<String, dynamic>? latestPropertyData;
 
   void changeDashboardOption(ManagerDashboardOption option) {
     dashboardOption = option;
     setState(() {});
+  }
+
+  void getLatestPropertyData() async {
+    await ApiController.getLatestPropertyData(
+      onSuccess: (data) {
+        latestPropertyData = jsonDecode(data);
+        setState(() {});
+      },
+      onError: (data) {},
+    );
+  }
+
+  void getAgentData() async {
+    await ApiController.getAllAgentData(
+      onSuccess: (responseData) {
+        agentData = jsonDecode(responseData) as List<dynamic>;
+        setState(() {});
+      },
+      onError: (errorData) {
+        print("Agent Data: Error has occured !!!");
+      },
+    );
+  }
+
+  void getClientData() async {
+    await ApiController.getAllClientsData(
+      onSuccess: (responseData) {
+        clientData = jsonDecode(responseData) as List<dynamic>;
+        setState(() {});
+        print('Data has been loaded');
+      },
+      onError: (errorData) {
+        print("Error has occured !!!");
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getClientData();
+    getAgentData();
+    getLatestPropertyData();
   }
 
   @override
@@ -100,11 +148,10 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                     ],
                   ),
                   const Spacer(),
-                  AgentUserInfoWidget(
-                    agentData: ManagerDashboardScreenController
-                        .getSampleManagerModel(),
+                  ManagerInfoWidget(
                     onProfilePress: () {},
-                  ),
+                    managerId: 'MNG-BLR-20250625-0001',
+                  )
                 ],
               ),
               const SizedBox(
@@ -141,19 +188,27 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                             )
                           ],
                         ),
-                        Column(
-                          children: List.generate(
-                            AgentDashboardScreenController
-                                    .getSampleAssignedUserModel()
-                                .length,
-                            (index) => ClientQuickActionWidget(
-                              userData: AgentDashboardScreenController
-                                  .getSampleAssignedUserModel()[index],
-                              isSelected: false,
-                              onProfilePress: () {},
+                        if (clientData == null)
+                          const Center(
+                            child: SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
                             ),
                           ),
-                        )
+                        if (clientData != null)
+                          Column(
+                            children: List.generate(
+                              clientData!.length,
+                              (index) => ClientQuickActionWidget(
+                                userData: clientData![index],
+                                isSelected: false,
+                                onProfilePress: () {},
+                              ),
+                            ),
+                          )
                       ],
                     ),
                   ),
@@ -182,26 +237,39 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                             ),
                             const Spacer(),
                             InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/manager-agent-onboarding',
+                                );
+                              },
                               child: const Icon(
                                 Icons.add,
                               ),
                             )
                           ],
                         ),
-                        Column(
-                          children: List.generate(
-                            AgentDashboardScreenController
-                                    .getSampleAssignedUserModel()
-                                .length,
-                            (index) => ClientQuickActionWidget(
-                              userData: AgentDashboardScreenController
-                                  .getSampleAssignedUserModel()[index],
-                              isSelected: false,
-                              onProfilePress: () {},
+                        if (agentData == null)
+                          const Center(
+                            child: SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
                             ),
                           ),
-                        )
+                        if (agentData != null)
+                          Column(
+                            children: List.generate(
+                              agentData!.length,
+                              (index) => AgentQuickActionWidget(
+                                userData: agentData![index],
+                                isSelected: false,
+                                onProfilePress: () {},
+                              ),
+                            ),
+                          )
                       ],
                     ),
                   ),
@@ -212,24 +280,36 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                     width: MediaQuery.of(context).size.width * 0.54,
                     height: MediaQuery.of(context).size.height * 0.86,
                     child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GalleryGridWidget(
-                            imagePaths: CustomerDashboardScreenController
-                                .propertyImagePaths,
-                            width: (MediaQuery.of(context).size.width * 0.5) *
-                                0.79,
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          PropertyInfoSection(
-                            propertyData: CustomerDashboardScreenController
-                                .getSamplePropertyData.first,
-                          )
-                        ],
-                      ),
+                      child: latestPropertyData == null
+                          ? const Center(
+                              child: SizedBox(
+                                height: 50,
+                                width: 50,
+                              ),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ManagerGalleryWidget(
+                                  // imagePaths: CustomerDashboardScreenController
+                                  //     .propertyImagePaths,
+                                  imagePaths:
+                                      latestPropertyData!["propertyImages"],
+                                  width: (MediaQuery.of(context).size.width *
+                                          0.5) *
+                                      0.79,
+                                ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                PropertyInfoSection(
+                                  // propertyData:
+                                  //     CustomerDashboardScreenController
+                                  //         .getSamplePropertyData.first,
+                                  propertyData: latestPropertyData!,
+                                )
+                              ],
+                            ),
                     ),
                   ),
                   // NOTE

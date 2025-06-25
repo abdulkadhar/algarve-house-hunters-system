@@ -154,8 +154,9 @@ class _AgentCustomerPropertyAllocationScreenState
                                     .getSampleAssignedUserModel()
                                 .length,
                             (index) => ClientQuickActionWidget(
-                              userData: AgentDashboardScreenController
-                                  .getSampleAssignedUserModel()[index],
+                              userData: {},
+                              // userData: AgentDashboardScreenController
+                              //     .getSampleAssignedUserModel()[index],
                               isSelected: AgentDashboardScreenController
                                           .getSampleAssignedUserModel()[index]
                                       .basicData

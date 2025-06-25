@@ -3,10 +3,10 @@ import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/g
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/gallery_grid_secondary_image_container.dart';
 import 'package:flutter/material.dart';
 
-class GalleryGridWidget extends StatelessWidget {
-  final List<String> imagePaths;
+class ManagerGalleryWidget extends StatelessWidget {
+  final List<dynamic> imagePaths;
   final double width;
-  const GalleryGridWidget({
+  const ManagerGalleryWidget({
     super.key,
     required this.imagePaths,
     required this.width,
@@ -17,7 +17,7 @@ class GalleryGridWidget extends StatelessWidget {
     return Row(
       children: [
         GalleryGridMainImageContainer(
-          imagePath: imagePaths.first,
+          imagePath: imagePaths[0],
           width: width,
         ),
         const SizedBox(

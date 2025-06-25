@@ -218,8 +218,9 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                             height: 30,
                           ),
                           PropertyInfoSection(
-                            propertyData: CustomerDashboardScreenController
-                                .getSamplePropertyData.first,
+                            // propertyData: CustomerDashboardScreenController
+                            //     .getSamplePropertyData.first,
+                            propertyData: {},
                           )
                         ],
                       ),

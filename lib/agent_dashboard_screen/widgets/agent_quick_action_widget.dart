@@ -1,11 +1,11 @@
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
-class ClientQuickActionWidget extends StatelessWidget {
+class AgentQuickActionWidget extends StatelessWidget {
   final Map<String, dynamic> userData;
   final VoidCallback onProfilePress;
   final bool isSelected;
-  const ClientQuickActionWidget({
+  const AgentQuickActionWidget({
     super.key,
     required this.userData,
     required this.onProfilePress,
@@ -36,7 +36,7 @@ class ClientQuickActionWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
                     image: DecorationImage(
-                      image: NetworkImage(userData["client_profile_pic"]),
+                      image: NetworkImage(userData["agent_profile_pic"]),
                     ),
                   ),
                 ),
@@ -47,7 +47,7 @@ class ClientQuickActionWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      userData["client_name"],
+                      userData["agent_name"],
                       style: ThemeController.normalTextStyle(
                         fontWeight: FontWeight.w800,
                         size: 14,
@@ -55,7 +55,7 @@ class ClientQuickActionWidget extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      userData["client_designation"],
+                      userData["agent_designation"],
                       style: ThemeController.normalTextStyle(
                         fontWeight: FontWeight.w400,
                         size: 13,
