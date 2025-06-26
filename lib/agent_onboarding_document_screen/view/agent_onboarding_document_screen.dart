@@ -70,8 +70,9 @@ class _AgentOnboardingDocumentScreenState
                         iconData: Icons.dashboard,
                         optionLabel: 'Dashboard',
                         onTap: () {
-                          changeDashboardOption(
-                            ManagerDashboardOption.dashboard,
+                          Navigator.pushNamed(
+                            context,
+                            '/manager-dashboard-screen',
                           );
                         },
                       ),
@@ -98,8 +99,9 @@ class _AgentOnboardingDocumentScreenState
                         iconData: Icons.support_agent,
                         optionLabel: 'Agents',
                         onTap: () {
-                          changeDashboardOption(
-                            ManagerDashboardOption.agents,
+                          Navigator.pushNamed(
+                            context,
+                            '/manager-agent-info-section-screen',
                           );
                         },
                       ),

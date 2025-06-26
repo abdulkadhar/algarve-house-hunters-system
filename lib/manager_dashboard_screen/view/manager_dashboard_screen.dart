@@ -98,8 +98,9 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                         iconData: Icons.dashboard,
                         optionLabel: 'Dashboard',
                         onTap: () {
-                          changeDashboardOption(
-                            ManagerDashboardOption.dashboard,
+                          Navigator.pushNamed(
+                            context,
+                            '/manager-dashboard-screen',
                           );
                         },
                       ),
@@ -126,8 +127,9 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                         iconData: Icons.support_agent,
                         optionLabel: 'Agents',
                         onTap: () {
-                          changeDashboardOption(
-                            ManagerDashboardOption.agents,
+                          Navigator.pushNamed(
+                            context,
+                            '/manager-agent-info-section-screen',
                           );
                         },
                       ),

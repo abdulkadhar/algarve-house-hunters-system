@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 class ToggleSwitchWidget extends StatefulWidget {
   final bool isOn;
   final Function(bool) onToggle;
+  final bool isEnabled;
   const ToggleSwitchWidget({
     super.key,
     this.isOn = false,
     required this.onToggle,
+    this.isEnabled = true,
   });
 
   @override
@@ -31,12 +33,14 @@ class _ToggleSwitchWidgetState extends State<ToggleSwitchWidget> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        _isOn = !_isOn;
-        setState(() {});
-        // setStatus(_isOn);
-        widget.onToggle(_isOn);
-      },
+      onTap: widget.isEnabled
+          ? () {
+              _isOn = !_isOn;
+              setState(() {});
+              // setStatus(_isOn);
+              widget.onToggle(_isOn);
+            }
+          : null,
       child: Container(
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(
