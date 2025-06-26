@@ -114,9 +114,8 @@ class _AgentOnboardingDocumentScreenState
                         iconData: Icons.dashboard_customize_rounded,
                         optionLabel: 'Clients',
                         onTap: () {
-                          changeDashboardOption(
-                            ManagerDashboardOption.clients,
-                          );
+                          Navigator.pushNamed(
+                              context, '/manager-client-info-screen');
                         },
                       ),
                     ],

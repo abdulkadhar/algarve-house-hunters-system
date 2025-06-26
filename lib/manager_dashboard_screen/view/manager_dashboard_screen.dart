@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/agent_quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/manager_gallery_widget.dart';
-import 'package:algarve_house_hunters_system/agent_onboarding_screen/view/agent_onboarding_screen.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/property_info_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
@@ -142,9 +141,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                         iconData: Icons.dashboard_customize_rounded,
                         optionLabel: 'Clients',
                         onTap: () {
-                          changeDashboardOption(
-                            ManagerDashboardOption.clients,
-                          );
+                          Navigator.pushNamed(
+                              context, '/manager-client-info-screen');
                         },
                       ),
                     ],
