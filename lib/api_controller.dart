@@ -5,13 +5,45 @@ import 'dart:html' as html;
 class ApiController {
   static String baseUrl = 'http://127.0.0.1:8000/';
 
-  static Future<void> getAllCheckListDataById(
+  static Future<void> getAgentInfoById(
     String agent_id, {
     required Function(String) onSuccess,
     required Function(String) onError,
   }) async {
     final url = Uri.parse(
-      baseUrl + "get-agent-checklist-data/" + agent_id,
+      baseUrl + "get-agent-info/" + agent_id,
+    );
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+      );
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+
+  static Future<void> getAllCheckListDataById(
+    String agent_id,
+    String user_id, {
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "get-agent-checklist-data/" + agent_id + "/" + user_id,
     );
     try {
       final response = await http.get(

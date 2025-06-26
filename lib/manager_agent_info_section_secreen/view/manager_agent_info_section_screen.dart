@@ -43,18 +43,18 @@ class _ManagerAgentInfoSectionScreenState
   Map<String, dynamic>? selectedAgent;
   Map<String, dynamic>? currentUserChecklist;
 
-  void getCurrentUserCheckListData(String agent_id) async {
-    await ApiController.getAllCheckListDataById(
-      agent_id,
-      onSuccess: (data) {
-        currentUserChecklist = jsonDecode(data);
-        setState(() {});
-      },
-      onError: (data) {
-        print("CHECKLIST DATA ERROR: ");
-      },
-    );
-  }
+  // void getCurrentUserCheckListData(String agent_id) async {
+  //   await ApiController.getAllCheckListDataById(
+  //     agent_id,
+  //     onSuccess: (data) {
+  //       currentUserChecklist = jsonDecode(data);
+  //       setState(() {});
+  //     },
+  //     onError: (data) {
+  //       print("CHECKLIST DATA ERROR: ");
+  //     },
+  //   );
+  // }
 
   void getAgentData() async {
     await ApiController.getAllAgentData(
@@ -158,9 +158,8 @@ class _ManagerAgentInfoSectionScreenState
                         iconData: Icons.dashboard_customize_rounded,
                         optionLabel: 'Clients',
                         onTap: () {
-                          changeDashboardOption(
-                            ManagerDashboardOption.clients,
-                          );
+                          Navigator.pushNamed(
+                              context, '/manager-client-info-screen');
                         },
                       ),
                     ],
@@ -270,12 +269,12 @@ class _ManagerAgentInfoSectionScreenState
                                 isEnabled:
                                     optionData == AgentInoOption.agentCheckList,
                                 onPress: () {
-                                  if (selectedAgent != null) {
-                                    getCurrentUserCheckListData(
-                                        selectedAgent!['agent_id']);
-                                    changeAgentOption(
-                                        AgentInoOption.agentCheckList);
-                                  }
+                                  // if (selectedAgent != null) {
+                                  //   getCurrentUserCheckListData(
+                                  //       selectedAgent!['agent_id']);
+                                  // }
+                                  changeAgentOption(
+                                      AgentInoOption.agentCheckList);
                                 },
                                 optionLabel: 'Check list',
                               ),
@@ -425,41 +424,35 @@ class _ManagerAgentInfoSectionScreenState
                               currentUserChecklist != null &&
                               selectedAgent != null)
                             Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  children: List.generate(
-                                    currentUserChecklist!['checklist_data']
-                                        .length,
-                                    (index) => index == 0
-                                        ? const SizedBox.shrink()
-                                        : Column(
-                                            children: [
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              CheckListUnitDataWidget(
-                                                isEnabled: false,
-                                                isOn: currentUserChecklist![
-                                                            'checklist_data']
-                                                        [index]['status'] !=
-                                                    'Not-Started',
-                                                onTogglePress: (data) {},
-                                                title: currentUserChecklist![
-                                                        'checklist_data'][index]
-                                                    ['title'],
-                                                subtitle: currentUserChecklist![
-                                                        'checklist_data'][index]
-                                                    ['subtitle'],
-                                              ),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                            ],
+                              children: List.generate(
+                                currentUserChecklist!['checklist_data'].length,
+                                (index) => index == 0
+                                    ? const SizedBox.shrink()
+                                    : Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
                                           ),
-                                  ),
-                                )
-                              ],
+                                          CheckListUnitDataWidget(
+                                            isEnabled: false,
+                                            isOn: currentUserChecklist![
+                                                        'checklist_data'][index]
+                                                    ['status'] !=
+                                                'Not-Started',
+                                            onTogglePress: (data) {},
+                                            title: currentUserChecklist![
+                                                    'checklist_data'][index]
+                                                ['title'],
+                                            subtitle: currentUserChecklist![
+                                                    'checklist_data'][index]
+                                                ['subtitle'],
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                        ],
+                                      ),
+                              ),
                             )
                         ],
                       ),
