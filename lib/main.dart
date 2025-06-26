@@ -1,6 +1,7 @@
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/view/agent_customer_property_allocation_screen.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/view/agent_dashboard_screen.dart';
 import 'package:algarve_house_hunters_system/agent_listing_screen/view/agent_listing_screen.dart';
+import 'package:algarve_house_hunters_system/agent_onboarding_document_screen/view/agent_onboarding_document_screen.dart';
 import 'package:algarve_house_hunters_system/agent_onboarding_screen/view/agent_onboarding_screen.dart';
 import 'package:algarve_house_hunters_system/agent_unit_property_screen/view/agent_unit_property_screen.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/view/customer_dashboard_screen.dart';
@@ -44,6 +45,8 @@ class AlgarveHouseHuntersSystem extends StatelessWidget {
             const ManagerDashboardScreen(),
         '/manager-log-in-screen': (context) => const ManagerLoginScreen(),
         '/manager-agent-onboarding': (context) => const AgentOnboardingScreen(),
+        '/manager-agent-onboarding-document-screen': (context) =>
+            const AgentOnboardingDocumentScreen(),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
