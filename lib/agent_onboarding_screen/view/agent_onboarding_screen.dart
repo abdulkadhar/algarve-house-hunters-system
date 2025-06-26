@@ -170,6 +170,12 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                           iconData: Icons.add,
                           isSelected: true,
                           label: "Add new agent",
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/manager-agent-onboarding',
+                            );
+                          },
                         ),
                         const SizedBox(
                           height: 10,
@@ -178,6 +184,12 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                           iconData: Icons.document_scanner,
                           isSelected: false,
                           label: "Training Document",
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/manager-agent-onboarding-document-screen',
+                            );
+                          },
                         )
                       ],
                     ),
