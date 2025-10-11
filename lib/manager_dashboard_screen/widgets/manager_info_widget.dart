@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:algarve_house_hunters_system/agent_listing_screen/view/agent_property_info_screen.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/controller/customer_dashboard_screen_controller.dart';
 
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_status_widget.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ManagerInfoWidget extends StatefulWidget {
   final String managerId;
@@ -111,61 +113,89 @@ class _ManagerInfoWidgetState extends State<ManagerInfoWidget> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
+              // InkWell(
+              //   onTap: () {
+              //     isSetStatus = !isSetStatus;
+              //     setState(() {});
+              //   },
+              //   child: !isSetStatus
+              //       ? Row(
+              //           children: [
+              //             AgentStatusWidget(status: status),
+              //             const SizedBox(
+              //               width: 10,
+              //             ),
+              //             Text(
+              //               CustomerDashboardScreenController
+              //                   .getAgentLabelString(status),
+              //               style: ThemeController.smallTextStyle(),
+              //             )
+              //           ],
+              //         )
+              //       : Row(
+              //           children: [
+              //             getSelectedStatusWidget(
+              //               status == AgentStatus.available,
+              //               AgentStatus.available,
+              //             ),
+              //             const SizedBox(
+              //               width: 5,
+              //             ),
+              //             getSelectedStatusWidget(
+              //               status == AgentStatus.away,
+              //               AgentStatus.away,
+              //             ),
+              //             const SizedBox(
+              //               width: 5,
+              //             ),
+              //             getSelectedStatusWidget(
+              //               status == AgentStatus.offline,
+              //               AgentStatus.offline,
+              //             ),
+              //             const SizedBox(
+              //               width: 5,
+              //             ),
+              //             InkWell(
+              //               onTap: () {
+              //                 isSetStatus = !isSetStatus;
+              //                 setState(() {});
+              //               },
+              //               child: Icon(
+              //                 Icons.cancel_presentation_outlined,
+              //                 color: Colors.black,
+              //               ),
+              //             )
+              //           ],
+              //         ),
+              // ),
+              const SizedBox(
+                height: 5,
+              ),
               InkWell(
                 onTap: () {
-                  isSetStatus = !isSetStatus;
-                  setState(() {});
+                  context.replace('/manager-log-in-screen');
                 },
-                child: !isSetStatus
-                    ? Row(
-                        children: [
-                          AgentStatusWidget(status: status),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            CustomerDashboardScreenController
-                                .getAgentLabelString(status),
-                            style: ThemeController.smallTextStyle(),
-                          )
-                        ],
-                      )
-                    : Row(
-                        children: [
-                          getSelectedStatusWidget(
-                            status == AgentStatus.available,
-                            AgentStatus.available,
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          getSelectedStatusWidget(
-                            status == AgentStatus.away,
-                            AgentStatus.away,
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          getSelectedStatusWidget(
-                            status == AgentStatus.offline,
-                            AgentStatus.offline,
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              isSetStatus = !isSetStatus;
-                              setState(() {});
-                            },
-                            child: Icon(
-                              Icons.cancel_presentation_outlined,
-                              color: Colors.black,
-                            ),
-                          )
-                        ],
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.power_settings_new,
+                      color: Colors.red,
+                      size: 14,
+                      weight: 10,
+                    ),
+                    const SizedBox(
+                      width: 2,
+                    ),
+                    Text(
+                      "Logout",
+                      style: ThemeController.smallTextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w900,
                       ),
-              ),
+                    ),
+                  ],
+                ),
+              )
             ],
           )
         ],

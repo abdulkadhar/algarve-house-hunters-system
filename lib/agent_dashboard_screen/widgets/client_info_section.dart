@@ -4,12 +4,12 @@ import 'package:algarve_house_hunters_system/unit_property_info_screen/widget/ge
 import 'package:flutter/material.dart';
 
 class ClientInfoSection extends StatelessWidget {
-  final CustomerDataModel customerData;
   final VoidCallback? onProfilePress;
+  final Map<String, dynamic> clientData;
   const ClientInfoSection({
     super.key,
-    required this.customerData,
     this.onProfilePress,
+    required this.clientData,
   });
 
   @override
@@ -25,7 +25,7 @@ class ClientInfoSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Customer Profile',
+            'Client Profile',
             style: ThemeController.normalTextStyle(
               fontWeight: FontWeight.w800,
             ),
@@ -41,7 +41,7 @@ class ClientInfoSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(100),
                 image: DecorationImage(
                   image: NetworkImage(
-                    customerData.basicData.profileImg,
+                    clientData["client_profile_pic"],
                   ),
                 ),
               ),
@@ -52,7 +52,7 @@ class ClientInfoSection extends StatelessWidget {
           ),
           Center(
             child: Text(
-              customerData.basicData.userName,
+              clientData["client_name"],
               style: ThemeController.normalTextStyle(
                 fontWeight: FontWeight.w900,
               ),
@@ -63,7 +63,7 @@ class ClientInfoSection extends StatelessWidget {
           ),
           Center(
             child: Text(
-              customerData.basicData.designation,
+              clientData["client_designation"],
               style: ThemeController.normalTextStyle(
                 fontWeight: FontWeight.w300,
                 size: 14,

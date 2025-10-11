@@ -8,8 +8,11 @@ import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/controller/manager_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/widgets/manager_info_widget.dart';
+import 'package:algarve_house_hunters_system/manager_log_in_screen/controller/manager_log_in_screen_controller.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'dart:html' as html;
 
 class AgentOnboardingScreen extends StatefulWidget {
   const AgentOnboardingScreen({super.key});
@@ -20,7 +23,29 @@ class AgentOnboardingScreen extends StatefulWidget {
 
 class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
   String? agentId;
+  String? agentNameErrorText;
+  String? agentEmailErrorText;
   ManagerDashboardOption dashboardOption = ManagerDashboardOption.agents;
+
+  void setAgentNameErrorText(String errorText) {
+    agentNameErrorText = errorText;
+    setState(() {});
+  }
+
+  void setAgentEmailErrorText(String errorText) {
+    agentEmailErrorText = errorText;
+    setState(() {});
+  }
+
+  void clearAgentNameErrorText() {
+    agentNameErrorText = null;
+    setState(() {});
+  }
+
+  void clearAgentEmailErrorText() {
+    agentEmailErrorText = null;
+    setState(() {});
+  }
 
   Map<String, dynamic> agentOnboardData = {
     "agent_id": "",
@@ -35,7 +60,9 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
     "agent_availability_status": "",
     "agent_description": "",
     "agent_designation": "",
-    "google_id": ""
+    "google_id": "",
+    "agent_password": "Test@123",
+    "password_updated": "false",
   };
 
   void changeDashboardOption(ManagerDashboardOption option) {
@@ -85,8 +112,7 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                         iconData: Icons.dashboard,
                         optionLabel: 'Dashboard',
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
+                          context.go(
                             '/manager-dashboard-screen',
                           );
                         },
@@ -114,8 +140,7 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                         iconData: Icons.support_agent,
                         optionLabel: 'Agents',
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
+                          context.go(
                             '/manager-agent-info-section-screen',
                           );
                         },
@@ -129,8 +154,8 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                         iconData: Icons.dashboard_customize_rounded,
                         optionLabel: 'Clients',
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, '/manager-client-info-screen');
+                          context.go(
+                              '/manager-client-info-screen/CLT-BLR-20221117-0001');
                         },
                       ),
                     ],
@@ -172,8 +197,7 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                           isSelected: true,
                           label: "Add new agent",
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
+                            context.go(
                               '/manager-agent-onboarding',
                             );
                           },
@@ -186,8 +210,7 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                           isSelected: false,
                           label: "Training Document",
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
+                            context.go(
                               '/manager-agent-onboarding-document-screen',
                             );
                           },
@@ -229,15 +252,22 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                                       child: CustomTextFormFiled(
                                         labelName: 'Agent name',
                                         placeholderText: '',
+                                        errorText: agentNameErrorText,
+                                        initialValue:
+                                            agentOnboardData['agent_name'],
                                         onChanged: (agentName) {
+                                          clearAgentNameErrorText();
                                           if (agentName != null) {
                                             if (agentName.isNotEmpty) {
                                               agentOnboardData['agent_name'] =
                                                   agentName;
                                             }
+                                          } else {
+                                            setAgentNameErrorText(
+                                                "Agent name cannot be empty");
                                           }
                                         },
-                                        isMandatory: false,
+                                        isMandatory: true,
                                       ),
                                     ),
                                     const SizedBox(
@@ -249,13 +279,20 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                                       child: CustomTextFormFiled(
                                         labelName: 'Agent email address',
                                         placeholderText: '',
+                                        errorText: agentEmailErrorText,
+                                        initialValue: agentOnboardData[
+                                            'agent_email_address'],
                                         onChanged: (agentEmail) {
+                                          clearAgentEmailErrorText();
                                           if (agentEmail != null) {
                                             if (agentEmail.isNotEmpty) {
                                               agentOnboardData[
                                                       'agent_email_address'] =
                                                   agentEmail;
                                             }
+                                          } else {
+                                            setAgentEmailErrorText(
+                                                "Agent email cannot be empty !!!");
                                           }
                                         },
                                         isMandatory: false,
@@ -274,6 +311,8 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                                       child: CustomTextFormFiled(
                                         labelName: 'Agent phone number',
                                         placeholderText: '',
+                                        initialValue: agentOnboardData[
+                                            'agent_phone_number'],
                                         onChanged: (phoneNumber) {
                                           if (phoneNumber != null &&
                                               phoneNumber.isNotEmpty) {
@@ -294,6 +333,8 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                                       child: CustomTextFormFiled(
                                         labelName: 'Agent location name',
                                         placeholderText: '',
+                                        initialValue: agentOnboardData[
+                                            'agent_location_name'],
                                         onChanged: (agentName) {
                                           if (agentName != null &&
                                               agentName.isNotEmpty) {
@@ -331,6 +372,8 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                                       child: CustomTextFormFiled(
                                         labelName: 'Agent description',
                                         placeholderText: '',
+                                        initialValue: agentOnboardData[
+                                            'agent_description'],
                                         onChanged: (agentName) {
                                           if (agentName != null &&
                                               agentName.isNotEmpty) {
@@ -353,6 +396,8 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                                   child: CustomTextFormFiled(
                                     labelName: 'Agent designation',
                                     placeholderText: '',
+                                    initialValue:
+                                        agentOnboardData['agent_designation'],
                                     onChanged: (agentName) {
                                       if (agentName != null &&
                                           agentName.isNotEmpty) {
@@ -368,19 +413,43 @@ class _AgentOnboardingScreenState extends State<AgentOnboardingScreen> {
                                 ),
                                 AddMoreButton(
                                   onButtonPress: () {
-                                    ApiController.sendAddAgentRequest(
-                                      agentOnboardData,
-                                      onSuccess: (data) {
-                                        Navigator.pushReplacementNamed(
-                                          context,
-                                          '/manager-dashboard-screen',
-                                        );
-                                      },
-                                      onError: (data) {
-                                        print(
-                                            'Agent Onboard Form: Error occured');
-                                      },
-                                    );
+                                    if (agentOnboardData["agent_name"] == '' ||
+                                        agentOnboardData["agent_name"] ==
+                                            null) {
+                                      setAgentNameErrorText(
+                                          'Agent name cannot be empty !!!');
+                                    } else if (agentOnboardData[
+                                                "agent_email_address"] ==
+                                            '' ||
+                                        agentOnboardData[
+                                                "agent_email_address"] ==
+                                            null) {
+                                      setAgentEmailErrorText(
+                                          'Agent email cannot be empty !!!');
+                                    } else {
+                                      ManagerLogInScreenController
+                                          .showLoaderDialog(context);
+                                      ApiController.sendAddAgentRequest(
+                                        agentOnboardData,
+                                        onSuccess: (data) async {
+                                          ManagerLogInScreenController.showSuccess(
+                                              context,
+                                              'Email sent successfully to agent !!!');
+                                          await Future.delayed(
+                                              const Duration(seconds: 2), () {
+                                            print("This runs after 2 seconds");
+                                          });
+                                          html.window.location.reload();
+                                        },
+                                        onError: (data) {
+                                          ManagerLogInScreenController.showError(
+                                              context,
+                                              'Error occured in sending mail');
+                                          print(
+                                              'Agent Onboard Form: Error occured');
+                                        },
+                                      );
+                                    }
                                   },
                                   buttonLabel: 'Add Agent',
                                 ),

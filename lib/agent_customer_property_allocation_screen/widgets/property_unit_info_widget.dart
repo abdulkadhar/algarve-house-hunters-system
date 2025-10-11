@@ -5,12 +5,14 @@ import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
 class PropertyUnitInfoWidget extends StatelessWidget {
-  final PropertyModel propertyData;
+  final Map<String, dynamic> propertyData;
   final bool isAssignButton;
+  final VoidCallback? onTap;
   const PropertyUnitInfoWidget({
     super.key,
     required this.propertyData,
     this.isAssignButton = false,
+    this.onTap,
   });
 
   @override
@@ -35,7 +37,7 @@ class PropertyUnitInfoWidget extends StatelessWidget {
                   bottom: 5,
                 ),
                 child: Image.network(
-                  propertyData.propertyImages.first,
+                  propertyData['propertyImages'][0],
                   height: 130,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -46,20 +48,20 @@ class PropertyUnitInfoWidget extends StatelessWidget {
               height: 5,
             ),
             Text(
-              propertyData.propertyName,
+              propertyData['propertyName'],
               style: ThemeController.smallTextStyle(
                 fontWeight: FontWeight.w800,
               ),
             ),
             Text(
-              propertyData.location,
+              propertyData['propertyLocationName'],
               style: ThemeController.smallTextStyle(
                 fontWeight: FontWeight.w500,
                 size: 12,
               ),
             ),
             Text(
-              propertyData.price.toString(),
+              propertyData['propertyPrice'],
               style: ThemeController.smallTextStyle(
                 fontWeight: FontWeight.w800,
               ),
@@ -70,13 +72,13 @@ class PropertyUnitInfoWidget extends StatelessWidget {
             Row(
               children: [
                 PropertyInfoContainer(
-                  label: 'Beds: ${propertyData.bedsNumber}',
+                  label: 'Beds: ${propertyData['bedsNumber']}',
                 ),
                 const SizedBox(
                   width: 3,
                 ),
                 PropertyInfoContainer(
-                  label: 'Baths: ${propertyData.bathsNumber}',
+                  label: 'Baths: ${propertyData['bathsNumber']}',
                 )
               ],
             ),
@@ -85,21 +87,24 @@ class PropertyUnitInfoWidget extends StatelessWidget {
                 height: 10,
               ),
             if (isAssignButton)
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Text(
-                  'Assign',
-                  style: ThemeController.smallTextStyle(
-                    color: Colors.white,
-                    size: 12,
-                    fontWeight: FontWeight.w900,
+              InkWell(
+                onTap: onTap,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Text(
+                    'Assign',
+                    style: ThemeController.smallTextStyle(
+                      color: Colors.white,
+                      size: 12,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
               )

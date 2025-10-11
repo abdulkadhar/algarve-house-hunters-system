@@ -1,22 +1,31 @@
 import 'dart:convert';
-
+import 'dart:html' as html;
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/option_label_selector_widget.dart';
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/toggle_switch_widget.dart';
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/user_preference_values_display_widget.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/agent_quick_action_widget.dart';
+import 'package:algarve_house_hunters_system/agent_listing_screen/widgets/add_more_button.dart';
 import 'package:algarve_house_hunters_system/agent_onboarding_document_screen/widgets/file_content_tile.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
+import 'package:algarve_house_hunters_system/global_widgets/custom_password_text_form_field.dart';
+import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_filed.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
+import 'package:algarve_house_hunters_system/global_widgets/submit_button.dart';
 import 'package:algarve_house_hunters_system/manager_agent_info_section_secreen/controller/manager_agent_info_section_screen_controller.dart';
-import 'package:algarve_house_hunters_system/manager_agent_info_section_secreen/widgets/checklist_unit_data_widget.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/controller/manager_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/widgets/manager_info_widget.dart';
+import 'package:algarve_house_hunters_system/manager_log_in_screen/controller/manager_log_in_screen_controller.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ManagerAgentInfoSectionScreen extends StatefulWidget {
-  const ManagerAgentInfoSectionScreen({super.key});
+  final String? agentId;
+  const ManagerAgentInfoSectionScreen({
+    super.key,
+    this.agentId,
+  });
 
   @override
   State<ManagerAgentInfoSectionScreen> createState() =>
@@ -42,6 +51,7 @@ class _ManagerAgentInfoSectionScreenState
   String currentAgentId = '';
   Map<String, dynamic>? selectedAgent;
   Map<String, dynamic>? currentUserChecklist;
+  List<dynamic>? assignedClients;
 
   // void getCurrentUserCheckListData(String agent_id) async {
   //   await ApiController.getAllCheckListDataById(
@@ -56,13 +66,86 @@ class _ManagerAgentInfoSectionScreenState
   //   );
   // }
 
+  // SECTION - Profile state
+  bool profileInformationReadOnly = true;
+  bool contactInformationReadOnly = true;
+  bool securityInformationReadOnly = true;
+
+  String newPasswordHolder = '';
+  String reEnterPasswordHolder = '';
+
+  Map<String, dynamic> personalInformationData = {
+    "agent_id": "",
+    "agent_name": "",
+    "agent_phone_number": "",
+    "agent_location_name": "",
+    "agent_description": "",
+    "agent_designation": ""
+  };
+
+  Map<String, dynamic> contactInformationData = {
+    "agent_id": "",
+    "agent_email_address": ""
+  };
+
+  Map<String, dynamic> securityInformationData = {
+    "agent_id": "",
+    "agent_password": ""
+  };
+
+  void setProfileReadOnly(bool value) {
+    profileInformationReadOnly = value;
+    setState(() {});
+  }
+
+  void setContactReadOnly(bool value) {
+    contactInformationReadOnly = value;
+    setState(() {});
+  }
+
+  void setSecurityReadOnly(bool value) {
+    securityInformationReadOnly = value;
+    setState(() {});
+  }
+
+  Widget getButtonWidget({
+    required VoidCallback onTap,
+    required String buttonLabel,
+    required Color buttonColor,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: buttonColor,
+          ),
+        ),
+        child: Text(
+          buttonLabel,
+          style: ThemeController.smallTextStyle(
+            color: buttonColor,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
+  }
+
+  //!SECTION
+
   void getAgentData() async {
+    print("INFO:getting in agents details ");
     await ApiController.getAllAgentData(
       onSuccess: (responseData) {
         agentData = jsonDecode(responseData) as List<dynamic>;
         currentAgentId = agentData![0]['agent_id'];
         selectedAgent = agentData![0];
+        assignedClients = null;
         setState(() {});
+        setAgentId();
       },
       onError: (errorData) {
         print("Agent Data: Error has occured !!!");
@@ -83,10 +166,63 @@ class _ManagerAgentInfoSectionScreenState
     );
   }
 
+  void setAgentId() {
+    print("INFO:entering the set agent id");
+    if (widget.agentId != null && agentData != null) {
+      print("agent id: ${widget.agentId}");
+      currentAgentId = widget.agentId!;
+      for (int i = 0; i < agentData!.length; i++) {
+        if (agentData![i]["agent_id"] == widget.agentId) {
+          currentAgentId = agentData![i]['agent_id'];
+          selectedAgent = agentData![i];
+          assignedClients = null;
+        }
+      }
+      setState(() {});
+    }
+  }
+
+  Future<void> showDeleteConfirmationDialog({
+    required BuildContext context,
+    required VoidCallback onConfirm,
+  }) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap a button
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: const Text(
+            'Do you wish to proceed with deleting the agent?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // close dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // close dialog
+                onConfirm(); // execute delete action
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     getAgentData();
     getAllFiles();
+
     super.initState();
   }
 
@@ -114,8 +250,7 @@ class _ManagerAgentInfoSectionScreenState
                         iconData: Icons.dashboard,
                         optionLabel: 'Dashboard',
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
+                          context.go(
                             '/manager-dashboard-screen',
                           );
                         },
@@ -132,6 +267,7 @@ class _ManagerAgentInfoSectionScreenState
                           changeDashboardOption(
                             ManagerDashboardOption.listings,
                           );
+                          context.go('/manager-property-management-screen');
                         },
                       ),
                       const SizedBox(
@@ -143,9 +279,8 @@ class _ManagerAgentInfoSectionScreenState
                         iconData: Icons.support_agent,
                         optionLabel: 'Agents',
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/manager-agent-info-section-screen',
+                          context.go(
+                            '/manager-client-info-screen/CLT-BLR-20221117-0001',
                           );
                         },
                       ),
@@ -158,8 +293,8 @@ class _ManagerAgentInfoSectionScreenState
                         iconData: Icons.dashboard_customize_rounded,
                         optionLabel: 'Clients',
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, '/manager-client-info-screen');
+                          context.go(
+                              '/manager-client-info-screen/CLT-BLR-20221117-0001');
                         },
                       ),
                     ],
@@ -187,11 +322,26 @@ class _ManagerAgentInfoSectionScreenState
                     child: ListView(
                       padding: const EdgeInsets.all(15),
                       children: [
-                        Text(
-                          'Agent list',
-                          style: ThemeController.normalTextStyle(
-                            fontWeight: FontWeight.w900,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              'Agent list',
+                              style: ThemeController.normalTextStyle(
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () {
+                                context.go(
+                                  '/manager-agent-onboarding',
+                                );
+                              },
+                              child: const Icon(
+                                Icons.add,
+                              ),
+                            )
+                          ],
                         ),
                         const SizedBox(
                           height: 20,
@@ -218,6 +368,8 @@ class _ManagerAgentInfoSectionScreenState
                                   currentAgentId =
                                       agentData![index]['agent_id'];
                                   selectedAgent = agentData![index];
+                                  changeAgentOption(AgentInoOption.agentInfo);
+                                  print("INFO:option data: ${optionData}");
                                   setState(() {});
                                 },
                               ),
@@ -284,12 +436,89 @@ class _ManagerAgentInfoSectionScreenState
                               OptionLabelSelectorWidget(
                                 isEnabled: optionData ==
                                     AgentInoOption.assignedClients,
-                                onPress: () {
+                                onPress: () async {
+                                  if (selectedAgent != null &&
+                                      selectedAgent!['agent_id'] != '') {
+                                    await ApiController.assignedClients(
+                                      selectedAgent!['agent_id'],
+                                      onSuccess: (data) {
+                                        assignedClients = jsonDecode(data);
+                                        setState(() {});
+                                      },
+                                      onError: (data) {},
+                                    );
+                                  }
                                   changeAgentOption(
                                       AgentInoOption.assignedClients);
                                 },
                                 optionLabel: 'Assigned Clients',
                               ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              OptionLabelSelectorWidget(
+                                enabledTextColor: Colors.green,
+                                enabledBorderColor: Colors.green,
+                                disabledBorderColor: Colors.green,
+                                disabledTextColor: Colors.green,
+                                isEnabled:
+                                    optionData == AgentInoOption.profileEdit,
+                                onPress: () {
+                                  changeAgentOption(AgentInoOption.profileEdit);
+                                },
+                                optionLabel: 'Edit Profile',
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  showDeleteConfirmationDialog(
+                                    context: context,
+                                    onConfirm: () {
+                                      ApiController.deleteAgentData(
+                                        currentAgentId,
+                                        onSuccess: (response) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Agent deleted successfully',
+                                              ),
+                                            ),
+                                          );
+                                          html.window.location.reload();
+                                        },
+                                        onError: (error) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Error deleting agent: $error')),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Delete Agent",
+                                    style: ThemeController.smallTextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                           const SizedBox(
@@ -345,6 +574,443 @@ class _ManagerAgentInfoSectionScreenState
                                 ),
                               ],
                             ),
+                          if (optionData == AgentInoOption.profileEdit)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Profile information",
+                                      style: ThemeController.normalTextStyle(
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    getButtonWidget(
+                                      onTap: () {
+                                        setProfileReadOnly(
+                                            !profileInformationReadOnly);
+                                      },
+                                      buttonLabel: profileInformationReadOnly
+                                          ? 'Edit personal information'
+                                          : 'Discard',
+                                      buttonColor: Colors.black,
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        width: 200,
+                                        child: CustomTextFormFiled(
+                                          labelName: 'Name',
+                                          placeholderText: '',
+                                          initialValue:
+                                              selectedAgent!['agent_name'],
+                                          readOnly: profileInformationReadOnly,
+                                          onChanged: (data) {
+                                            if (data != null && data != '') {
+                                              personalInformationData[
+                                                  "agent_name"] = data;
+                                              setState(() {});
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Expanded(
+                                      child: SizedBox(
+                                        width: 200,
+                                        child: CustomTextFormFiled(
+                                          labelName: 'Phone number',
+                                          placeholderText: '',
+                                          initialValue: selectedAgent![
+                                              'agent_phone_number'],
+                                          isMandatory: false,
+                                          readOnly: profileInformationReadOnly,
+                                          onChanged: (data) {
+                                            if (data != null && data != '') {
+                                              personalInformationData[
+                                                  "agent_phone_number"] = data;
+                                              setState(() {});
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        child: CustomTextFormFiled(
+                                          labelName: 'Location name',
+                                          placeholderText: '',
+                                          initialValue: selectedAgent![
+                                              'agent_location_name'],
+                                          readOnly: profileInformationReadOnly,
+                                          isMandatory: false,
+                                          onChanged: (data) {
+                                            if (data != null && data != '') {
+                                              personalInformationData[
+                                                  "agent_location_name"] = data;
+                                              setState(() {});
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Expanded(
+                                      child: SizedBox(
+                                        child: CustomTextFormFiled(
+                                          labelName: 'Agent description',
+                                          placeholderText: '',
+                                          initialValue: selectedAgent![
+                                              'agent_description'],
+                                          isMandatory: false,
+                                          readOnly: profileInformationReadOnly,
+                                          onChanged: (data) {
+                                            if (data != null && data != '') {
+                                              personalInformationData[
+                                                  "agent_description"] = data;
+                                              setState(() {});
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        child: CustomTextFormFiled(
+                                          labelName: 'Designation',
+                                          placeholderText: '',
+                                          initialValue: selectedAgent![
+                                              'agent_designation'],
+                                          readOnly: profileInformationReadOnly,
+                                          isMandatory: false,
+                                          onChanged: (data) {
+                                            if (data != null && data != '') {
+                                              personalInformationData[
+                                                  "agent_designation"] = data;
+                                              setState(() {});
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Expanded(
+                                      child: SizedBox(),
+                                    ),
+                                  ],
+                                ),
+                                if (!profileInformationReadOnly)
+                                  Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      SizedBox(
+                                        width: 200,
+                                        child: SubmitButton(
+                                          onButtonPress: () async {
+                                            if (selectedAgent!['agent_id'] !=
+                                                null) {
+                                              personalInformationData[
+                                                      'agent_id'] =
+                                                  selectedAgent!['agent_id'];
+                                            }
+                                            ManagerLogInScreenController
+                                                .showLoaderDialog(context);
+                                            await ApiController
+                                                .updateAgentProfileInformation(
+                                                    personalInformationData,
+                                                    onSuccess: (resData) {
+                                              ManagerLogInScreenController
+                                                  .showSuccess(
+                                                context,
+                                                'Profile information has been updated',
+                                              );
+                                              Future.delayed(
+                                                const Duration(seconds: 2),
+                                                () {
+                                                  html.window.location.reload();
+                                                },
+                                              );
+                                            }, onError: (errData) {
+                                              ManagerLogInScreenController
+                                                  .hideDialogBox(context);
+                                              ManagerLogInScreenController
+                                                  .showError(context,
+                                                      jsonDecode(errData));
+                                            });
+                                          },
+                                          buttonLabel: 'Save changes',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Contact information",
+                                      style: ThemeController.normalTextStyle(
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    const Spacer(),
+                                    getButtonWidget(
+                                      onTap: () {
+                                        setContactReadOnly(
+                                            !contactInformationReadOnly);
+                                      },
+                                      buttonLabel: contactInformationReadOnly
+                                          ? 'Edit contact information'
+                                          : 'Discard',
+                                      buttonColor: contactInformationReadOnly
+                                          ? Colors.black
+                                          : Colors.red,
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        child: CustomTextFormFiled(
+                                            labelName: 'Email',
+                                            placeholderText: '',
+                                            initialValue: selectedAgent![
+                                                'agent_email_address'],
+                                            readOnly:
+                                                contactInformationReadOnly,
+                                            isMandatory: true,
+                                            onChanged: (data) {
+                                              if (data != null && data != '') {
+                                                contactInformationData[
+                                                        "agent_email_address"] =
+                                                    data;
+                                                setState(() {});
+                                              }
+                                            }),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Expanded(
+                                      child: SizedBox(),
+                                    ),
+                                  ],
+                                ),
+                                if (!contactInformationReadOnly)
+                                  Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      SizedBox(
+                                        width: 200,
+                                        child: SubmitButton(
+                                          onButtonPress: () async {
+                                            if (selectedAgent!['agent_id'] !=
+                                                null) {
+                                              contactInformationData[
+                                                      'agent_id'] =
+                                                  selectedAgent!['agent_id'];
+                                            }
+                                            ManagerLogInScreenController
+                                                .showLoaderDialog(context);
+                                            await ApiController
+                                                .updateAgentContactInformation(
+                                                    contactInformationData,
+                                                    onSuccess: (resData) {
+                                              ManagerLogInScreenController
+                                                  .showSuccess(
+                                                context,
+                                                'Contact information has been updated',
+                                              );
+                                              Future.delayed(
+                                                const Duration(seconds: 2),
+                                                () {
+                                                  html.window.location.reload();
+                                                },
+                                              );
+                                            }, onError: (errData) {
+                                              ManagerLogInScreenController
+                                                  .hideDialogBox(context);
+                                              ManagerLogInScreenController
+                                                  .showError(context,
+                                                      jsonDecode(errData));
+                                            });
+                                          },
+                                          buttonLabel: 'Save changes',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Security information",
+                                      style: ThemeController.normalTextStyle(
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    const Spacer(),
+                                    getButtonWidget(
+                                      onTap: () {
+                                        setSecurityReadOnly(
+                                            !securityInformationReadOnly);
+                                      },
+                                      buttonLabel: 'Update password',
+                                      buttonColor: Colors.black,
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        child: CustomPasswordTextField(
+                                          labelName: 'New password',
+                                          placeholderText: '',
+                                          isMandatory: true,
+                                          readOnly: securityInformationReadOnly,
+                                          onChanged: (data) {
+                                            if (data != null && data != '') {
+                                              newPasswordHolder = data;
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Expanded(
+                                      child: SizedBox(
+                                        child: CustomPasswordTextField(
+                                          labelName: 'Re-enter password',
+                                          placeholderText: '',
+                                          isMandatory: true,
+                                          readOnly: securityInformationReadOnly,
+                                          onChanged: (data) {
+                                            if (data != null && data != '') {
+                                              reEnterPasswordHolder = data;
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (!securityInformationReadOnly)
+                                  Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      SizedBox(
+                                        width: 200,
+                                        child: SubmitButton(
+                                          onButtonPress: () async {
+                                            if (newPasswordHolder !=
+                                                reEnterPasswordHolder) {
+                                              ManagerLogInScreenController
+                                                  .showError(context,
+                                                      'Both the password must be same !!');
+                                            } else if (newPasswordHolder ==
+                                                    '' ||
+                                                reEnterPasswordHolder == '') {
+                                              ManagerLogInScreenController
+                                                  .showError(context,
+                                                      'password value cannot be empty!!');
+                                            } else {
+                                              securityInformationData[
+                                                      'agent_password'] =
+                                                  newPasswordHolder;
+                                              if (selectedAgent!['agent_id'] !=
+                                                  null) {
+                                                securityInformationData[
+                                                        'agent_id'] =
+                                                    selectedAgent!['agent_id'];
+                                              }
+                                              ManagerLogInScreenController
+                                                  .showLoaderDialog(context);
+                                              await ApiController
+                                                  .updateAgentProfilePassword(
+                                                      securityInformationData,
+                                                      onSuccess:
+                                                          (resData) async {
+                                                ManagerLogInScreenController
+                                                    .showSuccess(
+                                                  context,
+                                                  'Password has been updated. Please login again.',
+                                                );
+                                                Future.delayed(
+                                                  const Duration(seconds: 2),
+                                                  () {
+                                                    if (!mounted) return;
+
+                                                    html.window.location
+                                                        .reload();
+                                                  },
+                                                );
+                                              }, onError: (errData) {
+                                                ManagerLogInScreenController
+                                                    .hideDialogBox(context);
+                                                ManagerLogInScreenController
+                                                    .showError(context,
+                                                        jsonDecode(errData));
+                                              });
+                                            }
+                                          },
+                                          buttonLabel: 'Save changes',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ],
+                            ),
                           // TODO Need work on this
                           if (optionData == AgentInoOption.assignedClients &&
                               selectedAgent != null)
@@ -363,9 +1029,7 @@ class _ManagerAgentInfoSectionScreenState
                                           'Complete the onboarding document section to get assigned by clients'),
                                     ],
                                   )
-                                : Container(
-                                    child: Text('Assignment'),
-                                  ),
+                                : SizedBox.shrink(),
                           // NOTE Onboarding Section
                           if (optionData == AgentInoOption.onboardingDocument &&
                               filesData != null &&
@@ -420,38 +1084,78 @@ class _ManagerAgentInfoSectionScreenState
                               ],
                             ),
                           // NOTE - Check List Section
-                          if (optionData == AgentInoOption.agentCheckList &&
-                              currentUserChecklist != null &&
+                          if (optionData == AgentInoOption.assignedClients &&
+                              assignedClients != null &&
                               selectedAgent != null)
                             Column(
                               children: List.generate(
-                                currentUserChecklist!['checklist_data'].length,
-                                (index) => index == 0
-                                    ? const SizedBox.shrink()
-                                    : Column(
+                                assignedClients!.length,
+                                (index) => Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Colors.white,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          const SizedBox(
-                                            height: 10,
+                                          Text(
+                                            assignedClients![index]
+                                                ['client_id'],
                                           ),
-                                          CheckListUnitDataWidget(
-                                            isEnabled: false,
-                                            isOn: currentUserChecklist![
-                                                        'checklist_data'][index]
-                                                    ['status'] !=
-                                                'Not-Started',
-                                            onTogglePress: (data) {},
-                                            title: currentUserChecklist![
-                                                    'checklist_data'][index]
-                                                ['title'],
-                                            subtitle: currentUserChecklist![
-                                                    'checklist_data'][index]
-                                                ['subtitle'],
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
+                                          Text(
+                                            assignedClients![index]
+                                                ['client_name'],
                                           ),
                                         ],
                                       ),
+                                      const Spacer(),
+                                      AddMoreButton(
+                                        onButtonPress: () async {
+                                          ManagerLogInScreenController
+                                              .showLoaderDialog(context);
+                                          // NOTE  Un Assign
+                                          await ApiController.unAssignAgent(
+                                            agentId: selectedAgent!['agent_id'],
+                                            clientId: assignedClients![index]
+                                                ['client_id'],
+                                            onSuccess: (resData) {
+                                              ManagerLogInScreenController
+                                                  .showSuccess(
+                                                context,
+                                                'Client has been un assigned.',
+                                              );
+                                              Future.delayed(
+                                                const Duration(seconds: 2),
+                                                () {
+                                                  if (context.mounted) {
+                                                    context.push(
+                                                        '/manager-agent-info-section-screens/${selectedAgent!['agent_id']}');
+                                                  }
+                                                },
+                                              );
+                                            },
+                                            onError: (errData) {
+                                              ManagerLogInScreenController
+                                                  .hideDialogBox(context);
+                                              ManagerLogInScreenController
+                                                  .showError(
+                                                context,
+                                                jsonDecode(errData),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        buttonLabel: 'Un Assign',
+                                        iconData: Icons.cancel,
+                                      )
+                                    ],
+                                  ),
+                                ),
                               ),
                             )
                         ],

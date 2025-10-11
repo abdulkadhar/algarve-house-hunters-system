@@ -104,7 +104,9 @@ class PropertyUnitTileWidget extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(
+                      width: 100,
+                    ),
                     InkWell(
                       onTap: onViewMorePress,
                       child: Container(

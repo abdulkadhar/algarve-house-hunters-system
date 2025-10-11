@@ -1,5 +1,6 @@
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/controller/agent_controller_property_allocation_controller.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/agent_dashboard_screen_controller.dart';
+import 'package:algarve_house_hunters_system/agent_document_screen/view/agent_document_screen.dart';
 import 'package:algarve_house_hunters_system/agent_unit_property_screen/widgets/assigned_user_info_widget.dart';
 import 'package:algarve_house_hunters_system/agent_unit_property_screen/widgets/customer_info_section.dart';
 import 'package:algarve_house_hunters_system/agent_unit_property_screen/widgets/upcoming_home_tour_request_widget.dart';
@@ -12,9 +13,14 @@ import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_sel
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:algarve_house_hunters_system/unit_property_info_screen/widget/property_slider_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AgentUnitPropertyScreen extends StatefulWidget {
-  const AgentUnitPropertyScreen({super.key});
+  final String agentId;
+  const AgentUnitPropertyScreen({
+    super.key,
+    this.agentId = '',
+  });
 
   @override
   State<AgentUnitPropertyScreen> createState() =>
@@ -72,9 +78,7 @@ class _AgentUnitPropertyScreenState extends State<AgentUnitPropertyScreen> {
                         iconData: Icons.list,
                         optionLabel: 'Listings',
                         onTap: () {
-                          changeDashboardOption(
-                            AgentDashboardOption.listings,
-                          );
+                          context.go('/agent-listing-screen');
                         },
                       ),
                       const SizedBox(
@@ -86,8 +90,13 @@ class _AgentUnitPropertyScreenState extends State<AgentUnitPropertyScreen> {
                         iconData: Icons.calendar_month,
                         optionLabel: 'Calendar',
                         onTap: () {
-                          changeDashboardOption(
-                            AgentDashboardOption.calendar,
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (ctx) => AgentDocumentScreen(
+                                agentId: widget.agentId,
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -98,7 +107,7 @@ class _AgentUnitPropertyScreenState extends State<AgentUnitPropertyScreen> {
                         isEnabled:
                             dashboardOption == AgentDashboardOption.customer,
                         iconData: Icons.dashboard_customize_rounded,
-                        optionLabel: 'Customer',
+                        optionLabel: 'Client',
                         onTap: () {
                           changeDashboardOption(
                             AgentDashboardOption.customer,

@@ -3,6 +3,7 @@ enum AgentInoOption {
   agentCheckList,
   assignedClients,
   onboardingDocument,
+  profileEdit,
 }
 
 class ManagerAgentInfoSectionScreenController {}
