@@ -9,6 +9,7 @@ import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_fil
 import 'package:algarve_house_hunters_system/global_widgets/drop_down_options.dart';
 import 'package:algarve_house_hunters_system/global_widgets/extracted_property_grid_widget.dart';
 import 'package:algarve_house_hunters_system/global_widgets/global_widgets.dart';
+import 'package:algarve_house_hunters_system/global_widgets/submit_button.dart';
 import 'package:algarve_house_hunters_system/manager_log_in_screen/controller/manager_log_in_screen_controller.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,110 @@ class _PropertyFeaturesInfoWidgetState
     extends State<PropertyFeaturesInfoWidget> {
   Map<String, dynamic>? allClientsId;
   PropertyInfoWidgetOption option = PropertyInfoWidgetOption.propertyInfo;
+
+  // NOTE State for the property meta data holding
+  Map<String, dynamic> propertyMetaDataHolding = {
+    "propertyId": "",
+    "propertyName": "",
+    "clientLink": "",
+    "pool": "",
+    "parking": "",
+    "propertyLocationName": "",
+    "propertyPrice": "",
+    "listingRef": "",
+    "propertyM2": "",
+    "bedsNumber": "",
+    "bathsNumber": "",
+    "plotSize": "",
+    "distanceFromCoast": "",
+    "googleMapLink": "",
+    "propertyDescription": "",
+    "ourRef": "",
+    "propertyRefLink": "",
+    "isSold": ""
+  };
+  bool isEdit = false;
+
+  // NOTE MEthod for setting edit status
+  void setEditStatus() {
+    if (propertyMetaDataHolding["propertyId"] !=
+            widget.propertyInfoData["propertyId"] ||
+        propertyMetaDataHolding["propertyName"] !=
+            widget.propertyInfoData["propertyName"] ||
+        propertyMetaDataHolding["clientLink"] !=
+            widget.propertyInfoData["clientLink"] ||
+        propertyMetaDataHolding["pool"] != widget.propertyInfoData["pool"] ||
+        propertyMetaDataHolding["parking"] !=
+            widget.propertyInfoData["parking"] ||
+        propertyMetaDataHolding["propertyLocationName"] !=
+            widget.propertyInfoData["propertyLocationName"] ||
+        propertyMetaDataHolding["propertyPrice"] !=
+            widget.propertyInfoData["propertyPrice"] ||
+        propertyMetaDataHolding["listingRef"] !=
+            widget.propertyInfoData["listingRef"] ||
+        propertyMetaDataHolding["propertyM2"] !=
+            widget.propertyInfoData["propertyM2"] ||
+        propertyMetaDataHolding["bedsNumber"] !=
+            widget.propertyInfoData["bedsNumber"] ||
+        propertyMetaDataHolding["bathsNumber"] !=
+            widget.propertyInfoData["bathsNumber"] ||
+        propertyMetaDataHolding["plotSize"] !=
+            widget.propertyInfoData["plotSize"] ||
+        propertyMetaDataHolding["distanceFromCoast"] !=
+            widget.propertyInfoData["distanceFromCoast"] ||
+        propertyMetaDataHolding["googleMapLink"] !=
+            widget.propertyInfoData["googleMapLink"] ||
+        propertyMetaDataHolding["propertyDescription"] !=
+            widget.propertyInfoData["propertyDescription"] ||
+        propertyMetaDataHolding["ourRef"] !=
+            widget.propertyInfoData["ourRef"] ||
+        propertyMetaDataHolding["propertyRefLink"] !=
+            widget.propertyInfoData["propertyRefLink"] ||
+        propertyMetaDataHolding["isSold"] !=
+            widget.propertyInfoData["isSold"]) {
+      isEdit = true;
+    } else {
+      isEdit = false;
+    }
+    setState(() {});
+  }
+
+  // NOTE Method for setting the initial data value
+  void setPropertyMetaData() {
+    propertyMetaDataHolding["propertyId"] =
+        widget.propertyInfoData["propertyId"];
+    propertyMetaDataHolding["propertyName"] =
+        widget.propertyInfoData["propertyName"];
+    propertyMetaDataHolding["clientLink"] =
+        widget.propertyInfoData["clientLink"];
+    propertyMetaDataHolding["pool"] = widget.propertyInfoData["pool"];
+    propertyMetaDataHolding["parking"] = widget.propertyInfoData["parking"];
+    propertyMetaDataHolding["propertyLocationName"] =
+        widget.propertyInfoData["propertyLocationName"];
+    propertyMetaDataHolding["propertyPrice"] =
+        widget.propertyInfoData["propertyPrice"];
+    propertyMetaDataHolding["listingRef"] =
+        widget.propertyInfoData["listingRef"];
+    propertyMetaDataHolding["propertyM2"] =
+        widget.propertyInfoData["propertyM2"];
+    propertyMetaDataHolding["bedsNumber"] =
+        widget.propertyInfoData["bedsNumber"];
+    propertyMetaDataHolding["bathsNumber"] =
+        widget.propertyInfoData["bathsNumber"];
+    propertyMetaDataHolding["plotSize"] = widget.propertyInfoData["plotSize"];
+    propertyMetaDataHolding["distanceFromCoast"] =
+        widget.propertyInfoData["distanceFromCoast"];
+    propertyMetaDataHolding["googleMapLink"] =
+        widget.propertyInfoData["googleMapLink"];
+    propertyMetaDataHolding["propertyDescription"] =
+        widget.propertyInfoData["propertyDescription"];
+    propertyMetaDataHolding["ourRef"] = widget.propertyInfoData["ourRef"];
+    propertyMetaDataHolding["propertyRefLink"] =
+        widget.propertyInfoData["propertyRefLink"];
+    propertyMetaDataHolding["isSold"] = widget.propertyInfoData["isSold"];
+    print("All the data has been set to the local variable");
+  }
+
   String daysToGo(String timestamp) {
     try {
       // Parse the timestamp string
@@ -850,6 +955,7 @@ class _PropertyFeaturesInfoWidgetState
   @override
   void initState() {
     super.initState();
+    setPropertyMetaData();
     // getAllClientsIds();
   }
 
@@ -896,7 +1002,9 @@ class _PropertyFeaturesInfoWidgetState
         ),
         if (option == PropertyInfoWidgetOption.propertyInfo)
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // SECTION Image Expanded Section
               Column(
                 children: [
                   ExpansionTile(
@@ -940,121 +1048,420 @@ class _PropertyFeaturesInfoWidgetState
                   ),
                 ],
               ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Property Id',
-                labelValue: widget.propertyInfoData["propertyId"],
+              //!SECTION
+              // SECTION Text field sections
+              // NOTE Section Title
+              Text(
+                "Property Meta Data",
+                style: ThemeController.normalTextStyle(
+                  fontWeight: FontWeight.w900,
+                  size: 18,
+                ),
               ),
+              // NOTE Empty Space
               const SizedBox(
                 height: 10,
               ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Property name',
-                labelValue: widget.propertyInfoData["propertyName"],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Client link',
-                labelValue: widget.propertyInfoData["clientLink"],
-                isLink: true,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Property location',
-                labelValue: widget.propertyInfoData["propertyLocationName"],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Property Price',
-                labelValue: widget.propertyInfoData["propertyPrice"],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'listing Reference',
-                labelValue: widget.propertyInfoData["listingRef"],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Property M2',
-                labelValue: widget.propertyInfoData["propertyM2"],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Beds',
-                labelValue: widget.propertyInfoData["bedsNumber"],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Baths',
-                labelValue: widget.propertyInfoData["bathsNumber"],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Plot size',
-                labelValue: widget.propertyInfoData["plotSize"],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Distance from coast',
-                labelValue: widget.propertyInfoData["distanceFromCoast"],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Google map link',
-                labelValue: widget.propertyInfoData["googleMapLink"],
-                isLink: true,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              getToggleWidget(
-                isOn: widget.propertyInfoData["pool"] == 'False' ? false : true,
-                labelName: 'Pool',
-                onToggle: (data) {},
-                isEnabled: false,
 
-                //
+              //SECTION Row 1
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Property ID
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      readOnly: true,
+                      labelName: "Property ID",
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["propertyId"],
+                      onChanged: (data) {},
+                      onPaste: (data) {},
+                    ),
+                  ),
+                  // NOTE Property Name
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: "Property Name",
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["propertyName"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["propertyName"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["propertyName"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Client Link
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: "Client link",
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["clientLink"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["clientLink"] = data;
+
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["clientLink"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              getToggleWidget(
-                labelName: 'Parking',
-                onToggle: (data) {},
-                isEnabled: false,
-                isOn: widget.propertyInfoData["parking"] == 'False'
-                    ? false
-                    : true,
-              ),
+              //!SECTION
+              // NOTE Empty Space
               const SizedBox(
                 height: 10,
               ),
-              UserPreferenceValuesDisplayWidget(
-                labelName: 'Property Description',
-                labelValue: widget.propertyInfoData["propertyDescription"],
+              //SECTION Row 2
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Property Location
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: "Property location",
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue:
+                          widget.propertyInfoData["propertyLocationName"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["propertyLocationName"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["propertyLocationName"] = data;
+
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Property Price
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Property Price',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["propertyPrice"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["propertyPrice"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["propertyPrice"] = data;
+
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Property Listing Ref
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Listing Reference',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["listingRef"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["listingRef"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["listingRef"] = data;
+                        if (propertyMetaDataHolding["listingRef"] !=
+                            widget.propertyInfoData["listingRef"]) {
+                          isEdit = true;
+                        } else {
+                          isEdit = false;
+                        }
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
               ),
+              //!SECTION
+              // NOTE Empty Space
+              const SizedBox(
+                height: 10,
+              ),
+              //SECTION Row 3
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Property M2
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Property M2',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["propertyM2"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["propertyM2"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["propertyM2"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Beds
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Beds',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["bedsNumber"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["bedsNumber"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["bedsNumber"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Baths
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Baths',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["bathsNumber"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["bathsNumber"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["bathsNumber"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              //!SECTION
+              // NOTE Empty Space
+              const SizedBox(
+                height: 10,
+              ),
+              //SECTION Row 4
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Plot Size
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Plot size',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["plotSize"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["plotSize"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["plotSize"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Distance From coats
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Distance from coast',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue:
+                          widget.propertyInfoData["distanceFromCoast"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["distanceFromCoast"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["distanceFromCoast"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Baths
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Google map link',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["googleMapLink"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["googleMapLink"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["googleMapLink"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              //!SECTION
+              // NOTE Empty Space
+              const SizedBox(
+                height: 10,
+              ),
+              //SECTION Row 5
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Plot Size
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Property Description',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue:
+                          widget.propertyInfoData["propertyDescription"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["propertyDescription"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["propertyDescription"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              //!SECTION
+              // NOTE Empty Space
               const SizedBox(
                 height: 30,
               ),
+              // SECTION Row 6
+              Row(
+                children: [
+                  getToggleWidget(
+                    isOn:
+                        widget.propertyInfoData["pool"] == 'No' ? false : true,
+                    labelName: 'Pool',
+                    onToggle: (data) {
+                      propertyMetaDataHolding["pool"] = data ? 'Yes' : 'No';
+                      setEditStatus();
+                      setState(() {});
+                    },
+                    isEnabled: true,
+
+                    //
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  getToggleWidget(
+                    labelName: 'Parking',
+                    onToggle: (data) {
+                      propertyMetaDataHolding["parking"] = data ? 'Yes' : 'No';
+                      setEditStatus();
+                      setState(() {});
+                    },
+                    isEnabled: true,
+                    isOn: widget.propertyInfoData["parking"] == 'No'
+                        ? false
+                        : true,
+                  ),
+                ],
+              ),
+              //!SECTION
+              // !SECTION
+
+              const SizedBox(
+                height: 30,
+              ),
+
+              if (isEdit)
+                SizedBox(
+                  width: 200,
+                  child: SubmitButton(
+                    onButtonPress: () async {
+                      ManagerLogInScreenController.showLoaderDialog(context);
+                      await ApiController.propertyInfoEdit(
+                        propertyMetaDataHolding,
+                        onError: (errData) {
+                          ManagerLogInScreenController.showError(
+                            context,
+                            jsonDecode(errData),
+                          );
+                          Future.delayed(
+                            const Duration(seconds: 2),
+                            () {
+                              if (!mounted) {
+                                return;
+                              }
+                              html.window.location.reload();
+                            },
+                          );
+                        },
+                        onSuccess: (resData) {
+                          ManagerLogInScreenController.showSuccess(
+                            context,
+                            "Property info has been edited",
+                          );
+                          Future.delayed(
+                            const Duration(seconds: 2),
+                            () {
+                              if (!mounted) {
+                                return;
+                              }
+                              html.window.location.reload();
+                            },
+                          );
+                        },
+                      );
+                    },
+                    buttonLabel: "Edit Details",
+                  ),
+                ),
             ],
           ),
 

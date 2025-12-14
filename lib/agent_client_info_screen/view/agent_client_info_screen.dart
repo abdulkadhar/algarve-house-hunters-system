@@ -8,10 +8,13 @@ import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/a
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/agent_listing_screen/widgets/add_more_button.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
+import 'package:algarve_house_hunters_system/global_controller/global_controller.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_filed.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
 import 'package:algarve_house_hunters_system/global_widgets/date_time_selector.dart';
+import 'package:algarve_house_hunters_system/global_widgets/preference_details_unit_widget.dart';
+import 'package:algarve_house_hunters_system/global_widgets/warning_alert_box.dart';
 import 'package:algarve_house_hunters_system/manager_agent_info_section_secreen/widgets/checklist_unit_data_widget.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/controller/manager_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/view/manager_dashboard_screen.dart';
@@ -21,7 +24,9 @@ import 'package:algarve_house_hunters_system/manager_log_in_screen/controller/ma
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 class AgentClientInfoScreen extends StatefulWidget {
   final String clientId;
@@ -2737,7 +2742,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               CustomTextFormFiled(
                                 isMandatory: false,
                                 labelName: '',
-                                placeholderText: 'Search',
+                                placeholderText: 'Searc',
                                 onChanged: (data) {
                                   assignedQuery = data;
                                   assignedClientSearchResult = [];
@@ -2778,11 +2783,17 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                     userData: assignedQuery.isEmpty
                                         ? clientData![index]
                                         : assignedClientSearchResult[index],
-                                    isSelected: clientData![index]
-                                            ['client_id'] ==
-                                        selectedClient!['client_id'],
+                                    isSelected: assignedQuery.isEmpty
+                                        ? clientData![index]['client_id'] ==
+                                            selectedClient!['client_id']
+                                        : assignedClientSearchResult[index]
+                                                ['client_id'] ==
+                                            selectedClient!['client_id'],
                                     onProfilePress: () {
-                                      selectedClient = clientData![index];
+                                      selectedClient = assignedQuery.isEmpty
+                                          ? clientData![index]
+                                          : assignedClientSearchResult[index];
+                                      // selectedClient = clientData![index];
                                       changeAgentOption(
                                           AgentClientInfoOption.basicInfo);
                                       setState(() {});
@@ -2817,6 +2828,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // NOTE Internal option
                           Row(
@@ -3019,12 +3031,53 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                         'Complete first call process to approve.',
                                       );
                                     } else {
-                                      await showBlackDialog(
+                                      await GetAlertDialogBox
+                                          .warningAlertDialogBox(
                                         context,
-                                        'Approve client',
-                                        '',
-                                        'approved',
-                                        selectedClient!['client_id'],
+                                        title: "Approve client",
+                                        warningText:
+                                            "Do you wish to approve the client.",
+                                        confirmLabel: "Confirm",
+                                        cancelTextWidget: Text(
+                                          "Cancel",
+                                          style: ThemeController.smallTextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        onCancel: () {
+                                          Navigator.pop(context);
+                                        },
+                                        onConfirm: () async {
+                                          ManagerLogInScreenController
+                                              .showLoaderDialog(context);
+                                          await ApiController.approveCustomer(
+                                            clientId:
+                                                selectedClient!['client_id'],
+                                            msg: "Client has been approved",
+                                            onSuccess: (data) async {
+                                              ManagerLogInScreenController
+                                                  .showSuccess(context,
+                                                      'Client has been approved');
+                                              await Future.delayed(
+                                                const Duration(seconds: 2),
+                                                () {
+                                                  if (context.mounted) {
+                                                    context.push(
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                  }
+                                                },
+                                              );
+                                            },
+                                            onError: (errorData) {
+                                              var response =
+                                                  jsonDecode(errorData);
+
+                                              ManagerLogInScreenController
+                                                  .showError(context,
+                                                      response.toString());
+                                            },
+                                          );
+                                        },
                                       );
                                     }
                                   }
@@ -3348,208 +3401,579 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                   )
                               ],
                             ),
-                          // NOTE Preference Data
+                          // NOTE Adding the new feature
                           if (selectedClient != null &&
                               optionData ==
-                                  AgentClientInfoOption.preferenceInfo)
-                            Column(
+                                  AgentClientInfoOption.preferenceInfo &&
+                              selectedClient!['jot_form_submitted_data'] != "")
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Finding preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['findingPreference']
-                                      .toString(),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    // SECTION Property Preference
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 0.2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      width: 500,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.home,
+                                                color: Colors.black,
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                "Property Preference",
+                                                style: ThemeController
+                                                    .titleTextStyle(
+                                                  size: 16,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          Row(
+                                            children: [
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Bedroom",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['bedNumber']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Bathrooms",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['bathNumber']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          Row(
+                                            children: [
+                                              PreferenceDetailsUnitWidget(
+                                                title: "M2",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['M2Preference']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Location",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['locationPreference']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          PreferenceDetailsUnitWidget(
+                                            title: "House Regards",
+                                            value: GlobalController
+                                                .getPreferenceFormatter(
+                                              selectedClient!['preference_data']
+                                                      ['houseRegardsPreference']
+                                                  .toString(),
+                                            ),
+                                            width: 400,
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          PreferenceDetailsUnitWidget(
+                                            title: "Neighbourhood",
+                                            value: GlobalController
+                                                .getPreferenceFormatter(
+                                              selectedClient!['preference_data']
+                                                      ['neighborPreference']
+                                                  .toString(),
+                                            ),
+                                            width: 400,
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          PreferenceDetailsUnitWidget(
+                                            title: "Other preference",
+                                            value: GlobalController
+                                                .getPreferenceFormatter(
+                                              selectedClient!['preference_data']
+                                                      ['otherPreference']
+                                                  .toString(),
+                                            ),
+                                            width: 400,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // !SECTION
+                                    // NOTE Empty Space
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    // SECTION Activity Preference
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 0.2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      width: 500,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.access_time,
+                                                color: Colors.black,
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                "Status & Activity",
+                                                style: ThemeController
+                                                    .titleTextStyle(
+                                                  size: 16,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          Row(
+                                            children: [
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Viewing",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['viewingPreference']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Other agent",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['otherAgentsStatus']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          PreferenceDetailsUnitWidget(
+                                            title: "Next appointmen",
+                                            value: GlobalController
+                                                .formatAppointment(
+                                              selectedClient!['preference_data']
+                                                      ['appointmentInfo']
+                                                  .toString(),
+                                            ),
+                                            width: 400,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // !SECTION
+                                  ],
                                 ),
+                                // NOTE Empty Width Space
                                 const SizedBox(
-                                  height: 5,
+                                  width: 10,
                                 ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Bed number',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['bedNumber']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Bath number',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['bathNumber']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Requirement preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['requirementPreference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Other preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['otherPreference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'House regards preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['houseRegardsPreference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Neighbor preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['neighborPreference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Location Preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['locationPreference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'M2Preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['M2Preference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Buying preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['buyingPreference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Value spend preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['valueSpendPreference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Tax Preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['taxPreference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Residence Info',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['residenceInfo']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Language Preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['languagePreference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Viewing Preference',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['viewingPreference']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Other Agents Status',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['otherAgentsStatus']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Fiscal Status',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['fiscalStatus']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Bank Status',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['bankStatus']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Additional Info',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['additionalInfo']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Email',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['email']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Phone Number',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['phoneNumber']
-                                      .toString(),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                UserPreferenceValuesDisplayWidget(
-                                  labelName: 'Appointment Info',
-                                  labelValue: selectedClient!['preference_data']
-                                          ['appointmentInfo']
-                                      .toString(),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    // SECTION Financial Preference
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 0.2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      width: 500,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.money,
+                                                color: Colors.black,
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                "Financial Details",
+                                                style: ThemeController
+                                                    .titleTextStyle(
+                                                  size: 16,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          Row(
+                                            children: [
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Buying Preference",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['buyingPreference']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Value Spend",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          [
+                                                          'valueSpendPreference']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          Row(
+                                            children: [
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Tax Status",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['taxPreference']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Fiscal Status",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['fiscalStatus']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          PreferenceDetailsUnitWidget(
+                                            title: "Bank Status",
+                                            value: GlobalController
+                                                .getPreferenceFormatter(
+                                              selectedClient!['preference_data']
+                                                      ['bankStatus']
+                                                  .toString(),
+                                            ),
+                                            width: 400,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // !SECTION
+                                    // NOTE Empty Space
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    // SECTION Personal Preference
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 0.2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      width: 500,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.person,
+                                                color: Colors.black,
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                "Contact & Personal",
+                                                style: ThemeController
+                                                    .titleTextStyle(
+                                                  size: 16,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          PreferenceDetailsUnitWidget(
+                                            title: "Email",
+                                            value: GlobalController
+                                                .getPreferenceFormatter(
+                                              selectedClient!['preference_data']
+                                                      ['email']
+                                                  .toString(),
+                                            ),
+                                            width: 400,
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          PreferenceDetailsUnitWidget(
+                                            title: "Phone number",
+                                            value: GlobalController
+                                                .getPreferenceFormatter(
+                                              selectedClient!['preference_data']
+                                                      ['phoneNumber']
+                                                  .toString(),
+                                            ),
+                                            width: 400,
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          Row(
+                                            children: [
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Residence",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['residenceInfo']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                              PreferenceDetailsUnitWidget(
+                                                title: "Language",
+                                                value: GlobalController
+                                                    .getPreferenceFormatter(
+                                                  selectedClient![
+                                                              'preference_data']
+                                                          ['languagePreference']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // !SECTION
+                                    // NOTE Empty Space
+                                    const SizedBox(
+                                      height: 15,
+                                    ),
+                                    // SECTION Additional Info Preference
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 0.2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      width: 500,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.paste,
+                                                color: Colors.black,
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                "Additional Info",
+                                                style: ThemeController
+                                                    .titleTextStyle(
+                                                  size: 16,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          Text(
+                                            GlobalController
+                                                .getPreferenceFormatter(
+                                              selectedClient!['preference_data']
+                                                      ['additionalInfo']
+                                                  .toString(),
+                                            ),
+                                            style:
+                                                ThemeController.normalTextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // !SECTION
+                                  ],
                                 ),
                               ],
+                            ),
+
+                          if (selectedClient != null &&
+                              optionData ==
+                                  AgentClientInfoOption.preferenceInfo &&
+                              selectedClient!['jot_form_submitted_data'] == "")
+                            Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // NOTE Empty Space
+                                  const SizedBox(
+                                    height: 30,
+                                  ),
+                                  // NOTE SectionLottie
+                                  SizedBox(
+                                    height: 100,
+                                    width: 100,
+                                    child: Lottie.asset(
+                                        'assets/lottie/empty_lottie.json'),
+                                  ),
+                                  // NOTE Subtitle Section
+                                  Text(
+                                    "Client hasn't submitted jotform !!!",
+                                    style: ThemeController.normalTextStyle(
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                  // NOTE Button
+                                  // NOTE Empty Space
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  OptionLabelSelectorWidget(
+                                    isEnabled: true,
+                                    onPress: () async {
+                                      ManagerLogInScreenController
+                                          .showLoaderDialog(context);
+                                      await ApiController.sendJotFormRemainder(
+                                        {
+                                          "clientEmailAddress": selectedClient![
+                                              'client_email_address'],
+                                          "clientFullName":
+                                              selectedClient!['client_name'],
+                                        },
+                                        onError: (errData) {
+                                          ManagerLogInScreenController
+                                              .showError(
+                                            context,
+                                            errData,
+                                          );
+                                        },
+                                        onSuccess: (resData) {
+                                          ManagerLogInScreenController
+                                              .showSuccess(
+                                            context,
+                                            'Remainder has been sent',
+                                          );
+                                        },
+                                      );
+                                      Future.delayed(
+                                        const Duration(seconds: 2),
+                                        () {
+                                          // html.window.location.reload();
+                                          if (context.mounted) {
+                                            context.push(
+                                                '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                          }
+                                        },
+                                      );
+                                    },
+                                    optionLabel: 'Send reminder',
+                                  ),
+
+                                  // NOTE Empty Space
+                                  const SizedBox(
+                                    height: 30,
+                                  ),
+                                ],
+                              ),
                             ),
                           // NOTE Agent Info Section
                           if (selectedClient != null &&

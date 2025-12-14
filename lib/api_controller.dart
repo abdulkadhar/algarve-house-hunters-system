@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
+import 'package:http_parser/http_parser.dart';
 
 class ApiController {
   static String baseUrl = 'https://systems.algarvehousehunters.com/';
@@ -28,12 +30,8 @@ class ApiController {
       );
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        print("Response data: ${responseData}");
         onSuccess(response.body);
       } else {
-        print("Error: ${response.statusCode}");
-        print("Message: ${response.body}");
         onError(response.body);
       }
     } catch (e) {
@@ -1923,6 +1921,39 @@ class ApiController {
     }
   }
 
+  // SECTION firstCallStatusValue
+  static Future<void> firstCallStatusValueUpdate(
+    Map<String, dynamic> requestBody, {
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "update-first-call-status-value",
+    );
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+  //!SECTION
+
   static Future<void> sendWelcomeEmail(
     Map<String, dynamic> requestBody, {
     required Function(String) onSuccess,
@@ -3661,6 +3692,141 @@ class ApiController {
   }) async {
     final url = Uri.parse(
       baseUrl + "update-template",
+    );
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+
+  //!SECTION
+  // SECTION Newer requirement api handler
+  // NOTE API call for post api in client
+  static Future<void> sendJotFormRemainder(
+    Map<String, dynamic> requestBody, {
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "send-jotform-remainder-mail",
+    );
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print("Response data: ${responseData}");
+        onSuccess(response.body);
+      } else {
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+  //!SECTION
+
+  // SECTION User import api
+  static Future<void> uploadUserImport(
+    List<int> fileBytes,
+    String fileName, {
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final uri = Uri.parse("${baseUrl}user-import");
+
+    // Attach file
+    final request = http.MultipartRequest("POST", uri);
+
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        "file",
+        fileBytes,
+        filename: fileName,
+        contentType: MediaType("text", "csv"),
+      ),
+    );
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode != 200) {
+      onError(response.body);
+    } else {
+      onSuccess(response.body);
+    }
+  }
+
+  // NOTE Addition of user import addition
+  static Future<void> addClientDataImport(
+    Map<String, dynamic> requestBody, {
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "add-client-data-import",
+    );
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+
+  //!SECTION
+  // SECTION Handler for the property edit
+  static Future<void> propertyInfoEdit(
+    Map<String, dynamic> requestBody, {
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "edit-property-details",
     );
 
     try {

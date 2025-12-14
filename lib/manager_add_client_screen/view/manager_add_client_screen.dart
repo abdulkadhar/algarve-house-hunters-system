@@ -1,25 +1,43 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/user_preference_values_display_widget.dart';
 import 'package:algarve_house_hunters_system/agent_listing_screen/widgets/add_more_button.dart';
 import 'package:algarve_house_hunters_system/agent_onboarding_screen/widgets/side_option_button.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
+import 'package:algarve_house_hunters_system/global_widgets/csv_drop_zone_widget.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_filed.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
+import 'package:algarve_house_hunters_system/global_widgets/submit_button.dart';
+import 'package:algarve_house_hunters_system/login_screen/widgets/testimonals_carousel_widget.dart';
+import 'package:algarve_house_hunters_system/manager_add_client_screen/controller/manager_add_client_screen_controller.dart';
 import 'package:algarve_house_hunters_system/manager_add_client_screen/model/form_response.dart';
 import 'package:algarve_house_hunters_system/manager_add_client_screen/widget/collapsable_answer_widget.dart';
+import 'package:algarve_house_hunters_system/manager_add_client_screen/widget/count_info_widget.dart';
+import 'package:algarve_house_hunters_system/manager_add_client_screen/widget/user_list_unit_tile_widget.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/controller/manager_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/widgets/manager_info_widget.dart';
 import 'package:algarve_house_hunters_system/manager_log_in_screen/controller/manager_log_in_screen_controller.dart';
+import 'package:algarve_house_hunters_system/manager_log_in_screen/view/manager_log_in_screen.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:html' as html;
+import 'package:file_picker/file_picker.dart';
+
+import 'dart:convert';
+import 'package:flutter/services.dart';
+
+import 'dart:math';
 
 enum ClientHandlingOption {
   addClient,
   jotformSubmission,
+  clientImport,
 }
 
 class ManagerAddClientScreen extends StatefulWidget {
@@ -31,7 +49,7 @@ class ManagerAddClientScreen extends StatefulWidget {
 
 class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
   ManagerDashboardOption dashboardOption = ManagerDashboardOption.clients;
-  ClientHandlingOption clientOption = ClientHandlingOption.addClient;
+  ClientHandlingOption clientOption = ClientHandlingOption.clientImport;
 
   void changeClientOption(ClientHandlingOption option) {
     clientOption = option;
@@ -43,8 +61,14 @@ class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
     setState(() {});
   }
 
-  String? clientId;
+  String? clientId = "ss";
   Map<String, dynamic>? submissionData;
+  // NOTE Repose of csv upload analyzer
+  Map<String, dynamic>? uploadAnalyzer;
+  late DropzoneViewController controller;
+  bool csvLoadingState = false;
+  int? uploadIndexHolder;
+  bool imported = false;
 
   void getCurrentClientId() async {
     await ApiController.getCurrentCustomerId(
@@ -75,6 +99,8 @@ class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
   Map<String, dynamic> clientAdditionData = {
     "client_id": "CLT-BLR-20250625-0001",
     "client_name": "",
+    "client_first_name": "",
+    "client_second_name": "",
     "client_email_address": "",
     "client_phone_number": "",
     "client_location_name": "",
@@ -87,8 +113,8 @@ class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
     "google_id": "",
     "preference_data": {
       "findingPreference": [],
-      "bedNumber": 2,
-      "bathNumber": 4,
+      "bedNumber": 0,
+      "bathNumber": 0,
       "requirementPreference": [],
       "otherPreference": [],
       "houseRegardsPreference": [],
@@ -97,7 +123,7 @@ class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
       "areaInterestPreference": "",
       "M2Preference": "",
       "buyingPreference": [],
-      "valueSpendPreference": 4,
+      "valueSpendPreference": 0,
       "taxPreference": [],
       "residenceInfo": "",
       "languagePreference": [],
@@ -110,7 +136,18 @@ class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
       "phoneNumber": "",
       "appointmentInfo": ""
     },
-    "agent_id": []
+    "approved_status": "in-progress",
+    "approval_info": {
+      "approval_value": "in-progress",
+      "approval_date": "",
+      "approval_id": "",
+      "approval_msg": "",
+    },
+    "source": "portal",
+    "jot_form_submitted_data": "",
+    "manager_notes": [],
+    "agent_id": [],
+    "joined_date": "",
   };
 
   String? nameErrorText;
@@ -136,11 +173,641 @@ class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
     setState(() {});
   }
 
+// SECTION Helper function for the CSV Upload
+  bool isCsvFile(String fileName) {
+    final lower = fileName.toLowerCase();
+    return lower.endsWith(".csv");
+  }
+
+  // NOTE Method for uploading the csv file
+  Future<void> pickAndUploadCSV() async {
+    FilePickerResult? picked = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+      withData: true, // IMPORTANT for Web
+    );
+
+    if (picked == null) return;
+
+    final PlatformFile file = picked.files.first;
+
+    setState(() => csvLoadingState = true);
+
+    if (context.mounted) {
+      ManagerLogInScreenController.showLoaderDialog(context);
+    }
+    await ApiController.uploadUserImport(
+      file.bytes!,
+      file.name,
+      onError: (errData) {
+        ManagerLogInScreenController.showError(
+            context, jsonDecode(errData).toString());
+        Future.delayed(Duration(seconds: 2), () {
+          if (context.mounted) {
+            ManagerLogInScreenController.hideDialogBox(context);
+          }
+        });
+      },
+      onSuccess: (resData) {
+        uploadAnalyzer = jsonDecode(resData);
+        setState(() {});
+        Future.delayed(
+          const Duration(seconds: 2),
+          () {
+            if (context.mounted) {
+              ManagerLogInScreenController.hideDialogBox(context);
+            }
+          },
+        );
+      },
+    );
+
+    setState(() => csvLoadingState = false);
+  }
+
+  // NOTE Method for loading the sample response json
+  Future<Map<String, dynamic>> loadUserImportResponse() async {
+    // Load JSON string from assets
+    final String jsonString = await rootBundle.loadString(
+      'models/user_import_response.json',
+    );
+    // Decode into Map
+    final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+
+    return jsonMap;
+  }
+
+  void setUploadResponse() async {
+    uploadAnalyzer = await loadUserImportResponse();
+    setState(() {});
+    print("Data has been loaded !!!");
+  }
+
+//!SECTION
+// SECTION Right Section widget
+  Widget getRightSectionWidget(ClientHandlingOption option) {
+    if (option == ClientHandlingOption.addClient) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            clientId!,
+            style: ThemeController.normalTextStyle(
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.3,
+                child: CustomTextFormFiled(
+                  labelName: 'Name',
+                  placeholderText: '',
+                  errorText: nameErrorText,
+                  onChanged: (agentName) {
+                    clearNameErrorText();
+                    if (agentName != null) {
+                      if (agentName.isNotEmpty) {
+                        clientAdditionData['client_name'] = agentName;
+                      } else {
+                        setNameErrorText("Name cannot be empty !!!");
+                      }
+                    }
+                  },
+                  isMandatory: true,
+                ),
+              ),
+              const SizedBox(
+                width: 30,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.3,
+                child: CustomTextFormFiled(
+                  labelName: 'Email address',
+                  placeholderText: '',
+                  errorText: emailErrorText,
+                  onChanged: (agentEmail) {
+                    clearEmailErrorText();
+                    if (agentEmail != null) {
+                      if (agentEmail.isNotEmpty) {
+                        clientAdditionData['client_email_address'] = agentEmail;
+                      } else {
+                        setEmailErrorText("Client email cannot be empty !!!");
+                      }
+                    }
+                  },
+                  isMandatory: true,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.3,
+                child: CustomTextFormFiled(
+                  labelName: 'Phone number',
+                  placeholderText: '',
+                  onChanged: (phoneNumber) {
+                    if (phoneNumber != null && phoneNumber.isNotEmpty) {
+                      clientAdditionData['client_phone_number'] = phoneNumber;
+                    }
+                  },
+                  isMandatory: false,
+                ),
+              ),
+              const SizedBox(
+                width: 30,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.3,
+                child: CustomTextFormFiled(
+                  labelName: 'Location name',
+                  placeholderText: '',
+                  onChanged: (agentName) {
+                    if (agentName != null && agentName.isNotEmpty) {
+                      clientAdditionData['client_location_name'] = agentName;
+                    }
+                  },
+                  isMandatory: false,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.3,
+                child: CustomTextFormFiled(
+                  labelName: 'Designation',
+                  placeholderText: '',
+                  onChanged: (agentName) {
+                    if (agentName != null && agentName.isNotEmpty) {
+                      clientAdditionData['client_designation'] = agentName;
+                    }
+                  },
+                  isMandatory: false,
+                ),
+              ),
+              const SizedBox(
+                width: 30,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.3,
+                child: CustomTextFormFiled(
+                  labelName: 'Description',
+                  placeholderText: '',
+                  onChanged: (agentName) {
+                    if (agentName != null && agentName.isNotEmpty) {
+                      clientAdditionData['client_description'] = agentName;
+                    }
+                  },
+                  isMandatory: false,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          AddMoreButton(
+            onButtonPress: () {
+              if (clientAdditionData['client_name'] == '' ||
+                  clientAdditionData['client_name'] == null) {
+                setNameErrorText("Client name cannot be empty !!!");
+              } else if (clientAdditionData['client_email_address'] == null ||
+                  clientAdditionData['client_email_address'] == '') {
+                setEmailErrorText(
+                  'Client email cannot be empty !!!',
+                );
+              } else {
+                ManagerLogInScreenController.showLoaderDialog(context);
+                ApiController.requestClient(
+                  clientAdditionData,
+                  onSuccess: (data) {
+                    ManagerLogInScreenController.hideDialogBox(context);
+                    ManagerLogInScreenController.showSuccess(
+                        context, 'Email with form sent to client');
+                    html.window.location.reload();
+                  },
+                  onError: (data) {
+                    ManagerLogInScreenController.hideDialogBox(context);
+
+                    print('Agent Onboard Form: Error occured');
+                  },
+                );
+              }
+            },
+            buttonLabel: 'Add Client',
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+        ],
+      );
+    } else if (option == ClientHandlingOption.clientImport) {
+      if (uploadAnalyzer == null) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "User import Option",
+                  style: ThemeController.normalTextStyle(
+                    fontWeight: FontWeight.w900,
+                    size: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Upload your CSV file to bulk add client members to the systems.",
+                  style: ThemeController.normalTextStyle(
+                    fontWeight: FontWeight.w400,
+                    size: 14,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              DottedBorder(
+                radius: Radius.circular(100),
+                dashPattern: [10, 5],
+                color: Colors.grey,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const CircleAvatar(
+                        backgroundColor: Colors.black,
+                        radius: 30,
+                        child: Icon(
+                          Icons.upload,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      Text(
+                        "Tap to browse",
+                        style: ThemeController.normalTextStyle(),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        "Supports only CSV files. \n Max entries 1000.",
+                        style: ThemeController.normalTextStyle(),
+                      ),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      SubmitButton(
+                        onButtonPress: () async {
+                          await pickAndUploadCSV();
+                        },
+                        buttonLabel: "Select Files",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+            ],
+          ),
+        );
+      } else {
+        return Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    "Import Results",
+                    style: ThemeController.normalTextStyle(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const Spacer(),
+                  InkWell(
+                    onTap: () {
+                      uploadAnalyzer = null;
+                      uploadIndexHolder = null;
+                      imported = false;
+                      setState(() {});
+                    },
+                    child: Text(
+                      "Back",
+                      style: ThemeController.normalTextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(
+                height: 10,
+              ),
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: Color(0xFFDCFCE7),
+                child: Icon(
+                  Icons.done,
+                  color: Colors.green,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                "Analysis complete",
+                style: ThemeController.normalTextStyle(
+                  fontWeight: FontWeight.w900,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                "review the summary below before finalizing the the import to the portal",
+                style: ThemeController.normalTextStyle(),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              // NOTE total Records Section
+              Container(
+                padding: const EdgeInsets.all(20),
+                width: 400,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "TOTAL RECORDS",
+                          style: ThemeController.normalTextStyle(
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Text(
+                          (uploadAnalyzer!["rows_found"] +
+                                  uploadAnalyzer!["err_data"].length)
+                              .toString(),
+                          style: ThemeController.normalTextStyle(
+                            fontWeight: FontWeight.w900,
+                          ),
+                        )
+                      ],
+                    ),
+                    const Spacer(),
+                    const CircleAvatar(
+                      backgroundColor: Color(0xFFF9FAFB),
+                      radius: 25,
+                      child: Icon(
+                        Icons.menu,
+                        color: Colors.black,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              // NOTE Data count info
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CountInfoWidget(
+                    count: uploadAnalyzer!["rows_found"],
+                    label: "New users",
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  CountInfoWidget(
+                    count: uploadAnalyzer!["err_data"].length,
+                    label: "Existing users",
+                    icon: Icons.warning,
+                    iconBgColor: Colors.red,
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                "Data preview",
+                style: ThemeController.normalTextStyle(
+                  fontWeight: FontWeight.w900,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              //NOTE Data Preview Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // NOTE New Users List
+                  Column(
+                    children: List.generate(
+                      uploadAnalyzer!["data"].length > 5
+                          ? 5
+                          : uploadAnalyzer!["data"].length,
+                      (index) {
+                        return Column(
+                          children: [
+                            // NOTE Main Info holder Widget
+                            UserListUnitTileWidget(
+                              userData: uploadAnalyzer!["data"][index],
+                              state: UserState.newUser,
+                              isImported: uploadIndexHolder != null &&
+                                  uploadIndexHolder! >= index,
+                            ),
+                            // NOTE Empty Space
+                            const SizedBox(
+                              height: 10,
+                            )
+                          ],
+                        );
+                        // Text(uploadAnalyzer!["data"][index]["client_name"]);
+                      },
+                    ),
+                  ),
+                  // NOTE Empty Space
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  // NOTE Existing users widget
+                  // NOTE New Users List
+                  if (uploadAnalyzer!["err_data"].length != 0 &&
+                      uploadAnalyzer!["err_data"] != null)
+                    Column(
+                      children: List.generate(
+                        uploadAnalyzer!["err_data"].length > 5
+                            ? 5
+                            : uploadAnalyzer!["err_data"].length,
+                        (index) {
+                          return Column(
+                            children: [
+                              // NOTE Main Info holder Widget
+                              UserListUnitTileWidget(
+                                userData: uploadAnalyzer!["err_data"][index]
+                                    ["data"],
+                                state: UserState.existing,
+                              ),
+                              // NOTE Empty Space
+                              const SizedBox(
+                                height: 10,
+                              )
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              if (uploadAnalyzer!["err_data"].length != 0 &&
+                  uploadAnalyzer!["err_data"] != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.info,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "${uploadAnalyzer!["err_data"].length} existing users will be skipped",
+                      style: ThemeController.normalTextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: Colors.grey,
+                        size: 12,
+                      ),
+                    )
+                  ],
+                ),
+
+              const SizedBox(
+                height: 15,
+              ),
+              if (imported)
+                Text(
+                  "Clients has been imported",
+                  style: ThemeController.normalTextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              if (!imported && uploadAnalyzer!["data"].isNotEmpty)
+                SizedBox(
+                  width: 300,
+                  child: SubmitButton(
+                    onButtonPress: () async {
+                      // NOTE Showing the loader dialog
+                      ManagerLogInScreenController.showLoaderDialog(context);
+                      if (uploadAnalyzer!["data"].isNotEmpty) {
+                        for (int i = 0;
+                            i < uploadAnalyzer!["data"].length;
+                            i++) {
+                          await ApiController.addClientDataImport(
+                            uploadAnalyzer!["data"][i],
+                            onError: (errData) {
+                              ManagerLogInScreenController.showError(
+                                context,
+                                jsonDecode(errData),
+                              );
+                            },
+                            onSuccess: (resData) {
+                              uploadIndexHolder = i;
+                              if (uploadAnalyzer!["data"].length - 1 == i) {
+                                imported = true;
+                              }
+                              setState(() {});
+                            },
+                          );
+                        }
+                      }
+                      Future.delayed(
+                        const Duration(seconds: 2),
+                        () {
+                          if (context.mounted) {
+                            ManagerLogInScreenController.hideDialogBox(context);
+                          }
+                        },
+                      );
+                    },
+                    buttonLabel:
+                        "Import ${uploadAnalyzer!["rows_found"]} Users",
+                  ),
+                )
+            ],
+          ),
+        );
+      }
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    // TODO Un comment this after UI Development
     getCurrentClientId();
     getJotFormSubmission();
+    // NOTE calling the loader method
+    // setUploadResponse();
   }
 
   @override
@@ -275,6 +942,19 @@ class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
                             // context.go(
                             //   '/manager-agent-onboarding',
                             // );
+                          },
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        SideOptionButton(
+                          iconData: Icons.import_contacts,
+                          isSelected:
+                              clientOption == ClientHandlingOption.clientImport,
+                          label: "Import clients",
+                          onTap: () {
+                            changeClientOption(
+                                ClientHandlingOption.clientImport);
                           },
                         ),
                       ],
@@ -1149,225 +1829,7 @@ class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
                                   ),
                                 )
                           : clientId != null
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      clientId!,
-                                      style: ThemeController.normalTextStyle(
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.3,
-                                          child: CustomTextFormFiled(
-                                            labelName: 'Name',
-                                            placeholderText: '',
-                                            errorText: nameErrorText,
-                                            onChanged: (agentName) {
-                                              clearNameErrorText();
-                                              if (agentName != null) {
-                                                if (agentName.isNotEmpty) {
-                                                  clientAdditionData[
-                                                          'client_name'] =
-                                                      agentName;
-                                                } else {
-                                                  setNameErrorText(
-                                                      "Name cannot be empty !!!");
-                                                }
-                                              }
-                                            },
-                                            isMandatory: true,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 30,
-                                        ),
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.3,
-                                          child: CustomTextFormFiled(
-                                            labelName: 'Email address',
-                                            placeholderText: '',
-                                            errorText: emailErrorText,
-                                            onChanged: (agentEmail) {
-                                              clearEmailErrorText();
-                                              if (agentEmail != null) {
-                                                if (agentEmail.isNotEmpty) {
-                                                  clientAdditionData[
-                                                          'client_email_address'] =
-                                                      agentEmail;
-                                                } else {
-                                                  setEmailErrorText(
-                                                      "Client email cannot be empty !!!");
-                                                }
-                                              }
-                                            },
-                                            isMandatory: true,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.3,
-                                          child: CustomTextFormFiled(
-                                            labelName: 'Phone number',
-                                            placeholderText: '',
-                                            onChanged: (phoneNumber) {
-                                              if (phoneNumber != null &&
-                                                  phoneNumber.isNotEmpty) {
-                                                clientAdditionData[
-                                                        'client_phone_number'] =
-                                                    phoneNumber;
-                                              }
-                                            },
-                                            isMandatory: false,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 30,
-                                        ),
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.3,
-                                          child: CustomTextFormFiled(
-                                            labelName: 'Location name',
-                                            placeholderText: '',
-                                            onChanged: (agentName) {
-                                              if (agentName != null &&
-                                                  agentName.isNotEmpty) {
-                                                clientAdditionData[
-                                                        'client_location_name'] =
-                                                    agentName;
-                                              }
-                                            },
-                                            isMandatory: false,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.3,
-                                          child: CustomTextFormFiled(
-                                            labelName: 'Designation',
-                                            placeholderText: '',
-                                            onChanged: (agentName) {
-                                              if (agentName != null &&
-                                                  agentName.isNotEmpty) {
-                                                clientAdditionData[
-                                                        'client_designation'] =
-                                                    agentName;
-                                              }
-                                            },
-                                            isMandatory: false,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 30,
-                                        ),
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.3,
-                                          child: CustomTextFormFiled(
-                                            labelName: 'Description',
-                                            placeholderText: '',
-                                            onChanged: (agentName) {
-                                              if (agentName != null &&
-                                                  agentName.isNotEmpty) {
-                                                clientAdditionData[
-                                                        'client_description'] =
-                                                    agentName;
-                                              }
-                                            },
-                                            isMandatory: false,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    AddMoreButton(
-                                      onButtonPress: () {
-                                        if (clientAdditionData['client_name'] ==
-                                                '' ||
-                                            clientAdditionData['client_name'] ==
-                                                null) {
-                                          setNameErrorText(
-                                              "Client name cannot be empty !!!");
-                                        } else if (clientAdditionData[
-                                                    'client_email_address'] ==
-                                                null ||
-                                            clientAdditionData[
-                                                    'client_email_address'] ==
-                                                '') {
-                                          setEmailErrorText(
-                                            'Client email cannot be empty !!!',
-                                          );
-                                        } else {
-                                          ManagerLogInScreenController
-                                              .showLoaderDialog(context);
-                                          ApiController.requestClient(
-                                            clientAdditionData,
-                                            onSuccess: (data) {
-                                              ManagerLogInScreenController
-                                                  .hideDialogBox(context);
-                                              ManagerLogInScreenController
-                                                  .showSuccess(context,
-                                                      'Email with form sent to client');
-                                              html.window.location.reload();
-                                            },
-                                            onError: (data) {
-                                              ManagerLogInScreenController
-                                                  .hideDialogBox(context);
-
-                                              print(
-                                                  'Agent Onboard Form: Error occured');
-                                            },
-                                          );
-                                        }
-                                      },
-                                      buttonLabel: 'Add Client',
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
-                                )
+                              ? getRightSectionWidget(clientOption)
                               : SizedBox(
                                   height: 50,
                                   width: 50,

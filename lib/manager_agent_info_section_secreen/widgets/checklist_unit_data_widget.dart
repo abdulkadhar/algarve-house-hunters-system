@@ -3,10 +3,12 @@ import 'dart:html' as html;
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/toggle_switch_widget.dart';
 import 'package:algarve_house_hunters_system/agent_listing_screen/widgets/add_more_button.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
+import 'package:algarve_house_hunters_system/global_controller/global_controller.dart';
 import 'package:algarve_house_hunters_system/global_widgets/border_button.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_text_button.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_filed.dart';
 import 'package:algarve_house_hunters_system/global_widgets/date_time_selector.dart';
+import 'package:algarve_house_hunters_system/global_widgets/first_call_status_label_widget.dart';
 import 'package:algarve_house_hunters_system/global_widgets/html_renderer.dart';
 import 'package:algarve_house_hunters_system/global_widgets/rich_text_editor_dialog_box.dart';
 import 'package:algarve_house_hunters_system/manager_log_in_screen/controller/manager_log_in_screen_controller.dart';
@@ -404,6 +406,162 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      // NOTE - Status call widget
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          FirstCallStatusLabelWidget(
+                                            onPressed: () async {
+                                              ManagerLogInScreenController
+                                                  .showLoaderDialog(context);
+                                              await ApiController
+                                                  .firstCallStatusValueUpdate(
+                                                {
+                                                  "checklist_id":
+                                                      widget.checklistId,
+                                                  "call-status": "accepted"
+                                                },
+                                                onError: (errData) {
+                                                  // NOTE Hiding the loader
+                                                  ManagerLogInScreenController
+                                                      .hideDialogBox(context);
+                                                  ManagerLogInScreenController
+                                                      .showError(
+                                                          context, errData);
+                                                },
+                                                onSuccess: (resData) {
+                                                  ManagerLogInScreenController
+                                                      .showSuccess(context,
+                                                          "Call status has been updated !!!");
+                                                  Future.delayed(
+                                                    const Duration(seconds: 2),
+                                                    () {
+                                                      if (context.mounted) {
+                                                        context.push(
+                                                            '/manager-client-info-screen/${widget.clientData!['client_id']}');
+                                                      }
+                                                      html.window.location
+                                                          .reload();
+                                                    },
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            status:
+                                                FirstCallStatusData.accepted,
+                                            isSelected: GlobalController
+                                                    .getFirstCallStatusFromResponse(
+                                                        widget.userData![
+                                                            'call-status']) ==
+                                                FirstCallStatusData.accepted,
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          FirstCallStatusLabelWidget(
+                                            onPressed: () async {
+                                              ManagerLogInScreenController
+                                                  .showLoaderDialog(context);
+                                              await ApiController
+                                                  .firstCallStatusValueUpdate(
+                                                {
+                                                  "checklist_id":
+                                                      widget.checklistId,
+                                                  "call-status": "cancelled"
+                                                },
+                                                onError: (errData) {
+                                                  // NOTE Hiding the loader
+                                                  ManagerLogInScreenController
+                                                      .hideDialogBox(context);
+                                                  ManagerLogInScreenController
+                                                      .showError(
+                                                          context, errData);
+                                                },
+                                                onSuccess: (resData) {
+                                                  ManagerLogInScreenController
+                                                      .showSuccess(context,
+                                                          "Call status has been updated !!!");
+                                                  Future.delayed(
+                                                    const Duration(seconds: 2),
+                                                    () {
+                                                      if (context.mounted) {
+                                                        context.push(
+                                                            '/manager-client-info-screen/${widget.clientData!['client_id']}');
+                                                      }
+                                                      html.window.location
+                                                          .reload();
+                                                    },
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            status:
+                                                FirstCallStatusData.cancelled,
+                                            isSelected: GlobalController
+                                                    .getFirstCallStatusFromResponse(
+                                                        widget.userData![
+                                                            'call-status']) ==
+                                                FirstCallStatusData.cancelled,
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          FirstCallStatusLabelWidget(
+                                            onPressed: () async {
+                                              ManagerLogInScreenController
+                                                  .showLoaderDialog(context);
+                                              await ApiController
+                                                  .firstCallStatusValueUpdate(
+                                                {
+                                                  "checklist_id":
+                                                      widget.checklistId,
+                                                  "call-status": "rejected"
+                                                },
+                                                onError: (errData) {
+                                                  // NOTE Hiding the loader
+                                                  ManagerLogInScreenController
+                                                      .hideDialogBox(context);
+                                                  ManagerLogInScreenController
+                                                      .showError(
+                                                          context, errData);
+                                                },
+                                                onSuccess: (resData) {
+                                                  ManagerLogInScreenController
+                                                      .showSuccess(context,
+                                                          "Call status has been updated !!!");
+                                                  Future.delayed(
+                                                    const Duration(seconds: 2),
+                                                    () {
+                                                      if (context.mounted) {
+                                                        context.push(
+                                                            '/manager-client-info-screen/${widget.clientData!['client_id']}');
+                                                      }
+                                                      html.window.location
+                                                          .reload();
+                                                    },
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            status:
+                                                FirstCallStatusData.rejected,
+                                            isSelected: GlobalController
+                                                    .getFirstCallStatusFromResponse(
+                                                        widget.userData![
+                                                            'call-status']) ==
+                                                FirstCallStatusData.rejected,
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                        ],
+                                      ),
+                                      // NOTE Empty Space
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+
                                       // NOTE - Initial call widget
                                       Row(
                                         children: [
