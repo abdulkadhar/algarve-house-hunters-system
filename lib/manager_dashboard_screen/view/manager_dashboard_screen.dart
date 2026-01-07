@@ -301,7 +301,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                         onTap: () {
                           if (clientData != null && clientData!.isNotEmpty) {
                             context.go(
-                                '/manager-client-info-screen/CLT-BLR-20221117-0001');
+                                '/manager-client-info-screen/CLT-BLR-20221117-0001/basicInfo');
                           }
                         },
                       ),
@@ -432,7 +432,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                                                     index]['client_id'];
                                             print(clientTemp);
                                             context.go(
-                                                '/manager-client-info-screen/$clientTemp');
+                                                '/manager-client-info-screen/$clientTemp/basicInfo');
                                           },
                                         ),
                                       ),
@@ -497,7 +497,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                                                 : assignedClientSearchResult[
                                                     index]['client_id'];
                                             context.go(
-                                              '/manager-client-info-screen/$clientIdTemp',
+                                              '/manager-client-info-screen/$clientIdTemp/basicInfo',
                                             );
                                           },
                                         ),

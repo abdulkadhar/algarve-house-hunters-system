@@ -439,7 +439,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                                     () {
                                                       if (context.mounted) {
                                                         context.push(
-                                                            '/manager-client-info-screen/${widget.clientData!['client_id']}');
+                                                            '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
                                                       }
                                                       html.window.location
                                                           .reload();
@@ -481,16 +481,28 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                                 onSuccess: (resData) {
                                                   ManagerLogInScreenController
                                                       .showSuccess(context,
-                                                          "Call status has been updated !!!");
+                                                          "Call status has been updated !!");
                                                   Future.delayed(
                                                     const Duration(seconds: 2),
                                                     () {
+                                                      // html.window.history
+                                                      //     .replaceState(
+                                                      //   null,
+                                                      //   'title',
+                                                      //   '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist',
+                                                      // );
+                                                      // html.window.location
+                                                      //     .reload();
                                                       if (context.mounted) {
-                                                        context.push(
-                                                            '/manager-client-info-screen/${widget.clientData!['client_id']}');
+                                                        ManagerLogInScreenController
+                                                            .hideDialogBox(
+                                                                context);
+                                                        context.go(
+                                                          '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist',
+                                                        );
+                                                        // html.window.location
+                                                        //     .reload();
                                                       }
-                                                      html.window.location
-                                                          .reload();
                                                     },
                                                   );
                                                 },
@@ -535,7 +547,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                                     () {
                                                       if (context.mounted) {
                                                         context.push(
-                                                            '/manager-client-info-screen/${widget.clientData!['client_id']}');
+                                                            '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
                                                       }
                                                       html.window.location
                                                           .reload();
@@ -1058,7 +1070,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                                   () {
                                                     if (context.mounted) {
                                                       context.push(
-                                                          '/manager-client-info-screen/${widget.clientData!['client_id']}');
+                                                          '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
                                                     }
                                                     html.window.location
                                                         .reload();

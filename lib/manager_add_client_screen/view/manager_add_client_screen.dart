@@ -878,7 +878,7 @@ class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
                         optionLabel: 'Clients',
                         onTap: () {
                           context.go(
-                              '/manager-client-info-screen/CLT-BLR-20221117-0001');
+                              '/manager-client-info-screen/CLT-BLR-20221117-0001/basicInfo');
                         },
                       ),
                     ],

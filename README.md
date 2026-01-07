@@ -25,3 +25,9 @@ font size: 40
 font family: Lato
 font weight: 400
 font size: 20
+
+## Credentials for the site
+
+manager user name:
+usrName: rebeccachome@googlemail.com
+pass: Test@123

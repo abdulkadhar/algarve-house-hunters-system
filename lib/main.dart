@@ -19,10 +19,12 @@ import 'package:algarve_house_hunters_system/sign_up_screen/view/sign_up_screen.
 import 'package:flutter/material.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:algarve_house_hunters_system/routes.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
+  usePathUrlStrategy();
   runApp(const AlgarveHouseHuntersSystem());
 }
 

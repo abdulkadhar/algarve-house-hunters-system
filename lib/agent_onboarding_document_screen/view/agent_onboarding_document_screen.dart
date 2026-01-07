@@ -114,7 +114,7 @@ class _AgentOnboardingDocumentScreenState
                         optionLabel: 'Clients',
                         onTap: () {
                           context.go(
-                              '/manager-client-info-screen/CLT-BLR-20221117-0001');
+                              '/manager-client-info-screen/CLT-BLR-20221117-0001/basicInfo');
                         },
                       ),
                     ],

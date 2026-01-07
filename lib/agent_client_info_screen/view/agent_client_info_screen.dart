@@ -30,9 +30,11 @@ import 'package:lottie/lottie.dart';
 
 class AgentClientInfoScreen extends StatefulWidget {
   final String clientId;
+  final AgentClientInfoOption navigationState;
   const AgentClientInfoScreen({
     super.key,
     required this.clientId,
+    required this.navigationState,
   });
 
   @override
@@ -51,6 +53,11 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
 
   String unassignedQuery = '';
   String assignedQuery = '';
+
+  void setNavigationState() {
+    optionData = widget.navigationState;
+    setState(() {});
+  }
 
   void changeAgentOption(AgentClientInfoOption data) {
     assignedAgents = [];
@@ -121,18 +128,19 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
   Future<void> getCurrentUserCheckListData(
     String client_id,
   ) async {
-    ManagerLogInScreenController.showLoaderDialog(context);
+    // ManagerLogInScreenController.showLoaderDialog(context);
     await ApiController.getClientCheckListData(
       client_id,
       onSuccess: (data) {
-        ManagerLogInScreenController.hideDialogBox(context);
+        // ManagerLogInScreenController.hideDialogBox(context);
         currentUserChecklist = jsonDecode(data)['data'];
         setState(() {});
+        print("checklist_data_has been updated");
       },
       onError: (data) {
-        ManagerLogInScreenController.hideDialogBox(context);
-        ManagerLogInScreenController.showError(
-            context, jsonDecode(data).toString());
+        // ManagerLogInScreenController.hideDialogBox(context);
+        // ManagerLogInScreenController.showError(
+        //     context, jsonDecode(data).toString());
       },
     );
   }
@@ -275,7 +283,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -375,7 +383,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -475,7 +483,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -575,7 +583,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -675,7 +683,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -775,7 +783,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -875,7 +883,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -1005,7 +1013,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -1135,7 +1143,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -1231,7 +1239,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -1326,7 +1334,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -1421,7 +1429,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -1554,7 +1562,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -1649,7 +1657,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -1745,7 +1753,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -1840,7 +1848,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -1936,7 +1944,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                 // html.window.location.reload();
                                 if (context.mounted) {
                                   context.push(
-                                      '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                      '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                 }
                               },
                             );
@@ -2125,7 +2133,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                               // html.window.location.reload();
                               if (context.mounted) {
                                 context.push(
-                                    '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                    '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                               }
                             },
                           );
@@ -2221,7 +2229,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                 // html.window.location.reload();
                                 if (context.mounted) {
                                   context.push(
-                                      '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                      '/manager-client-info-screen/${selectedClient!['client_id']}/basicInfo');
                                 }
                               },
                             );
@@ -2246,7 +2254,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                 // html.window.location.reload();
                                 if (context.mounted) {
                                   context.push(
-                                      '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                      '/manager-client-info-screen/${selectedClient!['client_id']}/basicInfo');
                                 }
                               },
                             );
@@ -2271,7 +2279,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                 // html.window.location.reload();
                                 if (context.mounted) {
                                   context.push(
-                                      '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                      '/manager-client-info-screen/${selectedClient!['client_id']}/basicInfo');
                                 }
                               },
                             );
@@ -2526,6 +2534,19 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
     );
   }
 
+  void setChecklistData() async {
+    await getCurrentUserCheckListData(
+      widget.clientId,
+    );
+    // if (selectedClient != null) {
+    //   if (selectedClient!['agent_id'] != '') {
+    //     changeAgentOption(
+    //       AgentClientInfoOption.clientChecklist,
+    //     );
+    //   }
+    // }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -2533,6 +2554,12 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
     getClientInfo();
     getAvailableAgent(widget.clientId);
     getUnAssignedClientsData();
+    // NOTE Setting the navigation state
+    setNavigationState();
+    // NOTE Setting the checklist data
+    setChecklistData();
+
+    print('Checklist dat: ${currentUserChecklist}');
   }
 
   @override
@@ -2603,7 +2630,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                         optionLabel: 'Clients',
                         onTap: () {
                           context.go(
-                              '/manager-client-info-screen/CLT-BLR-20221117-0001');
+                              '/manager-client-info-screen/CLT-BLR-20221117-0001/basicInfo');
                         },
                       ),
                     ],
@@ -2991,7 +3018,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                           // html.window.location.reload();
                                           if (context.mounted) {
                                             context.push(
-                                                '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                '/manager-client-info-screen/${selectedClient!['client_id']}/basicInfo');
                                           }
                                         },
                                       );
@@ -3063,7 +3090,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                 () {
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/basicInfo');
                                                   }
                                                 },
                                               );
@@ -3960,7 +3987,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                           // html.window.location.reload();
                                           if (context.mounted) {
                                             context.push(
-                                                '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                '/manager-client-info-screen/${selectedClient!['client_id']}/basicInfo');
                                           }
                                         },
                                       );
@@ -4019,7 +4046,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/agentInfo');
                                                   }
                                                 },
                                               );
@@ -4098,7 +4125,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                     () {
                                                       if (context.mounted) {
                                                         context.push(
-                                                            '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                            '/manager-client-info-screen/${selectedClient!['client_id']}/agentInfo');
                                                       }
                                                     },
                                                   );
@@ -4175,7 +4202,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4219,7 +4246,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4264,7 +4291,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4307,7 +4334,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4359,7 +4386,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4409,7 +4436,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4459,7 +4486,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4528,7 +4555,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4579,7 +4606,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4630,7 +4657,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4681,7 +4708,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4731,7 +4758,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4781,7 +4808,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4832,7 +4859,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4883,7 +4910,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4933,7 +4960,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );
@@ -4984,7 +5011,7 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                                   // html.window.location.reload();
                                                   if (context.mounted) {
                                                     context.push(
-                                                        '/manager-client-info-screen/${selectedClient!['client_id']}');
+                                                        '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
                                                   }
                                                 },
                                               );

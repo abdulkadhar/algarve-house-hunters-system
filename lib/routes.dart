@@ -1,5 +1,6 @@
 import 'package:algarve_house_hunters_system/agen_login_screen/view/agent_login_screen.dart';
 import 'package:algarve_house_hunters_system/agent_add_client_screen/view/agent_add_client_screen.dart';
+import 'package:algarve_house_hunters_system/agent_client_info_screen/controller/agent_client_info_screen_controller.dart';
 import 'package:algarve_house_hunters_system/agent_client_info_screen/view/agent_client_info_screen.dart';
 import 'package:algarve_house_hunters_system/agent_client_info_screen/view/agent_client_information_screen.dart';
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/view/agent_customer_property_allocation_screen.dart';
@@ -128,11 +129,16 @@ class Routes {
         },
       ),
       GoRoute(
-        path: '/manager-client-info-screen/:clientId',
+        path: '/manager-client-info-screen/:clientId/:navigation',
         builder: (context, state) {
           final clientId = state.pathParameters['clientId']!;
+          final navigation =
+              AgentClientInfoScreenController.getAgentClientInfoOption(
+            state.pathParameters['navigation'] ?? 'basicInfo',
+          );
           return AgentClientInfoScreen(
             clientId: clientId,
+            navigationState: navigation,
             key: ValueKey(clientId),
           );
         },
