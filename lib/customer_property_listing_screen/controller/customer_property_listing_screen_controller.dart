@@ -1,6 +1,12 @@
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/controller/customer_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/property_model.dart';
 
+enum CustomerListingOption {
+  recommendation,
+  liked,
+  noList,
+}
+
 class CustomerPropertyListingScreenController {
   static List<PropertyModel> recentlyAddedProperty = [
     PropertyModel(

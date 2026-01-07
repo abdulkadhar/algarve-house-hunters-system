@@ -128,4 +128,14 @@ class CustomerDashboardScreenController {
         return 'Away';
     }
   }
+
+  static AgentStatus getAgentStatusEnum(String statusData) {
+    if (statusData == 'Available') {
+      return AgentStatus.available;
+    } else if (statusData == 'Offline') {
+      return AgentStatus.offline;
+    } else {
+      return AgentStatus.away;
+    }
+  }
 }

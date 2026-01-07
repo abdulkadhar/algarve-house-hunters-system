@@ -1,19 +1,26 @@
+import 'dart:convert';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/agent_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_info_section.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_quick_action_widget.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/controller/customer_dashboard_screen_controller.dart';
+import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/manager_gallery_widget.dart';
+import 'package:algarve_house_hunters_system/api_controller.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_action_widget.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/gallery_grid_widget.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/property_info_section.dart';
-import 'package:algarve_house_hunters_system/global_model/customer_data_model.dart';
 import 'package:algarve_house_hunters_system/global_widgets/agent_user_info_widget.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
+import 'package:algarve_house_hunters_system/global_widgets/global_widgets.dart';
+import 'package:algarve_house_hunters_system/manager_log_in_screen/controller/manager_log_in_screen_controller.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AgentDashboardScreen extends StatefulWidget {
-  const AgentDashboardScreen({super.key});
+  final String agentId;
+  const AgentDashboardScreen({
+    super.key,
+    this.agentId = '',
+  });
 
   @override
   State<AgentDashboardScreen> createState() => _AgentDashboardScreenState();
@@ -21,12 +28,59 @@ class AgentDashboardScreen extends StatefulWidget {
 
 class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
   AgentDashboardOption dashboardOption = AgentDashboardOption.dashboard;
-  CustomerDataModel selectedUserData =
-      AgentDashboardScreenController.getSampleAssignedUserModel().first;
 
   void changeDashboardOption(AgentDashboardOption option) {
     dashboardOption = option;
     setState(() {});
+  }
+
+  List<dynamic>? assignedClients;
+  Map<String, dynamic>? agentInfo;
+  Map<String, dynamic>? selectedUser;
+  Map<String, dynamic>? latestPropertyData;
+
+  void getLatestPropertyData() async {
+    await ApiController.getLatestPropertyData(
+      onSuccess: (data) {
+        latestPropertyData = jsonDecode(data);
+        setState(() {});
+      },
+      onError: (data) {},
+    );
+  }
+
+  void getAssignedClients() async {
+    await ApiController.assignedClients(
+      widget.agentId,
+      onSuccess: (data) {
+        assignedClients = jsonDecode(data);
+        if (assignedClients != null && assignedClients!.isNotEmpty) {
+          selectedUser = assignedClients![0];
+        }
+
+        setState(() {});
+      },
+      onError: (data) {},
+    );
+  }
+
+  void getAgentProfileData() async {
+    await ApiController.getAgentInfoById(
+      widget.agentId,
+      onError: (data) {},
+      onSuccess: (data) {
+        agentInfo = jsonDecode(data);
+        setState(() {});
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAssignedClients();
+    getAgentProfileData();
+    getLatestPropertyData();
   }
 
   @override
@@ -68,9 +122,19 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                         iconData: Icons.list,
                         optionLabel: 'Listings',
                         onTap: () {
-                          changeDashboardOption(
-                            AgentDashboardOption.listings,
-                          );
+                          if (agentInfo != null &&
+                              agentInfo!['agent_status'] == 'profile-created') {
+                            ManagerLogInScreenController.showError(context,
+                                'Please do complete the on boarding process in order to proceed to client section !!!');
+                          } else if (assignedClients == null ||
+                              assignedClients!.isEmpty) {
+                            ManagerLogInScreenController.showError(context,
+                                'No client has been assigned. Please do contact manager !!!');
+                          } else {
+                            context
+                                .go('/agent-listing-screen/${widget.agentId}');
+                          }
+                          // context.go('/agent-listing-screen');
                         },
                       ),
                       const SizedBox(
@@ -79,12 +143,11 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                       DashboardOptionSelector(
                         isEnabled:
                             dashboardOption == AgentDashboardOption.calendar,
-                        iconData: Icons.calendar_month,
-                        optionLabel: 'Calendar',
+                        iconData: Icons.document_scanner,
+                        optionLabel: 'Onboarding Document',
                         onTap: () {
-                          changeDashboardOption(
-                            AgentDashboardOption.calendar,
-                          );
+                          context.go(
+                              '/agent-onboarding-document-screen/${agentInfo!['agent_id']}');
                         },
                       ),
                       const SizedBox(
@@ -94,17 +157,38 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                         isEnabled:
                             dashboardOption == AgentDashboardOption.customer,
                         iconData: Icons.dashboard_customize_rounded,
-                        optionLabel: 'Customer',
+                        optionLabel: 'Client',
                         onTap: () {
-                          changeDashboardOption(
-                            AgentDashboardOption.customer,
-                          );
+                          if (agentInfo != null &&
+                              agentInfo!['agent_status'] == 'profile-created') {
+                            ManagerLogInScreenController.showError(context,
+                                'Please do complete the on boarding process in order to proceed to client section !!!');
+                          } else if (assignedClients == null ||
+                              assignedClients!.isEmpty) {
+                            ManagerLogInScreenController.showError(context,
+                                'No client has been assigned. Please do contact manager !!!');
+                          } else {
+                            context.go(
+                              '/agent-customer-property-allocation/${widget.agentId}',
+                            );
+                          }
+
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (ctx) =>
+                          //             const AgentCustomerPropertyAllocationScreen()));
+                          // context.go( '/agent-customer-property-allocation');
+                          // changeDashboardOption(
+                          //   AgentDashboardOption.customer,
+                          // );
                         },
                       ),
                     ],
                   ),
                   const Spacer(),
                   AgentUserInfoWidget(
+                    agentId: widget.agentId,
                     agentData:
                         AgentDashboardScreenController.getSampleAgentModel(),
                     onProfilePress: () {},
@@ -129,35 +213,106 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                     child: ListView(
                       padding: const EdgeInsets.all(15),
                       children: [
+                        InkWell(
+                          onTap: () {
+                            context
+                                .go('/agent-add-user-screen/${widget.agentId}');
+                          },
+                          child: Row(
+                            children: [
+                              Text(
+                                'Add new client',
+                                style: ThemeController.normalTextStyle(
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              Spacer(),
+                              Icon(
+                                Icons.add,
+                                color: Colors.black,
+                                size: 18,
+                              )
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         Text(
                           'Assigned Clients',
                           style: ThemeController.normalTextStyle(
                             fontWeight: FontWeight.w900,
                           ),
                         ),
-                        Column(
-                          children: List.generate(
-                            AgentDashboardScreenController
-                                    .getSampleAssignedUserModel()
-                                .length,
-                            (index) => ClientQuickActionWidget(
-                              userData: {},
-                              // userData: AgentDashboardScreenController
-                              //     .getSampleAssignedUserModel()[index],
-                              isSelected: AgentDashboardScreenController
-                                          .getSampleAssignedUserModel()[index]
-                                      .basicData
-                                      .userId ==
-                                  selectedUserData.basicData.userId,
-                              onProfilePress: () {
-                                selectedUserData =
-                                    AgentDashboardScreenController
-                                        .getSampleAssignedUserModel()[index];
-                                setState(() {});
-                              },
-                            ),
-                          ),
-                        )
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        if (agentInfo != null)
+                          agentInfo!['agent_status'] == 'profile-created'
+                              ? Column(
+                                  children: [
+                                    SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.3,
+                                    ),
+                                    Icon(
+                                      Icons.document_scanner,
+                                      color: Colors.black,
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'Complete the onboarding process',
+                                      style: ThemeController.normalTextStyle(
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : assignedClients != null &&
+                                      assignedClients!.isNotEmpty
+                                  ? Column(
+                                      children: List.generate(
+                                        assignedClients!.length,
+                                        (index) => ClientQuickActionWidget(
+                                          userData: assignedClients![index],
+                                          isSelected: assignedClients![index]
+                                                  ["client_id"] ==
+                                              selectedUser!["client_id"],
+                                          onProfilePress: () {
+                                            selectedUser =
+                                                assignedClients![index];
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ),
+                                    )
+                                  : Column(
+                                      children: [
+                                        SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.3,
+                                        ),
+                                        Icon(
+                                          Icons.dangerous,
+                                          color: Colors.black,
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          'No client has been assigned yet',
+                                          style:
+                                              ThemeController.normalTextStyle(
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
+                                      ],
+                                    )
                       ],
                     ),
                   ),
@@ -166,84 +321,114 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                     width: MediaQuery.of(context).size.width * 0.01,
                   ),
                   // NOTE Client Info Section
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.25,
-                    child: Column(
-                      children: [
-                        // NOTE Agent Info
-                        ClientInfoSection(
-                          customerData: selectedUserData,
-                        ),
-                        const SizedBox(
-                          height: 25,
-                        ),
+                  if (selectedUser != null)
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      child: Column(
+                        children: [
+                          // NOTE Agent Info
+                          ClientInfoSection(
+                            clientData: selectedUser!,
+                            onProfilePress: () {
+                              print('OnProfile press is done !!!!');
+                              context.go(
+                                  '/agent-customer-property-allocation/${agentInfo!['agent_id']}');
+                            },
+                          ),
+                          const SizedBox(
+                            height: 25,
+                          ),
 
-                        AgentActionWidget(
-                          actionName: 'Amount Pref',
-                          iconData: Icons.account_balance,
-                          actionValue: selectedUserData
-                              .preferenceData.valueSpendPreference
-                              .toString(),
-                          onActionPress: () {},
-                        ),
-                        AgentActionWidget(
-                          actionName: 'Email',
-                          iconData: Icons.mail,
-                          actionValue: selectedUserData.preferenceData.email,
-                          onActionPress: () {},
-                        ),
-                        AgentActionWidget(
-                          actionName: 'Phone',
-                          iconData: Icons.phone,
-                          actionValue:
-                              selectedUserData.preferenceData.phoneNumber,
-                          onActionPress: () {},
-                        ),
-                        AgentActionWidget(
-                          actionName: 'Agent status',
-                          iconData: Icons.support_agent,
-                          actionValue:
-                              selectedUserData.preferenceData.otherAgentsStatus,
-                          onActionPress: () {},
-                        ),
-                        AgentActionWidget(
-                          actionName: 'Bank Status',
-                          iconData: Icons.account_balance_wallet,
-                          actionValue:
-                              selectedUserData.preferenceData.bankStatus,
-                          onActionPress: () {},
-                        ),
-                      ],
+                          AgentActionWidget(
+                            actionName: 'Amount Pref',
+                            iconData: Icons.account_balance,
+                            actionValue: selectedUser!["preference_data"]
+                                    ["valueSpendPreference"]
+                                .toString(),
+                            onActionPress: () {},
+                          ),
+                          AgentActionWidget(
+                            actionName: 'Email',
+                            iconData: Icons.mail,
+                            actionValue: selectedUser!["client_email_address"],
+                            onActionPress: () {},
+                          ),
+                          AgentActionWidget(
+                            actionName: 'Phone',
+                            iconData: Icons.phone,
+                            actionValue: selectedUser!["client_phone_number"],
+                            onActionPress: () {},
+                          ),
+                          AgentActionWidget(
+                            actionName: 'Agent status',
+                            iconData: Icons.support_agent,
+                            actionValue: selectedUser!["preference_data"]
+                                    ["otherAgentsStatus"]
+                                .toString(),
+                            onActionPress: () {},
+                          ),
+                          AgentActionWidget(
+                            actionName: 'Bank Status',
+                            iconData: Icons.account_balance_wallet,
+                            actionValue: selectedUser!["preference_data"]
+                                    ["bankStatus"]
+                                .toString(),
+                            onActionPress: () {},
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.01,
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.5,
+                    width: MediaQuery.of(context).size.width * 0.48,
                     height: MediaQuery.of(context).size.height * 0.86,
                     child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GalleryGridWidget(
-                            imagePaths: CustomerDashboardScreenController
-                                .propertyImagePaths,
-                            width:
-                                (MediaQuery.of(context).size.width * 0.5) * 0.7,
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          PropertyInfoSection(
-                            // propertyData: CustomerDashboardScreenController
-                            //     .getSamplePropertyData.first,
-                            propertyData: {},
-                          )
-                        ],
-                      ),
+                      child: latestPropertyData == null
+                          ? const Center(
+                              child: SizedBox(
+                                height: 50,
+                                width: 50,
+                              ),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ManagerGalleryWidget(
+                                  onPress: () {
+                                    final List<String> urls =
+                                        (latestPropertyData!["propertyImages"]
+                                                as List)
+                                            .cast<String>();
+                                    GlobalWidgets.showImageViewerDialog(
+                                      context,
+                                      imageUrls: urls,
+                                      title: "Property glance",
+                                    );
+                                  },
+                                  // imagePaths: CustomerDashboardScreenController
+                                  //     .propertyImagePaths,
+                                  imagePaths:
+                                      latestPropertyData!["propertyImages"],
+                                  width: (MediaQuery.of(context).size.width *
+                                          0.5) *
+                                      0.67,
+                                ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                PropertyInfoSection(
+                                  // propertyData:
+                                  //     CustomerDashboardScreenController
+                                  //         .getSamplePropertyData.first,
+                                  propertyData: latestPropertyData!,
+                                )
+                              ],
+                            ),
                     ),
                   ),
+
                   // NOTE
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.01,

@@ -44,8 +44,7 @@ class PropertyInfoSection extends StatelessWidget {
             Text(
               '€${propertyData["propertyPrice"]}',
               style: ThemeController.normalTextStyle(
-                fontWeight: FontWeight.w800,
-              ),
+                  fontWeight: FontWeight.w800, size: 12),
             )
           ],
         ),
@@ -120,7 +119,7 @@ class PropertyInfoSection extends StatelessWidget {
             PropertyInfoWidget(
               iconData: Icons.bathroom,
               infoLabel: 'Plot number',
-              infoValue: propertyData["plotNumber"].toString(),
+              infoValue: propertyData["plotSize"].toString(),
             ),
             const SizedBox(
               width: 20,

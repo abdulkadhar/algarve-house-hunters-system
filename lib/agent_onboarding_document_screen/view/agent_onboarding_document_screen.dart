@@ -9,6 +9,7 @@ import 'package:algarve_house_hunters_system/manager_dashboard_screen/controller
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/widgets/manager_info_widget.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AgentOnboardingDocumentScreen extends StatefulWidget {
   const AgentOnboardingDocumentScreen({super.key});
@@ -70,8 +71,7 @@ class _AgentOnboardingDocumentScreenState
                         iconData: Icons.dashboard,
                         optionLabel: 'Dashboard',
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
+                          context.go(
                             '/manager-dashboard-screen',
                           );
                         },
@@ -99,8 +99,7 @@ class _AgentOnboardingDocumentScreenState
                         iconData: Icons.support_agent,
                         optionLabel: 'Agents',
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
+                          context.go(
                             '/manager-agent-info-section-screen',
                           );
                         },
@@ -114,8 +113,8 @@ class _AgentOnboardingDocumentScreenState
                         iconData: Icons.dashboard_customize_rounded,
                         optionLabel: 'Clients',
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, '/manager-client-info-screen');
+                          context.go(
+                              '/manager-client-info-screen/CLT-BLR-20221117-0001/basicInfo');
                         },
                       ),
                     ],
@@ -157,8 +156,7 @@ class _AgentOnboardingDocumentScreenState
                           isSelected: false,
                           label: "Add new agent",
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
+                            context.go(
                               '/manager-agent-onboarding',
                             );
                           },
@@ -171,8 +169,7 @@ class _AgentOnboardingDocumentScreenState
                           isSelected: true,
                           label: "Training Document",
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
+                            context.go(
                               '/manager-agent-onboarding-document-screen',
                             );
                           },
@@ -238,11 +235,22 @@ class _AgentOnboardingDocumentScreenState
                               ],
                             ),
                           )
-                        : const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.black,
+                        : Container(
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            decoration: BoxDecoration(
+                              color:
+                                  ThemeController.pageBackgroundSecondaryColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: CircularProgressIndicator(
+                                  color: Colors.black,
+                                ),
+                              ),
                             ),
                           ),
                   )

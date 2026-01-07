@@ -8,6 +8,7 @@ class CustomPasswordTextField extends StatefulWidget {
   final String placeholderText;
   final Function(String?)? onChanged;
   final String? errorText;
+  final bool readOnly;
   const CustomPasswordTextField({
     super.key,
     required this.labelName,
@@ -15,6 +16,7 @@ class CustomPasswordTextField extends StatefulWidget {
     this.placeholderText = '',
     this.onChanged,
     this.errorText,
+    this.readOnly = false,
   });
 
   @override
@@ -38,6 +40,7 @@ class _CustomPasswordTextFieldState extends State<CustomPasswordTextField> {
           height: 8,
         ),
         TextFormField(
+          readOnly: widget.readOnly,
           onChanged: widget.onChanged,
           obscureText: _obscureText,
           decoration: InputDecoration(

@@ -2,7 +2,7 @@ import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
 class SubmitButton extends StatelessWidget {
-  final VoidCallback onButtonPress;
+  final VoidCallback? onButtonPress;
   final String buttonLabel;
   const SubmitButton({
     super.key,

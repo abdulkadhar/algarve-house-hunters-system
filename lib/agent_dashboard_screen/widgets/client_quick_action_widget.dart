@@ -1,3 +1,4 @@
+import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/agent_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -46,20 +47,28 @@ class ClientQuickActionWidget extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      userData["client_name"],
-                      style: ThemeController.normalTextStyle(
-                        fontWeight: FontWeight.w800,
-                        size: 14,
-                        color: isSelected ? Colors.white : Colors.black,
+                    SizedBox(
+                      width: 160,
+                      child: Text(
+                        userData["client_name"],
+                        style: ThemeController.normalTextStyle(
+                          fontWeight: FontWeight.w800,
+                          size: 14,
+                          color: isSelected ? Colors.white : Colors.black,
+                        ),
                       ),
                     ),
-                    Text(
-                      userData["client_designation"],
-                      style: ThemeController.normalTextStyle(
-                        fontWeight: FontWeight.w400,
-                        size: 13,
-                        color: isSelected ? Colors.white : Colors.black,
+                    SizedBox(
+                      width: 160,
+                      child: Text(
+                        userData["client_email_address"],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: ThemeController.normalTextStyle(
+                          fontWeight: FontWeight.w400,
+                          size: 13,
+                          color: isSelected ? Colors.white : Colors.black,
+                        ),
                       ),
                     ),
                   ],

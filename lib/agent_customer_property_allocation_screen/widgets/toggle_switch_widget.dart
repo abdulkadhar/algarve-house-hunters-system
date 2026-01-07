@@ -5,12 +5,15 @@ class ToggleSwitchWidget extends StatefulWidget {
   final bool isOn;
   final Function(bool) onToggle;
   final bool isEnabled;
-  const ToggleSwitchWidget({
-    super.key,
-    this.isOn = false,
-    required this.onToggle,
-    this.isEnabled = true,
-  });
+  final String onLabel;
+  final String offLabel;
+  const ToggleSwitchWidget(
+      {super.key,
+      this.isOn = false,
+      required this.onToggle,
+      this.isEnabled = true,
+      this.onLabel = "Completed",
+      this.offLabel = "Not Started"});
 
   @override
   State<ToggleSwitchWidget> createState() => _ToggleSwitchWidgetState();
@@ -57,7 +60,7 @@ class _ToggleSwitchWidgetState extends State<ToggleSwitchWidget> {
                     width: 3,
                   ),
                   Text(
-                    'Completed',
+                    widget.onLabel,
                     style: ThemeController.smallTextStyle(
                       color: Colors.green,
                       fontWeight: FontWeight.w900,
@@ -85,7 +88,7 @@ class _ToggleSwitchWidgetState extends State<ToggleSwitchWidget> {
                     width: 3,
                   ),
                   Text(
-                    'Not Started',
+                    widget.offLabel,
                     style: ThemeController.smallTextStyle(
                       color: Colors.grey,
                       fontWeight: FontWeight.w900,

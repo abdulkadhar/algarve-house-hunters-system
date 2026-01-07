@@ -9,6 +9,7 @@ import 'package:algarve_house_hunters_system/unit_property_info_screen/widget/ag
 import 'package:algarve_house_hunters_system/unit_property_info_screen/widget/home_tour_request_section.dart';
 import 'package:algarve_house_hunters_system/unit_property_info_screen/widget/property_slider_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class UnitPropertyInfoScreen extends StatefulWidget {
   final PropertyModel propertyData;
@@ -68,8 +69,11 @@ class _UnitPropertyInfoScreenState extends State<UnitPropertyInfoScreen> {
                         iconData: Icons.list,
                         optionLabel: 'Listings',
                         onTap: () {
-                          changeDashboardOption(
-                            CustomerDashboardOption.listings,
+                          // changeDashboardOption(
+                          //   CustomerDashboardOption.listings,
+                          // );
+                          context.go(
+                            '/customer-property-listing-screen',
                           );
                         },
                       ),

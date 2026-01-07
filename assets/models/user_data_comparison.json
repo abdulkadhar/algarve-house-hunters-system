@@ -1,0 +1,122 @@
+[
+    {
+        "client_id": "CLT-BLR-20251114-0144",
+        "client_name": "Ross Canning",
+        "client_first_name": "Ross",
+        "client_second_name": "Canning ",
+        "client_email_address": "ross.canning@gmail.com",
+        "client_phone_number": "942963412",
+        "client_location_name": "East Algarve, Unsure",
+        "client_lat_long": "",
+        "client_profile_pic": "https://randomuser.me/api/portraits/man/28.jpg",
+        "client_gender": "Male",
+        "client_description": "",
+        "client_designation": "",
+        "client_company_name": "",
+        "google_id": "",
+        "preference_data": {
+            "findingPreference": [
+                "Apartment"
+            ],
+            "bedNumber": "2",
+            "bathNumber": "2",
+            "requirementPreference": [
+                "Pool",
+                "Land"
+            ],
+            "otherPreference": [
+                "Relatively new"
+            ],
+            "houseRegardsPreference": "",
+            "neighborPreference": "",
+            "locationPreference": [
+                "East Algarve",
+                "Unsure"
+            ],
+            "areaInterestPreference": "",
+            "M2Preference": "180",
+            "buyingPreference": [
+                "As soon as I find the right place"
+            ],
+            "valueSpendPreference": "300",
+            "taxPreference": "No, taxes will be on top",
+            "residenceInfo": [
+                "No but I plan to be..."
+            ],
+            "languagePreference": [
+                "English"
+            ],
+            "viewingPreference": "January ",
+            "otherAgentsStatus": [
+                "No, I have not enquired or searched before"
+            ],
+            "fiscalStatus": [
+                "No"
+            ],
+            "bankStatus": [
+                "No"
+            ],
+            "additionalInfo": "I have a dog.",
+            "email": "ross.canning@gmail.com",
+            "phoneNumber": "942963412",
+            "appointmentInfo": {
+                "implementation": "new",
+                "date": "2025-11-18 18:00",
+                "duration": "60",
+                "timezone": "Europe/Lisbon (GMT)"
+            }
+        },
+        "approved_status": "approved",
+        "approval_info": {
+            "approval_value": "approved",
+            "approval_date": "2025-11-14 16:53:13.024",
+            "approval_id": "APR-BHRSGVMO",
+            "approval_msg": "approve"
+        },
+        "manager_notes": [],
+        "agent_id": [
+            "AGT-BLR-20250626-0002"
+        ],
+        "joined_date": "2025-11-14 16:08:56.713"
+    },
+    {
+        "client_id": "CLT-BLR-20251125-0145",
+        "client_name": "Abdul Test",
+        "client_email_address": "s.abdulkadhar1@gmail.com",
+        "client_phone_number": "+91 9080823869",
+        "client_location_name": "Sample location",
+        "client_lat_long": "",
+        "client_profile_pic": "https://randomuser.me/api/portraits/man/28.jpg",
+        "client_gender": "Male",
+        "client_description": "Testing the user",
+        "client_designation": "Team Lead",
+        "client_company_name": "",
+        "google_id": "",
+        "preference_data": {
+            "findingPreference": [],
+            "bedNumber": 2,
+            "bathNumber": 4,
+            "requirementPreference": [],
+            "otherPreference": [],
+            "houseRegardsPreference": [],
+            "neighborPreference": [],
+            "locationPreference": [],
+            "areaInterestPreference": "",
+            "M2Preference": "",
+            "buyingPreference": [],
+            "valueSpendPreference": 4,
+            "taxPreference": [],
+            "residenceInfo": "",
+            "languagePreference": [],
+            "viewingPreference": "",
+            "otherAgentsStatus": "",
+            "fiscalStatus": "",
+            "bankStatus": "",
+            "additionalInfo": "",
+            "email": "",
+            "phoneNumber": "",
+            "appointmentInfo": ""
+        },
+        "agent_id": []
+    }
+]

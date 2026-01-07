@@ -5,11 +5,19 @@ class OptionLabelSelectorWidget extends StatelessWidget {
   final String optionLabel;
   final VoidCallback onPress;
   final bool isEnabled;
+  final Color enabledBorderColor;
+  final Color disabledBorderColor;
+  final Color enabledTextColor;
+  final Color disabledTextColor;
   const OptionLabelSelectorWidget({
     super.key,
     required this.isEnabled,
     required this.onPress,
     required this.optionLabel,
+    this.enabledBorderColor = Colors.black,
+    this.disabledBorderColor = Colors.grey,
+    this.enabledTextColor = Colors.black,
+    this.disabledTextColor = Colors.grey,
   });
 
   @override
@@ -21,7 +29,7 @@ class OptionLabelSelectorWidget extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isEnabled ? Colors.black : Colors.grey,
+            color: isEnabled ? enabledBorderColor : disabledBorderColor,
           ),
         ),
         child: Text(
@@ -29,7 +37,7 @@ class OptionLabelSelectorWidget extends StatelessWidget {
           style: ThemeController.smallTextStyle(
             size: 12,
             fontWeight: FontWeight.w900,
-            color: isEnabled ? Colors.black : Colors.grey,
+            color: isEnabled ? enabledTextColor : disabledTextColor,
           ),
         ),
       ),

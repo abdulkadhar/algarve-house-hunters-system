@@ -6,6 +6,7 @@ import 'package:algarve_house_hunters_system/login_screen/widgets/already_have_a
 import 'package:algarve_house_hunters_system/login_screen/widgets/testimonals_carousel_widget.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -76,8 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   SubmitButton(
                     onButtonPress: () {
-                      Navigator.pushNamed(
-                        context,
+                      context.go(
                         '/otp-screen',
                       );
                     },
@@ -90,7 +90,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     prefixText: "Already have an account?",
                     actionName: "Log in",
                     onClick: () {
-                      Navigator.pushNamed(context, '/log-in');
+                      context.go('/log-in');
                     },
                   )
                 ],

@@ -2,14 +2,25 @@ import 'dart:convert';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/agent_quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/manager_gallery_widget.dart';
+
 import 'package:algarve_house_hunters_system/api_controller.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/property_info_section.dart';
+import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_filed.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
+import 'package:algarve_house_hunters_system/global_widgets/global_widgets.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/controller/manager_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/manager_dashboard_screen/widgets/manager_info_widget.dart';
+import 'package:algarve_house_hunters_system/manager_dashboard_screen/widgets/oldest_newest_filter.dart';
+import 'package:algarve_house_hunters_system/manager_log_in_screen/controller/manager_log_in_screen_controller.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+enum ClientTypeOption {
+  unAssigned,
+  assigned,
+}
 
 class ManagerDashboardScreen extends StatefulWidget {
   const ManagerDashboardScreen({super.key});
@@ -19,10 +30,18 @@ class ManagerDashboardScreen extends StatefulWidget {
 }
 
 class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
+  ClientTypeOption clientTypeOption = ClientTypeOption.unAssigned;
   ManagerDashboardOption dashboardOption = ManagerDashboardOption.dashboard;
   List<dynamic>? clientData;
+  List<dynamic>? unAssignedClients;
   List<dynamic>? agentData;
   Map<String, dynamic>? latestPropertyData;
+
+  List<dynamic> unassignedClientSearchResult = [];
+  List<dynamic> assignedClientSearchResult = [];
+
+  String unassignedQuery = '';
+  String assignedQuery = '';
 
   void changeDashboardOption(ManagerDashboardOption option) {
     dashboardOption = option;
@@ -35,7 +54,10 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         latestPropertyData = jsonDecode(data);
         setState(() {});
       },
-      onError: (data) {},
+      onError: (data) {
+        ManagerLogInScreenController.showError(
+            context, "Error fetching latest property data !!!!");
+      },
     );
   }
 
@@ -46,7 +68,24 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         setState(() {});
       },
       onError: (errorData) {
-        print("Agent Data: Error has occured !!!");
+        ManagerLogInScreenController.showError(
+            context, "Error fetching agent data !!!!");
+        // print("Agent Data: Error has occured !!!");
+      },
+    );
+  }
+
+  void getUnAssignedClientsData() async {
+    await ApiController.getUnAssignedClientsData(
+      onSuccess: (responseData) {
+        unAssignedClients = jsonDecode(responseData) as List<dynamic>;
+        unAssignedClients = unAssignedClients!.reversed.toList();
+        setState(() {});
+      },
+      onError: (errorData) {
+        ManagerLogInScreenController.showError(
+            context, "Error fetching un assigned data !!!!");
+        print("Error has occured !!!");
       },
     );
   }
@@ -55,21 +94,140 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     await ApiController.getAllClientsData(
       onSuccess: (responseData) {
         clientData = jsonDecode(responseData) as List<dynamic>;
+        clientData = clientData!.reversed.toList();
         setState(() {});
         print('Data has been loaded');
       },
       onError: (errorData) {
+        ManagerLogInScreenController.showError(
+            context, "Error fetching client data !!!!");
         print("Error has occured !!!");
       },
     );
   }
 
+  void setClientOptionType(ClientTypeOption option) {
+    clientTypeOption = option;
+    setState(() {});
+  }
+
+  Widget getClientOptionSelectorWidget() {
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.black,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (clientTypeOption != ClientTypeOption.unAssigned)
+            InkWell(
+              onTap: () {
+                setClientOptionType(ClientTypeOption.unAssigned);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  "Unassigned Clients",
+                  style: ThemeController.normalTextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w800,
+                    size: 12,
+                  ),
+                ),
+              ),
+            ),
+          if (clientTypeOption == ClientTypeOption.unAssigned)
+            InkWell(
+              onTap: () {
+                setClientOptionType(ClientTypeOption.unAssigned);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  "Unassigned Clients",
+                  style: ThemeController.normalTextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    size: 12,
+                  ),
+                ),
+              ),
+            ),
+          if (clientTypeOption == ClientTypeOption.assigned)
+            InkWell(
+              onTap: () {
+                setClientOptionType(ClientTypeOption.assigned);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  "Assigned Clients",
+                  style: ThemeController.normalTextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    size: 12,
+                  ),
+                ),
+              ),
+            ),
+          if (clientTypeOption != ClientTypeOption.assigned)
+            InkWell(
+              onTap: () {
+                setClientOptionType(ClientTypeOption.assigned);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  "Assigned Clients",
+                  style: ThemeController.normalTextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w800,
+                    size: 12,
+                  ),
+                ),
+              ),
+            )
+        ],
+      ),
+    );
+  }
+
+  List<dynamic> searchClients(List<dynamic> clients, String query) {
+    if (query.isEmpty) return clients;
+
+    final lowerQuery = query.toLowerCase();
+
+    return clients.where((client) {
+      if (client is Map<String, dynamic>) {
+        final name = (client['client_name'] ?? '').toString().toLowerCase();
+        final email =
+            (client['client_email_address'] ?? '').toString().toLowerCase();
+        return name.contains(lowerQuery) || email.contains(lowerQuery);
+      }
+      return false;
+    }).toList();
+  }
+
   @override
   void initState() {
     super.initState();
+
     getClientData();
     getAgentData();
     getLatestPropertyData();
+    getUnAssignedClientsData();
   }
 
   @override
@@ -97,8 +255,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                         iconData: Icons.dashboard,
                         optionLabel: 'Dashboard',
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
+                          context.go(
                             '/manager-dashboard-screen',
                           );
                         },
@@ -115,6 +272,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                           changeDashboardOption(
                             ManagerDashboardOption.listings,
                           );
+                          // NOTE addition of route for the listing screen
+                          context.go('/manager-property-management-screen');
                         },
                       ),
                       const SizedBox(
@@ -126,8 +285,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                         iconData: Icons.support_agent,
                         optionLabel: 'Agents',
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
+                          context.go(
                             '/manager-agent-info-section-screen',
                           );
                         },
@@ -141,8 +299,10 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                         iconData: Icons.dashboard_customize_rounded,
                         optionLabel: 'Clients',
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, '/manager-client-info-screen');
+                          if (clientData != null && clientData!.isNotEmpty) {
+                            context.go(
+                                '/manager-client-info-screen/CLT-BLR-20221117-0001/basicInfo');
+                          }
                         },
                       ),
                     ],
@@ -181,7 +341,11 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                             ),
                             const Spacer(),
                             InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                context.go(
+                                  '/manager-add-client-screen',
+                                );
+                              },
                               child: const Icon(
                                 Icons.add,
                               ),
@@ -198,16 +362,150 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                               ),
                             ),
                           ),
-                        if (clientData != null)
+                        if (unAssignedClients != null)
                           Column(
-                            children: List.generate(
-                              clientData!.length,
-                              (index) => ClientQuickActionWidget(
-                                userData: clientData![index],
-                                isSelected: false,
-                                onProfilePress: () {},
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 10,
                               ),
-                            ),
+                              getClientOptionSelectorWidget(),
+                              // NOTE List of unassigned client
+                              if (clientTypeOption ==
+                                  ClientTypeOption.unAssigned)
+                                Column(
+                                  children: [
+                                    CustomTextFormFiled(
+                                      isMandatory: false,
+                                      labelName: '',
+                                      placeholderText: 'Search',
+                                      onChanged: (data) {
+                                        unassignedQuery = data;
+                                        unassignedClientSearchResult = [];
+                                        setState(() {});
+                                        unassignedClientSearchResult =
+                                            searchClients(
+                                          unAssignedClients!,
+                                          unassignedQuery,
+                                        );
+                                        setState(() {});
+                                      },
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    if (unassignedQuery.isEmpty)
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: OldestNewestFilter(
+                                          getOptionData: (data) {
+                                            unAssignedClients =
+                                                unAssignedClients!.reversed
+                                                    .toList();
+
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ),
+                                    if (unassignedQuery.isEmpty)
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                    Column(
+                                      children: List.generate(
+                                        unassignedQuery.isEmpty
+                                            ? unAssignedClients!.length
+                                            : unassignedClientSearchResult
+                                                .length,
+                                        (index) => ClientQuickActionWidget(
+                                          userData: unassignedQuery.isEmpty
+                                              ? unAssignedClients![index]
+                                              : unassignedClientSearchResult[
+                                                  index],
+                                          isSelected: false,
+                                          onProfilePress: () {
+                                            String clientTemp = unassignedQuery
+                                                    .isEmpty
+                                                ? unAssignedClients![index]
+                                                    ['client_id']
+                                                : unassignedClientSearchResult[
+                                                    index]['client_id'];
+                                            print(clientTemp);
+                                            context.go(
+                                                '/manager-client-info-screen/$clientTemp/basicInfo');
+                                          },
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              if (clientTypeOption == ClientTypeOption.assigned)
+                                Column(
+                                  children: [
+                                    CustomTextFormFiled(
+                                      isMandatory: false,
+                                      labelName: '',
+                                      placeholderText: 'Search',
+                                      onChanged: (data) {
+                                        assignedQuery = data;
+                                        assignedClientSearchResult = [];
+                                        setState(() {});
+                                        assignedClientSearchResult =
+                                            searchClients(
+                                          clientData!,
+                                          assignedQuery,
+                                        );
+                                        setState(() {});
+                                      },
+                                    ),
+                                    if (assignedQuery.isEmpty)
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                    if (assignedQuery.isEmpty)
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: OldestNewestFilter(
+                                          getOptionData: (data) {
+                                            clientData =
+                                                clientData!.reversed.toList();
+
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ),
+                                    if (assignedQuery.isEmpty)
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                    Column(
+                                      children: List.generate(
+                                        assignedQuery.isEmpty
+                                            ? clientData!.length
+                                            : assignedClientSearchResult.length,
+                                        (index) => ClientQuickActionWidget(
+                                          userData: assignedQuery.isEmpty
+                                              ? clientData![index]
+                                              : assignedClientSearchResult[
+                                                  index],
+                                          isSelected: false,
+                                          onProfilePress: () {
+                                            String clientIdTemp = assignedQuery
+                                                    .isEmpty
+                                                ? clientData![index]
+                                                    ['client_id']
+                                                : assignedClientSearchResult[
+                                                    index]['client_id'];
+                                            context.go(
+                                              '/manager-client-info-screen/$clientIdTemp/basicInfo',
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                            ],
                           )
                       ],
                     ),
@@ -238,8 +536,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                             const Spacer(),
                             InkWell(
                               onTap: () {
-                                Navigator.pushNamed(
-                                  context,
+                                context.go(
                                   '/manager-agent-onboarding',
                                 );
                               },
@@ -266,7 +563,10 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                               (index) => AgentQuickActionWidget(
                                 userData: agentData![index],
                                 isSelected: false,
-                                onProfilePress: () {},
+                                onProfilePress: () {
+                                  context.go(
+                                      '/manager-agent-info-section-screens/${agentData![index]['agent_id']}');
+                                },
                               ),
                             ),
                           )
@@ -291,6 +591,17 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 ManagerGalleryWidget(
+                                  onPress: () {
+                                    final List<String> urls =
+                                        (latestPropertyData!["propertyImages"]
+                                                as List)
+                                            .cast<String>();
+                                    GlobalWidgets.showImageViewerDialog(
+                                      context,
+                                      imageUrls: urls,
+                                      title: "Property glance",
+                                    );
+                                  },
                                   // imagePaths: CustomerDashboardScreenController
                                   //     .propertyImagePaths,
                                   imagePaths:

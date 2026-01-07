@@ -1,19 +1,30 @@
+import 'dart:convert';
+import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/agent_dashboard_screen_controller.dart';
+import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/agent_quick_action_widget.dart';
+import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/manager_gallery_widget.dart';
+import 'package:algarve_house_hunters_system/api_controller.dart';
 import 'package:algarve_house_hunters_system/assets_controller.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/controller/customer_dashboard_screen_controller.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/agent_model.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/action_container_widget.dart';
+import 'package:algarve_house_hunters_system/customer_dashboard_screen/model/dashboard_user_info_model.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_action_widget.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/agent_info_container.dart';
-import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/gallery_grid_widget.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/widgets/property_info_section.dart';
+import 'package:algarve_house_hunters_system/global_model/customer_data_model.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_user_info_widget.dart';
+import 'package:algarve_house_hunters_system/global_widgets/global_widgets.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
+import 'package:algarve_house_hunters_system/unit_property_info_screen/widget/agent_info_sectIon.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomerDashboardScreen extends StatefulWidget {
-  const CustomerDashboardScreen({super.key});
+  final String clientId;
+  const CustomerDashboardScreen({
+    super.key,
+    required this.clientId,
+  });
 
   @override
   State<CustomerDashboardScreen> createState() =>
@@ -21,11 +32,69 @@ class CustomerDashboardScreen extends StatefulWidget {
 }
 
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
+  // NOTE STATE User info
+  Map<String, dynamic>? userInfo;
+  // NOTE STATE Agent Info
+  List<dynamic>? assignedAgent = [];
+  Map<String, dynamic>? selectedAgent;
+  CustomerDataModel selectedUserData =
+      AgentDashboardScreenController.getSampleAssignedUserModel().first;
   CustomerDashboardOption dashboardOption = CustomerDashboardOption.dashboard;
 
   void changeDashboardOption(CustomerDashboardOption option) {
     dashboardOption = option;
     setState(() {});
+  }
+
+  Map<String, dynamic>? latestPropertyData;
+
+  void getLatestPropertyData() async {
+    await ApiController.getLatestPropertyData(
+      onSuccess: (data) {
+        latestPropertyData = jsonDecode(data);
+        setState(() {});
+      },
+      onError: (data) {},
+    );
+  }
+
+// NOTE API CALL - User Info GET
+  void getUserInfo() async {
+    await ApiController.getClientInfoByID(
+      widget.clientId,
+      onSuccess: (successData) {
+        final responseData = jsonDecode(successData);
+        userInfo = responseData;
+        setState(() {});
+      },
+      onError: (errorData) {
+        setState(() {});
+      },
+    );
+  }
+
+  void getAssignedAgents() async {
+    await ApiController.getAvailableAgents(
+      widget.clientId,
+      onError: (errorData) {
+        setState(() {});
+      },
+      onSuccess: (successData) {
+        assignedAgent = jsonDecode(successData)['assigned_agents'];
+        if (assignedAgent != null && assignedAgent!.isNotEmpty) {
+          selectedAgent = assignedAgent![0];
+        }
+        setState(() {});
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getLatestPropertyData();
+    getUserInfo();
+    getAssignedAgents();
   }
 
   @override
@@ -67,9 +136,12 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                         iconData: Icons.list,
                         optionLabel: 'Listings',
                         onTap: () {
-                          changeDashboardOption(
-                            CustomerDashboardOption.listings,
+                          context.go(
+                            '/customer-property-listing-screen/${widget.clientId}',
                           );
+                          // changeDashboardOption(
+                          //   CustomerDashboardOption.listings,
+                          // );
                         },
                       ),
                       const SizedBox(
@@ -89,16 +161,22 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                     ],
                   ),
                   const Spacer(),
-                  DashboardUserInfoWidget(
-                    userData: CustomerDashboardScreenController
-                        .getCurrentUserInfoModel(),
-                  ),
+                  if (userInfo != null)
+                    DashboardUserInfoWidget(
+                      userData: DashboardUserInfoModel(
+                        designation: userInfo!['client_id'],
+                        profileImg: userInfo!['client_profile_pic'],
+                        userName: userInfo!['client_name'],
+                        userId: userInfo!['client_profile_pic'],
+                      ),
+                    ),
                 ],
               ),
               const SizedBox(
                 height: 10,
               ),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // NOTE Action Section
                   Container(
@@ -112,15 +190,26 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                       padding: const EdgeInsets.all(15),
                       children: [
                         Text(
-                          'Actions',
+                          'Assigned Agents',
                           style: ThemeController.normalTextStyle(
                             fontWeight: FontWeight.w900,
                           ),
                         ),
-                        ActionContainerWidget(
-                          actionModel: CustomerDashboardScreenController
-                              .getSampleActionModel(),
-                        )
+                        if (assignedAgent != null && assignedAgent!.isNotEmpty)
+                          Column(
+                            children:
+                                List.generate(assignedAgent!.length, (index) {
+                              return AgentQuickActionWidget(
+                                isSelected: selectedAgent!['agent_id'] ==
+                                    assignedAgent![index]['agent_id'],
+                                userData: assignedAgent![index],
+                                onProfilePress: () {
+                                  selectedAgent = assignedAgent![index];
+                                  setState(() {});
+                                },
+                              );
+                            }),
+                          )
                       ],
                     ),
                   ),
@@ -132,11 +221,24 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                     child: Column(
                       children: [
                         // NOTE Agent Info
-                        AgentInfoContainer(
-                          agentData: CustomerDashboardScreenController
-                              .getSampleAgentModel(),
-                          onCallPress: () {},
+                        // TODO Alter this
+                        AgentInfoSection(
+                          agentData: AgentModel(
+                            agentName: selectedAgent!['agent_name'],
+                            agentDesignation:
+                                selectedAgent!['agent_designation'],
+                            status: CustomerDashboardScreenController
+                                .getAgentStatusEnum(
+                              selectedAgent!['agent_availability_status'],
+                            ),
+                            agentDescription:
+                                selectedAgent!['agent_description'],
+                            profileImgPath: selectedAgent!['agent_profile_pic'],
+                          ),
                         ),
+                        // ClientInfoSection(
+                        //   clientData: {},
+                        // ),
                         const SizedBox(
                           height: 25,
                         ),
@@ -150,13 +252,13 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                         AgentActionWidget(
                           actionName: 'Email',
                           iconData: Icons.mail,
-                          actionValue: 's.abdulkadhar11@gmail.com',
+                          actionValue: selectedAgent!['agent_email_address'],
                           onActionPress: () {},
                         ),
                         AgentActionWidget(
                           actionName: 'Phone',
                           iconData: Icons.phone,
-                          actionValue: '9080823869',
+                          actionValue: selectedAgent!['agent_phone_number'],
                           onActionPress: () {},
                         ),
 
@@ -188,7 +290,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                                 child: AgentActionWidget(
                                   actionName: 'Location',
                                   iconData: Icons.location_city,
-                                  actionValue: 'France',
+                                  actionValue:
+                                      selectedAgent!['agent_location_name'],
                                   onActionPress: () {},
                                 ),
                               ),
@@ -201,29 +304,51 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.01,
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.5,
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.48,
                     height: MediaQuery.of(context).size.height * 0.86,
                     child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GalleryGridWidget(
-                            imagePaths: CustomerDashboardScreenController
-                                .propertyImagePaths,
-                            width:
-                                (MediaQuery.of(context).size.width * 0.5) * 0.7,
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          PropertyInfoSection(
-                            // propertyData: CustomerDashboardScreenController
-                            //     .getSamplePropertyData.first,
-                            propertyData: {},
-                          )
-                        ],
-                      ),
+                      child: latestPropertyData == null
+                          ? const Center(
+                              child: SizedBox(
+                                height: 50,
+                                width: 50,
+                              ),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ManagerGalleryWidget(
+                                  onPress: () {
+                                    final List<String> urls =
+                                        (latestPropertyData!["propertyImages"]
+                                                as List)
+                                            .cast<String>();
+                                    GlobalWidgets.showImageViewerDialog(
+                                      context,
+                                      imageUrls: urls,
+                                      title: "Property glance",
+                                    );
+                                  },
+                                  // imagePaths: CustomerDashboardScreenController
+                                  //     .propertyImagePaths,
+                                  imagePaths:
+                                      latestPropertyData!["propertyImages"],
+                                  width: (MediaQuery.of(context).size.width *
+                                          0.5) *
+                                      0.67,
+                                ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                PropertyInfoSection(
+                                  // propertyData:
+                                  //     CustomerDashboardScreenController
+                                  //         .getSamplePropertyData.first,
+                                  propertyData: latestPropertyData!,
+                                )
+                              ],
+                            ),
                     ),
                   ),
                 ],
