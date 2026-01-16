@@ -312,6 +312,32 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                         errorText = "Meeting link field cannot be empty";
                       });
                     } else {
+                      // Call status update
+                      // NOTE Getting the email content
+                      ManagerLogInScreenController.showLoaderDialog(context);
+                      String? welcomeHtmlContent;
+
+                      await ApiController.getCallConfirmationMailContent(
+                        {
+                          "agent_id": widget.agentId,
+                          "client_name": valueHolder,
+                          "call_time_details": timingDetailsIso,
+                          "meet_link": linkValue
+                        },
+                        onSuccess: (resData) {
+                          welcomeHtmlContent = jsonDecode(resData);
+                        },
+                        onError: (errData) {},
+                      );
+                      print(
+                          "Call confirmation html content: ${welcomeHtmlContent}");
+                      welcomeHtmlContent =
+                          await HtmlEditorDialog.showHtmlEditorDialogWeb(
+                        context,
+                        title: 'Edit call confirmation content',
+                        initialHtml: welcomeHtmlContent,
+                      );
+                      ManagerLogInScreenController.hideDialogBox(context);
                       ManagerLogInScreenController.showLoaderDialog(context);
 
                       await ApiController.firstCallUpdateStatus(
@@ -324,14 +350,20 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                           "client_email":
                               widget.clientData!['client_email_address'],
                           "client_name": widget.clientData!['client_name'],
+                          "html_content": welcomeHtmlContent,
                         },
                         onSuccess: (resData) {
                           ManagerLogInScreenController.showSuccess(
                               context, 'Meeting has been created !!!');
+                          print(
+                              '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
                           Future.delayed(
                             const Duration(seconds: 2),
                             () {
-                              html.window.location.reload();
+                              if (context.mounted) {
+                                context.push(
+                                    '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
+                              }
                             },
                           );
                         },
@@ -411,6 +443,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
+                                          // NOTE accepted button section
                                           FirstCallStatusLabelWidget(
                                             onPressed: () async {
                                               ManagerLogInScreenController
@@ -441,8 +474,6 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                                         context.push(
                                                             '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
                                                       }
-                                                      html.window.location
-                                                          .reload();
                                                     },
                                                   );
                                                 },
@@ -459,6 +490,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           const SizedBox(
                                             width: 5,
                                           ),
+                                          //NOTE cancelled button
                                           FirstCallStatusLabelWidget(
                                             onPressed: () async {
                                               ManagerLogInScreenController
@@ -494,12 +526,10 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                                       // html.window.location
                                                       //     .reload();
                                                       if (context.mounted) {
-                                                        ManagerLogInScreenController
-                                                            .hideDialogBox(
-                                                                context);
-                                                        context.go(
-                                                          '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist',
-                                                        );
+                                                        if (context.mounted) {
+                                                          context.push(
+                                                              '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
+                                                        }
                                                         // html.window.location
                                                         //     .reload();
                                                       }
@@ -519,6 +549,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           const SizedBox(
                                             width: 5,
                                           ),
+                                          // NOTE Rejected section
                                           FirstCallStatusLabelWidget(
                                             onPressed: () async {
                                               ManagerLogInScreenController
@@ -541,7 +572,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                                 onSuccess: (resData) {
                                                   ManagerLogInScreenController
                                                       .showSuccess(context,
-                                                          "Call status has been updated !!!");
+                                                          "Call status has been rejected !!!");
                                                   Future.delayed(
                                                     const Duration(seconds: 2),
                                                     () {
@@ -549,8 +580,8 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                                         context.push(
                                                             '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
                                                       }
-                                                      html.window.location
-                                                          .reload();
+                                                      // html.window.location
+                                                      //     .reload();
                                                     },
                                                   );
                                                 },
@@ -1072,8 +1103,6 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                                       context.push(
                                                           '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
                                                     }
-                                                    html.window.location
-                                                        .reload();
                                                   },
                                                 );
                                               },
@@ -1438,6 +1467,23 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                       child: CustomBorderButton(
                         label: "Re-Send",
                         onTap: () async {
+                          print("re send button is pingged !!!");
+                          String? welcomeHtmlContent;
+                          await ApiController.getWelcomMailContent(
+                            onSuccess: (resData) {
+                              welcomeHtmlContent = jsonDecode(resData);
+                            },
+                            onError: (errData) {},
+                          );
+                          print("html email content: ${welcomeHtmlContent}");
+                          welcomeHtmlContent =
+                              await HtmlEditorDialog.showHtmlEditorDialogWeb(
+                            context,
+                            title: 'Edit notes',
+                            initialHtml: welcomeHtmlContent,
+                          );
+                          print("edited html content ${welcomeHtmlContent}");
+                          if (!mounted) return;
                           ManagerLogInScreenController.showLoaderDialog(
                               context);
                           await ApiController.sendWelcomeEmail(
@@ -1445,7 +1491,8 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               "checklist_id": widget.checklistId,
                               "agent_id": widget.agentId,
                               "client_email_address":
-                                  widget.clientData!['client_email_address']
+                                  widget.clientData!['client_email_address'],
+                              "html_content": welcomeHtmlContent,
                             },
                             onSuccess: (resData) {
                               ManagerLogInScreenController.showSuccess(
@@ -1453,7 +1500,10 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               Future.delayed(
                                 const Duration(seconds: 2),
                                 () {
-                                  html.window.location.reload();
+                                  if (context.mounted) {
+                                    context.push(
+                                        '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
+                                  }
                                 },
                               );
                             },
@@ -1582,7 +1632,10 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               context,
                               'Call notes has been added !!!',
                             );
-                            html.window.location.reload();
+                            if (context.mounted) {
+                              context.push(
+                                  '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
+                            }
                           },
                         );
                       }
@@ -2189,7 +2242,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
 
         case 5:
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -2203,8 +2256,30 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                       CustomBorderButton(
                         label: 'Advocate Info',
                         onTap: () async {
+                          // NOTE Showing the loader
                           ManagerLogInScreenController.showLoaderDialog(
-                              context);
+                            context,
+                          );
+                          String? htmlContent;
+                          await ApiController.getAdvicateSharingInfoMailContent(
+                            onSuccess: (resData) {
+                              htmlContent = jsonDecode(resData);
+                            },
+                            onError: (errData) {},
+                          );
+                          htmlContent =
+                              await HtmlEditorDialog.showHtmlEditorDialogWeb(
+                            context,
+                            title: 'Edit email content',
+                            initialHtml: htmlContent,
+                          );
+                          // NOTE Hiding the loader
+                          ManagerLogInScreenController.hideDialogBox(
+                            context,
+                          );
+                          ManagerLogInScreenController.showLoaderDialog(
+                            context,
+                          );
                           await ApiController.sendAdvocateInfo(
                             {
                               "emailAddress":
@@ -2212,7 +2287,8 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               "checklist_id": widget.checklistId,
                               "agent_id": widget.agentId,
                               "action_msg":
-                                  "<b style=\"color:black\">The <i style=\"color:blue\">Advocate</i> details has been shared.</b>"
+                                  "<b style=\"color:black\">The <i style=\"color:blue\">Advocate</i> details has been shared.</b>",
+                              "html_content": htmlContent,
                             },
                             onError: (errData) {
                               ManagerLogInScreenController.showError(
@@ -2226,7 +2302,10 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                 'Details has been shared',
                               );
                               Future.delayed(const Duration(seconds: 2), () {
-                                html.window.location.reload();
+                                if (context.mounted) {
+                                  context.push(
+                                      '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
+                                }
                               });
                             },
                           );
@@ -2241,6 +2320,27 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                         label: 'Mortgage Manager Info',
                         onTap: () async {
                           ManagerLogInScreenController.showLoaderDialog(
+                            context,
+                          );
+                          String? htmlContent;
+                          await ApiController
+                              .getMortageManagerSharingInfoMailContent(
+                            onSuccess: (resData) {
+                              htmlContent = jsonDecode(resData);
+                            },
+                            onError: (errData) {},
+                          );
+                          htmlContent =
+                              await HtmlEditorDialog.showHtmlEditorDialogWeb(
+                            context,
+                            title: 'Edit email content',
+                            initialHtml: htmlContent,
+                          );
+                          // NOTE Hiding the loader
+                          ManagerLogInScreenController.hideDialogBox(
+                            context,
+                          );
+                          ManagerLogInScreenController.showLoaderDialog(
                               context);
                           await ApiController.sendMortgageInfo(
                             {
@@ -2249,7 +2349,8 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               "checklist_id": widget.checklistId,
                               "agent_id": widget.agentId,
                               "action_msg":
-                                  "<b style=\"color:black\">The <i style=\"color:purple\">Mortgage manager</i> details has been shared.</b>"
+                                  "<b style=\"color:black\">The <i style=\"color:purple\">Mortgage manager</i> details has been shared.</b>",
+                              "html_content": htmlContent,
                             },
                             onError: (errData) {
                               ManagerLogInScreenController.showError(
@@ -2263,7 +2364,10 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                 'Details has been shared',
                               );
                               Future.delayed(const Duration(seconds: 2), () {
-                                html.window.location.reload();
+                                if (context.mounted) {
+                                  context.push(
+                                      '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
+                                }
                               });
                             },
                           );
@@ -2278,6 +2382,27 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                         label: 'Currency Manager Info',
                         onTap: () async {
                           ManagerLogInScreenController.showLoaderDialog(
+                            context,
+                          );
+                          String? htmlContent;
+                          await ApiController
+                              .getCurrencyManagerSharingInfoMailContent(
+                            onSuccess: (resData) {
+                              htmlContent = jsonDecode(resData);
+                            },
+                            onError: (errData) {},
+                          );
+                          htmlContent =
+                              await HtmlEditorDialog.showHtmlEditorDialogWeb(
+                            context,
+                            title: 'Edit email content',
+                            initialHtml: htmlContent,
+                          );
+                          // NOTE Hiding the loader
+                          ManagerLogInScreenController.hideDialogBox(
+                            context,
+                          );
+                          ManagerLogInScreenController.showLoaderDialog(
                               context);
                           await ApiController.sendCurrencyInfo(
                             {
@@ -2286,7 +2411,8 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               "checklist_id": widget.checklistId,
                               "agent_id": widget.agentId,
                               "action_msg":
-                                  "<b style=\"color:black\">The <i style=\"color:green\">Currency manager</i> details has been shared.</b>"
+                                  "<b style=\"color:black\">The <i style=\"color:green\">Currency manager</i> details has been shared.</b>",
+                              "html_content": htmlContent,
                             },
                             onError: (errData) {
                               ManagerLogInScreenController.showError(
@@ -2300,7 +2426,10 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                 'Details has been shared',
                               );
                               Future.delayed(const Duration(seconds: 2), () {
-                                html.window.location.reload();
+                                if (context.mounted) {
+                                  context.push(
+                                      '/manager-client-info-screen/${widget.clientData!['client_id']}/clientChecklist');
+                                }
                               });
                             },
                           );

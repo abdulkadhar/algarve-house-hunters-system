@@ -31,3 +31,6 @@ font size: 20
 manager user name:
 usrName: rebeccachome@googlemail.com
 pass: Test@123
+
+context.push(
+'/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');

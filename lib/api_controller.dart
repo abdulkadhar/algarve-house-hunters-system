@@ -3851,4 +3851,150 @@ class ApiController {
     }
   }
   //!SECTION
+
+  // SECTION Email content renderer
+  static Future<void> getWelcomMailContent({
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "get-welcome-email-content",
+    );
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+      );
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+
+  static Future<void> getCallConfirmationMailContent(
+    Map<String, dynamic> requestBody, {
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "get-call-confirmation-email-content",
+    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+
+  static Future<void> getAdvicateSharingInfoMailContent({
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "get-advocate-info-mail-content",
+    );
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+      );
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+
+  static Future<void> getMortageManagerSharingInfoMailContent({
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "get-mortage-info-mail-content",
+    );
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+      );
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+
+  static Future<void> getCurrencyManagerSharingInfoMailContent({
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "get-currency-manager-info-mail-content",
+    );
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+      );
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+
+  // NOTE
+  //!SECTION
 }
