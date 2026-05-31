@@ -62,13 +62,14 @@ class HtmlEditorDialog {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: HtmlEditor(
-                            controller: controller,
+                            controller: controller, // HtmlEditorController
                             htmlEditorOptions: HtmlEditorOptions(
                               initialText: initialHtml ?? '',
                               hint: 'Write something…',
-                              autoAdjustHeight: false,
+                              autoAdjustHeight:
+                                  false, // keep false for Flutter Web
                             ),
-                            htmlToolbarOptions: const HtmlToolbarOptions(
+                            htmlToolbarOptions: HtmlToolbarOptions(
                               toolbarType: ToolbarType.nativeGrid,
                               defaultToolbarButtons: [
                                 StyleButtons(),
@@ -77,25 +78,62 @@ class HtmlEditorDialog {
                                 ListButtons(),
                                 ParagraphButtons(),
                                 InsertButtons(
-                                    audio: false,
-                                    video: true,
-                                    table: true,
-                                    hr: true),
+                                  audio: false,
+                                  video: true,
+                                  table: true,
+                                  hr: true,
+                                ),
                                 OtherButtons(
-                                    fullscreen: true,
-                                    undo: true,
-                                    redo: true,
-                                    copy: true,
-                                    paste: true),
+                                  fullscreen: true,
+                                  undo: true,
+                                  redo: true,
+                                  copy: true,
+                                  paste: true,
+                                ),
                               ],
                             ),
                             callbacks: Callbacks(
-                              onChangeContent: (html) {
-                                // Handy to verify typing actually changes value (open DevTools console)
-                                // debugPrint('Editor changed: ${html?.substring(0, math.min(20, html.length))}');
+                              onChangeContent: (String? html) {
+                                // Use this to sync content
+                                // debugPrint(html);
                               },
                             ),
                           ),
+                          // child: HtmlEditor(
+                          //   controller: controller,
+                          //   htmlEditorOptions: HtmlEditorOptions(
+                          //     initialText: initialHtml ?? '',
+                          //     hint: 'Write something…',
+                          //     autoAdjustHeight: false,
+                          //   ),
+                          //   htmlToolbarOptions: const HtmlToolbarOptions(
+                          //     toolbarType: ToolbarType.nativeGrid,
+                          //     defaultToolbarButtons: [
+                          //       StyleButtons(),
+                          //       FontButtons(),
+                          //       ColorButtons(),
+                          //       ListButtons(),
+                          //       ParagraphButtons(),
+                          //       InsertButtons(
+                          //           audio: false,
+                          //           video: true,
+                          //           table: true,
+                          //           hr: true),
+                          //       OtherButtons(
+                          //           fullscreen: true,
+                          //           undo: true,
+                          //           redo: true,
+                          //           copy: true,
+                          //           paste: true),
+                          //     ],
+                          //   ),
+                          //   callbacks: Callbacks(
+                          //     onChangeContent: (html) {
+                          //       // Handy to verify typing actually changes value (open DevTools console)
+                          //       // debugPrint('Editor changed: ${html?.substring(0, math.min(20, html.length))}');
+                          //     },
+                          //   ),
+                          // ),
                         ),
                       ),
 

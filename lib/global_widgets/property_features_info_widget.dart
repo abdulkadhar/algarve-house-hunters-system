@@ -60,7 +60,26 @@ class _PropertyFeaturesInfoWidgetState
     "propertyDescription": "",
     "ourRef": "",
     "propertyRefLink": "",
-    "isSold": ""
+    "isSold": "",
+    "landType": "",
+    "houseType": "",
+    "floorNumber": "",
+    "condominiumFees": "",
+    "liftOrStairs": "",
+    "distanceFromShops": "",
+    "distanceTocafe": "",
+    "singleLevelLiving": "",
+    "annexOutbuilding": "",
+    "mainWaterBoreHoles": "",
+    "sewerage": "",
+    "accessToProperty": "",
+    "roadNoise": "",
+    "neighbours": "",
+    "aircon": "",
+    "heating": "",
+    "windowsNumber": "",
+    "fullyLegal": "",
+    "solar": "",
   };
   bool isEdit = false;
 
@@ -100,7 +119,44 @@ class _PropertyFeaturesInfoWidgetState
         propertyMetaDataHolding["propertyRefLink"] !=
             widget.propertyInfoData["propertyRefLink"] ||
         propertyMetaDataHolding["isSold"] !=
-            widget.propertyInfoData["isSold"]) {
+            widget.propertyInfoData["isSold"] ||
+        propertyMetaDataHolding["landType"] !=
+            widget.propertyInfoData["landType"] ||
+        propertyMetaDataHolding["houseType"] !=
+            widget.propertyInfoData["houseType"] ||
+        propertyMetaDataHolding["floorNumber"] !=
+            widget.propertyInfoData["floorNumber"] ||
+        propertyMetaDataHolding["condominiumFees"] !=
+            widget.propertyInfoData["condominiumFees"] ||
+        propertyMetaDataHolding["liftOrStairs"] !=
+            widget.propertyInfoData["liftOrStairs"] ||
+        propertyMetaDataHolding["distanceFromShops"] !=
+            widget.propertyInfoData["distanceFromShops"] ||
+        propertyMetaDataHolding["distanceTocafe"] !=
+            widget.propertyInfoData["distanceTocafe"] ||
+        propertyMetaDataHolding["singleLevelLiving"] !=
+            widget.propertyInfoData["singleLevelLiving"] ||
+        propertyMetaDataHolding["annexOutbuilding"] !=
+            widget.propertyInfoData["annexOutbuilding"] ||
+        propertyMetaDataHolding["mainWaterBoreHoles"] !=
+            widget.propertyInfoData["mainWaterBoreHoles"] ||
+        propertyMetaDataHolding["sewerage"] !=
+            widget.propertyInfoData["sewerage"] ||
+        propertyMetaDataHolding["accessToProperty"] !=
+            widget.propertyInfoData["accessToProperty"] ||
+        propertyMetaDataHolding["roadNoise"] !=
+            widget.propertyInfoData["roadNoise"] ||
+        propertyMetaDataHolding["neighbours"] !=
+            widget.propertyInfoData["neighbours"] ||
+        propertyMetaDataHolding["aircon"] !=
+            widget.propertyInfoData["aircon"] ||
+        propertyMetaDataHolding["heating"] !=
+            widget.propertyInfoData["heating"] ||
+        propertyMetaDataHolding["windowsNumber"] !=
+            widget.propertyInfoData["windowsNumber"] ||
+        propertyMetaDataHolding["fullyLegal"] !=
+            widget.propertyInfoData["fullyLegal"] ||
+        propertyMetaDataHolding["solar"] != widget.propertyInfoData["solar"]) {
       isEdit = true;
     } else {
       isEdit = false;
@@ -140,8 +196,39 @@ class _PropertyFeaturesInfoWidgetState
     propertyMetaDataHolding["ourRef"] = widget.propertyInfoData["ourRef"];
     propertyMetaDataHolding["propertyRefLink"] =
         widget.propertyInfoData["propertyRefLink"];
-    propertyMetaDataHolding["isSold"] = widget.propertyInfoData["isSold"];
-    print("All the data has been set to the local variable");
+    propertyMetaDataHolding["landType"] = widget.propertyInfoData["landType"];
+    propertyMetaDataHolding["houseType"] = widget.propertyInfoData["houseType"];
+    propertyMetaDataHolding["floorNumber"] =
+        widget.propertyInfoData["floorNumber"];
+    propertyMetaDataHolding["condominiumFees"] =
+        widget.propertyInfoData["condominiumFees"];
+    propertyMetaDataHolding["liftOrStairs"] =
+        widget.propertyInfoData["liftOrStairs"];
+    propertyMetaDataHolding["distanceFromShops"] =
+        widget.propertyInfoData["distanceFromShops"];
+    propertyMetaDataHolding["distanceTocafe"] =
+        widget.propertyInfoData["distanceTocafe"];
+    propertyMetaDataHolding["singleLevelLiving"] =
+        widget.propertyInfoData["singleLevelLiving"];
+    propertyMetaDataHolding["annexOutbuilding"] =
+        widget.propertyInfoData["annexOutbuilding"];
+    propertyMetaDataHolding["mainWaterBoreHoles"] =
+        widget.propertyInfoData["mainWaterBoreHoles"];
+    propertyMetaDataHolding["sewerage"] = widget.propertyInfoData["sewerage"];
+    propertyMetaDataHolding["accessToProperty"] =
+        widget.propertyInfoData["accessToProperty"];
+    propertyMetaDataHolding["roadNoise"] = widget.propertyInfoData["roadNoise"];
+    propertyMetaDataHolding["neighbours"] =
+        widget.propertyInfoData["neighbours"];
+    propertyMetaDataHolding["aircon"] = widget.propertyInfoData["aircon"];
+    propertyMetaDataHolding["heating"] = widget.propertyInfoData["heating"];
+    propertyMetaDataHolding["windowsNumber"] =
+        widget.propertyInfoData["windowsNumber"];
+    propertyMetaDataHolding["fullyLegal"] =
+        widget.propertyInfoData["fullyLegal"];
+    propertyMetaDataHolding["fullyLegal"] =
+        widget.propertyInfoData["fullyLegal"];
+    propertyMetaDataHolding["solar"] = widget.propertyInfoData["solar"];
   }
 
   String daysToGo(String timestamp) {
@@ -1372,6 +1459,435 @@ class _PropertyFeaturesInfoWidgetState
                       },
                     ),
                   ),
+                  // NOTE land Type
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Land Type',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["landType"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["landType"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["landType"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE House Type
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'House Type',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["houseType"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["houseType"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["houseType"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              // NOTE Empty Space
+              const SizedBox(
+                height: 10,
+              ),
+
+              //SECTION Row 6
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Condominium Fees
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Condominium Fees',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["condominiumFees"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["condominiumFees"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["condominiumFees"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Lift Details
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Lift or Stairs',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["liftOrStairs"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["liftOrStairs"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["liftOrStairs"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Distance From Shops
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Distance From Shops',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue:
+                          widget.propertyInfoData["distanceFromShops"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["distanceFromShops"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["distanceFromShops"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              //!SECTION
+              // NOTE Empty Space
+              const SizedBox(
+                height: 10,
+              ),
+              //SECTION Row 7
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Distance To Cafe
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Distance To Cafe',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["distanceTocafe"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["distanceTocafe"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["distanceTocafe"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Single Level Living
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Single Level Living',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue:
+                          widget.propertyInfoData["singleLevelLiving"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["singleLevelLiving"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["singleLevelLiving"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Annex Out Building
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Annex Out Building',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["annexOutbuilding"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["annexOutbuilding"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["annexOutbuilding"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              //!SECTION
+              // NOTE Empty Space
+              const SizedBox(
+                height: 10,
+              ),
+              //SECTION Row 8
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Main Water Bore Holes
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Main Water Bore Holes',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue:
+                          widget.propertyInfoData["mainWaterBoreHoles"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["mainWaterBoreHoles"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["mainWaterBoreHoles"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Sewerage
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Sewerage',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["sewerage"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["sewerage"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["sewerage"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Access To Property
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Access To Property',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["accessToProperty"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["accessToProperty"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["accessToProperty"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              //!SECTION
+              // NOTE Empty Space
+              const SizedBox(
+                height: 10,
+              ),
+              //SECTION Row 9
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Road Noise
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Road Noise',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["roadNoise"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["roadNoise"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["roadNoise"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Neighbours
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Neighbours',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["neighbours"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["neighbours"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["neighbours"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Aircon
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Aircon',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["aircon"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["aircon"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["aircon"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              //!SECTION
+              // NOTE Empty Space
+              const SizedBox(
+                height: 10,
+              ),
+              //SECTION Row 10
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Heating
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Heating',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["heating"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["heating"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["heating"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE Windows Number
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Windows Number',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["windowsNumber"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["windowsNumber"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["windowsNumber"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  // NOTE fullyLegal
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Fully Legal',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["fullyLegal"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["fullyLegal"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["fullyLegal"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              //!SECTION
+              // NOTE Empty Space
+              const SizedBox(
+                height: 10,
+              ),
+              //SECTION Row 11
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // NOTE Solar
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: CustomTextFormFiled(
+                      labelName: 'Solar',
+                      placeholderText: "",
+                      isMandatory: false,
+                      initialValue: widget.propertyInfoData["solar"],
+                      onChanged: (data) {
+                        propertyMetaDataHolding["solar"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                      onPaste: (data) {
+                        propertyMetaDataHolding["solar"] = data;
+                        setEditStatus();
+                        setState(() {});
+                      },
+                    ),
+                  ),
                 ],
               ),
               //!SECTION
@@ -1379,7 +1895,7 @@ class _PropertyFeaturesInfoWidgetState
               const SizedBox(
                 height: 30,
               ),
-              // SECTION Row 6
+              // SECTION Row Last
               Row(
                 children: [
                   getToggleWidget(

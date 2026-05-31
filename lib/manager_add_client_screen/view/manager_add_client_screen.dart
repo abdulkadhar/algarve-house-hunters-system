@@ -405,8 +405,7 @@ class _ManagerAddClientScreenState extends State<ManagerAddClientScreen> {
                   },
                   onError: (data) {
                     ManagerLogInScreenController.hideDialogBox(context);
-
-                    print('Agent Onboard Form: Error occured');
+                    ManagerLogInScreenController.showError(context, data);
                   },
                 );
               }

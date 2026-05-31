@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/option_label_selector_widget.dart';
+import 'package:algarve_house_hunters_system/agent_listing_screen/widgets/add_more_button.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
 import 'package:algarve_house_hunters_system/global_widgets/border_button.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_filed.dart';
@@ -19,9 +20,12 @@ import 'package:algarve_house_hunters_system/manager_property_management_screen/
 import 'package:algarve_house_hunters_system/manager_property_management_screen/widgets/manager_property_unit_tile_widget.dart';
 import 'package:algarve_house_hunters_system/manager_property_management_screen/widgets/quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:html' as html;
+import 'package:http/http.dart' as http;
 
 import 'package:lottie/lottie.dart';
 
@@ -90,6 +94,8 @@ class _MangerPropertyManagementScreenState
   String? emailError;
   String? phoneNumberError;
 
+  Map<String, dynamic>? uploadAnalyzer;
+
   void changeCrmPersonEditOption(CrmPersonOption optionData) {
     crmPersonEditOption = optionData;
     setState(() {});
@@ -157,6 +163,39 @@ class _MangerPropertyManagementScreenState
         );
       },
     );
+  }
+
+  //ANCHOR Upload Handler
+
+  Future<void> pickAndUploadCSV() async {
+    FilePickerResult? picked = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xlsx'],
+      withData: true, // IMPORTANT for Web
+    );
+
+    if (picked == null) return;
+
+    final PlatformFile file = picked.files.first;
+
+    // setState(() => csvLoadingState = true);
+
+    await ApiController.uploadPropertyImport(
+      file.bytes!,
+      file.name,
+      onError: (errData) {
+        print("Upload error has occured");
+        ManagerLogInScreenController.showError(
+            context, jsonDecode(errData).toString());
+      },
+      onSuccess: (resData) {
+        print("Upload success has occured !!!");
+        uploadAnalyzer = jsonDecode(resData);
+        setState(() {});
+      },
+    );
+
+    // setState(() => csvLoadingState = false);
   }
 
   String crmPersonOptionToString(CrmPersonOption optionData) {
@@ -1056,11 +1095,25 @@ class _MangerPropertyManagementScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "All properties",
-                  style: ThemeController.normalTextStyle(
-                    fontWeight: FontWeight.w900,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      "All properties",
+                      style: ThemeController.normalTextStyle(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const Spacer(),
+                    AddMoreButton(
+                      onButtonPress: () {
+                        ManagerLogInScreenController.showLoaderDialog(context);
+                        ApiController.exportPropertiesWeb(context);
+                        ManagerLogInScreenController.hideDialogBox(context);
+                      },
+                      buttonLabel: "Export",
+                      iconData: Icons.download,
+                    )
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
@@ -1435,6 +1488,132 @@ class _MangerPropertyManagementScreenState
               ),
           ],
         );
+
+      case PropertyManagementOption.import:
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Property import Option",
+                  style: ThemeController.normalTextStyle(
+                    fontWeight: FontWeight.w900,
+                    size: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Upload your excel file to bulk add properties to the systems.",
+                  style: ThemeController.normalTextStyle(
+                    fontWeight: FontWeight.w400,
+                    size: 14,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              DottedBorder(
+                radius: Radius.circular(100),
+                dashPattern: [10, 5],
+                color: Colors.grey,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const CircleAvatar(
+                        backgroundColor: Colors.black,
+                        radius: 30,
+                        child: Icon(
+                          Icons.upload,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      Text(
+                        "Tap to browse",
+                        style: ThemeController.normalTextStyle(),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        "Supports only excel files. \n Max entries 500.",
+                        style: ThemeController.normalTextStyle(),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      SubmitButton(
+                        onButtonPress: () async {
+                          // NOTE Adding the loader
+                          if (context.mounted) {
+                            ManagerLogInScreenController.showLoaderDialog(
+                                context);
+                          }
+                          // TODO Add the method
+                          await pickAndUploadCSV();
+                          // NOTE Updating the properties
+                          if (uploadAnalyzer != null) {
+                            uploadAnalyzer!["employee_id"] = widget.agentId;
+                            ApiController.importProperties(
+                              uploadAnalyzer!,
+                              onSuccess: (resData) {
+                                ManagerLogInScreenController.showSuccess(
+                                  context,
+                                  "${uploadAnalyzer!["count"]} properties has been added",
+                                );
+                                Future.delayed(const Duration(seconds: 2), () {
+                                  if (context.mounted) {
+                                    ManagerLogInScreenController.hideDialogBox(
+                                        context);
+                                  }
+                                });
+                              },
+                              onError: (errData) {
+                                ManagerLogInScreenController.showError(
+                                  context,
+                                  errData,
+                                );
+                                Future.delayed(const Duration(seconds: 2), () {
+                                  if (context.mounted) {
+                                    ManagerLogInScreenController.hideDialogBox(
+                                        context);
+                                  }
+                                });
+                              },
+                            );
+                          }
+                        },
+                        buttonLabel: "Select Files",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+            ],
+          ),
+        );
     }
   }
 
@@ -1556,6 +1735,20 @@ class _MangerPropertyManagementScreenState
                           isSelected: propertyManagementOption ==
                               PropertyManagementOption.listProperty,
                           icons: Icons.menu,
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        QuickActionWidget(
+                          label: 'Import Properties',
+                          onPress: () {
+                            changePropertyOption(
+                              PropertyManagementOption.import,
+                            );
+                          },
+                          isSelected: propertyManagementOption ==
+                              PropertyManagementOption.import,
+                          icons: Icons.import_contacts,
                         ),
                         const SizedBox(
                           height: 5,

@@ -2262,6 +2262,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                           );
                           String? htmlContent;
                           await ApiController.getAdvicateSharingInfoMailContent(
+                            widget.clientData!['client_name'],
                             onSuccess: (resData) {
                               htmlContent = jsonDecode(resData);
                             },
@@ -2325,6 +2326,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                           String? htmlContent;
                           await ApiController
                               .getMortageManagerSharingInfoMailContent(
+                            widget.clientData!['client_name'],
                             onSuccess: (resData) {
                               htmlContent = jsonDecode(resData);
                             },
@@ -2387,6 +2389,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                           String? htmlContent;
                           await ApiController
                               .getCurrencyManagerSharingInfoMailContent(
+                            widget.clientData!['client_name'],
                             onSuccess: (resData) {
                               htmlContent = jsonDecode(resData);
                             },

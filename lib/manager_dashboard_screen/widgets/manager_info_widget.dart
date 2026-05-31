@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:algarve_house_hunters_system/agent_listing_screen/view/agent_property_info_screen.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
 import 'package:algarve_house_hunters_system/customer_dashboard_screen/controller/customer_dashboard_screen_controller.dart';
 
@@ -12,10 +10,12 @@ import 'package:go_router/go_router.dart';
 class ManagerInfoWidget extends StatefulWidget {
   final String managerId;
   final VoidCallback onProfilePress;
+  final Color textColor;
   const ManagerInfoWidget({
     super.key,
     required this.onProfilePress,
     required this.managerId,
+    this.textColor = Colors.black,
   });
 
   @override
@@ -86,12 +86,25 @@ class _ManagerInfoWidgetState extends State<ManagerInfoWidget> {
       onTap: widget.onProfilePress,
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundImage: NetworkImage(
-              // widget.agentData.profileImgPath,
-              managerData!["manager_profile_pic"],
-            ),
+          Builder(
+            builder: (context) {
+              final profilePic =
+                  managerData!["manager_profile_pic"]?.toString() ?? '';
+              final hasProfilePic = profilePic.isNotEmpty;
+              return CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.grey.shade300,
+                backgroundImage:
+                    hasProfilePic ? NetworkImage(profilePic) : null,
+                child: hasProfilePic
+                    ? null
+                    : Icon(
+                        Icons.person,
+                        size: 36,
+                        color: Colors.grey.shade700,
+                      ),
+              );
+            },
           ),
           const SizedBox(
             width: 10,
@@ -103,6 +116,7 @@ class _ManagerInfoWidgetState extends State<ManagerInfoWidget> {
                 // widget.agentData.agentName,
                 managerData!["manager_name"],
                 style: ThemeController.normalTextStyle(
+                  color: widget.textColor,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -110,6 +124,7 @@ class _ManagerInfoWidgetState extends State<ManagerInfoWidget> {
                 // widget.agentData.agentDesignation,
                 managerData!["manager_designation"],
                 style: ThemeController.smallTextStyle(
+                  color: widget.textColor,
                   fontWeight: FontWeight.w400,
                 ),
               ),

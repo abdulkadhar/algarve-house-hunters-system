@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 import 'package:http_parser/http_parser.dart';
@@ -3755,6 +3756,54 @@ class ApiController {
   }
   //!SECTION
 
+  // SECTION Property Upload API
+  // SECTION User import api
+  static Future<void> uploadPropertyImport(
+    List<int> fileBytes,
+    String fileName, {
+    required Function(String) onSuccess,
+    required Function(String) onError,
+    String? token, // optional JWT
+  }) async {
+    try {
+      final uri = Uri.parse("${baseUrl}import-properties");
+
+      final request = http.MultipartRequest("POST", uri);
+
+      // Optional Authorization header
+      if (token != null) {
+        request.headers["Authorization"] = "Bearer $token";
+      }
+
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          "file",
+          fileBytes,
+          filename: fileName,
+          contentType: MediaType(
+            "application",
+            "vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          ),
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        onError(
+          "Error ${response.statusCode}: ${response.body}",
+        );
+      }
+    } catch (e) {
+      onError("Exception: $e");
+    }
+  }
+
+  //!SECTION
+
   // SECTION User import api
   static Future<void> uploadUserImport(
     List<int> fileBytes,
@@ -3911,12 +3960,13 @@ class ApiController {
     }
   }
 
-  static Future<void> getAdvicateSharingInfoMailContent({
+  static Future<void> getAdvicateSharingInfoMailContent(
+    String username, {
     required Function(String) onSuccess,
     required Function(String) onError,
   }) async {
     final url = Uri.parse(
-      baseUrl + "get-advocate-info-mail-content",
+      baseUrl + "get-advocate-info-mail-content/$username",
     );
     try {
       final response = await http.get(
@@ -3939,12 +3989,13 @@ class ApiController {
     }
   }
 
-  static Future<void> getMortageManagerSharingInfoMailContent({
+  static Future<void> getMortageManagerSharingInfoMailContent(
+    String username, {
     required Function(String) onSuccess,
     required Function(String) onError,
   }) async {
     final url = Uri.parse(
-      baseUrl + "get-mortage-info-mail-content",
+      baseUrl + "get-mortage-info-mail-content/$username",
     );
     try {
       final response = await http.get(
@@ -3967,12 +4018,13 @@ class ApiController {
     }
   }
 
-  static Future<void> getCurrencyManagerSharingInfoMailContent({
+  static Future<void> getCurrencyManagerSharingInfoMailContent(
+    String username, {
     required Function(String) onSuccess,
     required Function(String) onError,
   }) async {
     final url = Uri.parse(
-      baseUrl + "get-currency-manager-info-mail-content",
+      baseUrl + "get-currency-manager-info-mail-content/$username",
     );
     try {
       final response = await http.get(
@@ -3996,5 +4048,74 @@ class ApiController {
   }
 
   // NOTE
+  //!SECTION
+
+  // SECTION
+  static Future<void> exportPropertiesWeb(BuildContext context) async {
+    try {
+      final url = Uri.parse(
+        "https://systems.algarvehousehunters.com/export/properties/excel",
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final blob = html.Blob([response.bodyBytes]);
+        final blobUrl = html.Url.createObjectUrlFromBlob(blob);
+
+        final anchor = html.AnchorElement(href: blobUrl)
+          ..setAttribute("download", "properties_export.xlsx")
+          ..click();
+
+        html.Url.revokeObjectUrl(blobUrl);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Export Started")),
+        );
+      } else {
+        throw Exception("Export failed: ${response.statusCode}");
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
+  }
+
+  //!SECTION
+
+  //SECTION - Properties import
+  // NOTE Addition of user import addition
+  static Future<void> importProperties(
+    Map<String, dynamic> requestBody, {
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    final url = Uri.parse(
+      baseUrl + "properties/clear-images",
+    );
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json"
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        onSuccess(response.body);
+      } else {
+        onError(response.body);
+      }
+    } catch (e) {
+      onError(
+        e.toString(),
+      );
+    }
+  }
+
   //!SECTION
 }

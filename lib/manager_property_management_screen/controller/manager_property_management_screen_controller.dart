@@ -3,6 +3,7 @@ enum PropertyManagementOption {
   listProperty,
   crmPortal,
   emailTemplate,
+  import,
 }
 
 class ManagerPropertyManagementScreenController {

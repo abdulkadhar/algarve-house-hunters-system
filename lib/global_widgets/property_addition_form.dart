@@ -56,6 +56,25 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
   String referenceLink = '';
   String infocasaLink = '';
   List<String> propertyImages = [];
+  String landType = '';
+  String houseType = '';
+  String floorNumber = '';
+  String condominiumFees = '';
+  String liftOrStairs = '';
+  String distanceFromShops = '';
+  String distanceTocafe = '';
+  String singleLevelLiving = '';
+  String annexOutbuilding = '';
+  String mainWaterBoreHoles = '';
+  String sewerage = '';
+  String accessToProperty = '';
+  String roadNoise = '';
+  String neighbours = '';
+  String aircon = '';
+  String heating = '';
+  String windowsNumber = '';
+  String fullyLegal = '';
+  String solar = "";
 
   // NOTE Form error text
   String? propertyNameErrorText;
@@ -726,54 +745,348 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
             ),
           ],
         ),
+        // SECTION New Row 1
         const SizedBox(
           height: 10,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // NOTE Land Type
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.2,
               child: CustomTextFormFiled(
                 initialValue: plotSize,
-                labelName: 'Plot size',
+                labelName: 'Land Type',
                 placeholderText: '',
-                errorText: plotErrorText,
+                errorText: null,
                 isMandatory: false,
                 onChanged: (notesData) {
                   clearPlotErrorText();
                   if (notesData != null) {
-                    plotSize = notesData;
+                    landType = notesData;
                   }
                 },
               ),
             ),
+            // NOTE House Type
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.2,
               child: CustomTextFormFiled(
                 initialValue: distanceFromCoast,
-                labelName: 'Distance from coast',
+                labelName: 'House Type',
                 placeholderText: '',
                 isMandatory: false,
                 onChanged: (notesData) {
                   if (notesData != null) {
-                    distanceFromCoast = notesData;
+                    houseType = notesData;
                   }
                 },
               ),
             ),
+            // NOTE Condominium Fees
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.2,
               child: CustomTextFormFiled(
                 initialValue: googleMaps,
-                labelName: 'Google map link',
+                labelName: 'Condominium Fees',
                 placeholderText: '',
                 isMandatory: false,
-                errorText: googleErrorText,
+                errorText: null,
                 onChanged: (notesData) {
                   clearGoogleErrorText();
                   if (notesData != null) {
-                    googleMaps = notesData;
+                    condominiumFees = notesData;
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        // SECTION New Row 2
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // NOTE liftOrStairs
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: plotSize,
+                labelName: 'Lift Or Stairs',
+                placeholderText: '',
+                errorText: null,
+                isMandatory: false,
+                onChanged: (notesData) {
+                  clearPlotErrorText();
+                  if (notesData != null) {
+                    liftOrStairs = notesData;
+                  }
+                },
+              ),
+            ),
+            // NOTE Distance From Shops
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: distanceFromCoast,
+                labelName: 'Distance From Shops',
+                placeholderText: '',
+                isMandatory: false,
+                onChanged: (notesData) {
+                  if (notesData != null) {
+                    distanceFromShops = notesData;
+                  }
+                },
+              ),
+            ),
+            // NOTE Distance To cafe
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: googleMaps,
+                labelName: 'Distance To cafe',
+                placeholderText: '',
+                isMandatory: false,
+                errorText: null,
+                onChanged: (notesData) {
+                  clearGoogleErrorText();
+                  if (notesData != null) {
+                    distanceTocafe = notesData;
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        // SECTION New Row 3
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // NOTE singleLevelLiving
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: singleLevelLiving,
+                labelName: 'Single Level Living',
+                placeholderText: '',
+                errorText: null,
+                isMandatory: false,
+                onChanged: (notesData) {
+                  clearPlotErrorText();
+                  if (notesData != null) {
+                    singleLevelLiving = notesData;
+                  }
+                },
+              ),
+            ),
+            // NOTE annexOutbuilding
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: annexOutbuilding,
+                labelName: 'Annex Out Building',
+                placeholderText: '',
+                isMandatory: false,
+                onChanged: (notesData) {
+                  if (notesData != null) {
+                    annexOutbuilding = notesData;
+                  }
+                },
+              ),
+            ),
+            // NOTE Distance To cafe
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: mainWaterBoreHoles,
+                labelName: 'Main Water Bore Holes',
+                placeholderText: '',
+                isMandatory: false,
+                errorText: null,
+                onChanged: (notesData) {
+                  clearGoogleErrorText();
+                  if (notesData != null) {
+                    mainWaterBoreHoles = notesData;
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        // SECTION New Row 4
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // NOTE Sewerage
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: sewerage,
+                labelName: 'Sewerage',
+                placeholderText: '',
+                errorText: null,
+                isMandatory: false,
+                onChanged: (notesData) {
+                  clearPlotErrorText();
+                  if (notesData != null) {
+                    sewerage = notesData;
+                  }
+                },
+              ),
+            ),
+            // NOTE accessToProperty
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: accessToProperty,
+                labelName: 'Access To Property',
+                placeholderText: '',
+                isMandatory: false,
+                onChanged: (notesData) {
+                  if (notesData != null) {
+                    accessToProperty = notesData;
+                  }
+                },
+              ),
+            ),
+            // NOTE Road Noise
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: roadNoise,
+                labelName: 'Road Noise',
+                placeholderText: '',
+                isMandatory: false,
+                errorText: null,
+                onChanged: (notesData) {
+                  clearGoogleErrorText();
+                  if (notesData != null) {
+                    roadNoise = notesData;
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        // SECTION New Row 5
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // NOTE Neighbours
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: neighbours,
+                labelName: 'Neighbours',
+                placeholderText: '',
+                errorText: null,
+                isMandatory: false,
+                onChanged: (notesData) {
+                  clearPlotErrorText();
+                  if (notesData != null) {
+                    neighbours = notesData;
+                  }
+                },
+              ),
+            ),
+            // NOTE aircon
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: aircon,
+                labelName: 'aircon',
+                placeholderText: '',
+                isMandatory: false,
+                onChanged: (notesData) {
+                  if (notesData != null) {
+                    aircon = notesData;
+                  }
+                },
+              ),
+            ),
+            // NOTE Road Noise
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: heating,
+                labelName: 'Heating',
+                placeholderText: '',
+                isMandatory: false,
+                errorText: null,
+                onChanged: (notesData) {
+                  clearGoogleErrorText();
+                  if (notesData != null) {
+                    heating = notesData;
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        // SECTION New Row 6
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // NOTE Windows Number
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: windowsNumber,
+                labelName: 'Windows Number',
+                placeholderText: '',
+                errorText: null,
+                isMandatory: false,
+                onChanged: (notesData) {
+                  clearPlotErrorText();
+                  if (notesData != null) {
+                    windowsNumber = notesData;
+                  }
+                },
+              ),
+            ),
+            // NOTE Fully Legal
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: fullyLegal,
+                labelName: 'Fully Legal',
+                placeholderText: '',
+                isMandatory: false,
+                onChanged: (notesData) {
+                  if (notesData != null) {
+                    fullyLegal = notesData;
+                  }
+                },
+              ),
+            ),
+            // NOTE Road Noise
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: CustomTextFormFiled(
+                initialValue: solar,
+                labelName: 'Solar',
+                placeholderText: '',
+                isMandatory: false,
+                errorText: null,
+                onChanged: (notesData) {
+                  clearGoogleErrorText();
+                  if (notesData != null) {
+                    solar = notesData;
                   }
                 },
               ),
