@@ -23,14 +23,32 @@ class ManagerPropertyUnitTileWidget extends StatelessWidget {
       margin: const EdgeInsets.only(right: 10),
       child: Row(
         children: [
-          InkWell(
-            onTap: onCarouselPress,
-            child: PropertyInfoCarousel(
-              imagePaths: List<String>.from(
-                propertyInfo["propertyImages"],
+          if (propertyInfo["propertyImages"].isEmpty)
+            Container(
+              height: double.infinity,
+              width: 200,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Center(
+                child: Text(
+                  "No Image Data",
+                  style: ThemeController.normalTextStyle(
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
-          ),
+          if (propertyInfo["propertyImages"].isNotEmpty)
+            InkWell(
+              onTap: onCarouselPress,
+              child: PropertyInfoCarousel(
+                imagePaths: List<String>.from(
+                  propertyInfo["propertyImages"],
+                ),
+              ),
+            ),
           const SizedBox(
             width: 10,
           ),

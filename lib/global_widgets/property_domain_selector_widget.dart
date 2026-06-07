@@ -33,62 +33,45 @@ class _PropertyDomainSelectorWidgetState
     print('eidget domain state value: $domainType');
   }
 
+  Widget _option(String label, PropertyDomainType type) {
+    final bool selected = domainType == type;
+    return InkWell(
+      onTap: () {
+        changeDomainType(type);
+        widget.onStateChange(domainType);
+      },
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: selected ? Colors.black : Colors.transparent,
+        ),
+        child: Text(
+          label,
+          style: ThemeController.normalTextStyle(
+            color: selected ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w800,
+            size: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5)),
-      padding: EdgeInsets.all(5),
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      padding: const EdgeInsets.all(5),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          InkWell(
-            onTap: () {
-              changeDomainType(PropertyDomainType.infocasa);
-              widget.onStateChange(domainType);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: domainType == PropertyDomainType.infocasa
-                    ? Colors.black
-                    : Colors.transparent,
-              ),
-              child: Text(
-                "Infocasa",
-                style: ThemeController.normalTextStyle(
-                  color: domainType == PropertyDomainType.infocasa
-                      ? Colors.white
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              changeDomainType(PropertyDomainType.casayes);
-              widget.onStateChange(domainType);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: domainType == PropertyDomainType.casayes
-                    ? Colors.black
-                    : Colors.transparent,
-              ),
-              child: Text(
-                "Casayes",
-                style: ThemeController.normalTextStyle(
-                  color: domainType == PropertyDomainType.casayes
-                      ? Colors.white
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
+          _option("Infocasa", PropertyDomainType.infocasa),
+          _option("Casayes", PropertyDomainType.casayes),
         ],
       ),
     );

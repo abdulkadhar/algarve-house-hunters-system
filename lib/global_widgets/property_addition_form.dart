@@ -364,55 +364,47 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
         //   height: 20,
         // ),
 
+        Text(
+          "PROPERTY LINK",
+          style: ThemeController.smallTextStyle(
+            color: Colors.grey.shade700,
+            fontWeight: FontWeight.w700,
+            size: 12,
+          ),
+        ),
+        const SizedBox(height: 8),
+        CustomTextFormFiled(
+          labelName: '',
+          placeholderText: 'https://...',
+          isMandatory: false,
+          onChanged: (data) {
+            if (data != null && data == '') {
+              infocasaLink = data;
+              setState(() {});
+            }
+          },
+          onPaste: (data) {
+            infocasaLink = data;
+            PropertyDomainType linkType = detectPropertySite(infocasaLink);
+            changeDomainType(linkType);
+            setState(() {});
+          },
+        ),
+        const SizedBox(height: 16),
         Row(
           children: [
+            PropertyDomainSelectorWidget(
+              key: Key(domainType.toString()),
+              initialValue: domainType,
+              onStateChange: (stateValue) {
+                changeDomainType(stateValue);
+              },
+            ),
+            const Spacer(),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.45,
-              child: CustomTextFormFiled(
-                labelName: '',
-                placeholderText: 'Enter the property link',
-                isMandatory: false,
-                onChanged: (data) {
-                  if (data != null && data == '') {
-                    infocasaLink = data;
-                    print('Infocasa link $data');
-                    setState(() {});
-                  }
-                },
-                onPaste: (data) {
-                  print('Paste has been detected : $data');
-                  infocasaLink = data;
-                  PropertyDomainType linkType =
-                      detectPropertySite(infocasaLink);
-                  print('Link type is : $linkType');
-                  changeDomainType(linkType);
-                  print('Infocasa link $data');
-                  setState(() {});
-                },
-              ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 25.0),
-              child: PropertyDomainSelectorWidget(
-                key: Key(domainType.toString()),
-                initialValue: domainType,
-                onStateChange: (stateValue) {
-                  print('data changedL; $stateValue');
-                },
-              ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 25.0),
-              child: SizedBox(
-                width: 150,
-                child: SubmitButton(
-                  onButtonPress: () async {
+              width: 150,
+              child: SubmitButton(
+                onButtonPress: () async {
                     if (infocasaLink != '') {
                       ManagerLogInScreenController.showLoaderDialog(context);
                       if (domainType == PropertyDomainType.infocasa) {
@@ -499,9 +491,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                   buttonLabel: 'Extract Data',
                 ),
               ),
-            )
-          ],
-        ),
+            ],
+          ),
         const SizedBox(
           height: 20,
         ),
@@ -577,11 +568,12 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
             ],
           ),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: propertyName,
                 labelName: 'Property name',
@@ -599,8 +591,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                 },
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: propertyDescription,
                 labelName: 'Property description',
@@ -615,8 +607,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                 },
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: clientLink,
                 labelName: 'Client link',
@@ -636,11 +628,12 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
         const SizedBox(
           height: 20,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: location,
                 labelName: 'Location name',
@@ -655,8 +648,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                 },
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: price,
                 labelName: 'Price',
@@ -671,8 +664,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                 },
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: listingRef,
                 labelName: 'Listing reference',
@@ -692,11 +685,12 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
         const SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: propertyM2,
                 labelName: 'M2',
@@ -711,8 +705,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                 },
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: beds,
                 labelName: 'Beds number',
@@ -727,8 +721,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                 },
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: baths,
                 labelName: 'Baths number',
@@ -749,12 +743,13 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
         const SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // NOTE Land Type
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: plotSize,
                 labelName: 'Land Type',
@@ -770,8 +765,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE House Type
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: distanceFromCoast,
                 labelName: 'House Type',
@@ -785,8 +780,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE Condominium Fees
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: googleMaps,
                 labelName: 'Condominium Fees',
@@ -807,12 +802,13 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
         const SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // NOTE liftOrStairs
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: plotSize,
                 labelName: 'Lift Or Stairs',
@@ -828,8 +824,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE Distance From Shops
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: distanceFromCoast,
                 labelName: 'Distance From Shops',
@@ -843,8 +839,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE Distance To cafe
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: googleMaps,
                 labelName: 'Distance To cafe',
@@ -865,12 +861,13 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
         const SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // NOTE singleLevelLiving
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: singleLevelLiving,
                 labelName: 'Single Level Living',
@@ -886,8 +883,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE annexOutbuilding
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: annexOutbuilding,
                 labelName: 'Annex Out Building',
@@ -901,8 +898,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE Distance To cafe
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: mainWaterBoreHoles,
                 labelName: 'Main Water Bore Holes',
@@ -923,12 +920,13 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
         const SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // NOTE Sewerage
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: sewerage,
                 labelName: 'Sewerage',
@@ -944,8 +942,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE accessToProperty
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: accessToProperty,
                 labelName: 'Access To Property',
@@ -959,8 +957,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE Road Noise
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: roadNoise,
                 labelName: 'Road Noise',
@@ -981,12 +979,13 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
         const SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // NOTE Neighbours
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: neighbours,
                 labelName: 'Neighbours',
@@ -1002,8 +1001,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE aircon
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: aircon,
                 labelName: 'aircon',
@@ -1017,8 +1016,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE Road Noise
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: heating,
                 labelName: 'Heating',
@@ -1039,12 +1038,13 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
         const SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // NOTE Windows Number
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: windowsNumber,
                 labelName: 'Windows Number',
@@ -1060,8 +1060,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE Fully Legal
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: fullyLegal,
                 labelName: 'Fully Legal',
@@ -1075,8 +1075,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
               ),
             ),
             // NOTE Road Noise
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: solar,
                 labelName: 'Solar',
@@ -1096,11 +1096,12 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
         const SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: ourRef,
                 labelName: 'Our reference',
@@ -1113,8 +1114,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                 },
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: CustomTextFormFiled(
                 initialValue: referenceLink,
                 labelName: 'Reference link',
@@ -1129,19 +1130,17 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                 },
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
-            )
           ],
         ),
         const SizedBox(
           height: 20,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: getToggleWidget(
                 labelName: "Pool",
                 onToggle: (data) {
@@ -1153,8 +1152,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                 },
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: getToggleWidget(
                 labelName: "Parking",
                 onToggle: (data) {
@@ -1166,8 +1165,8 @@ class _PropertyAdditionFormState extends State<PropertyAdditionForm> {
                 },
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: getToggleWidget(
                 labelName: "Sold",
                 onToggle: (data) {},

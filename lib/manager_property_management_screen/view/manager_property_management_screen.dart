@@ -3,12 +3,15 @@ import 'dart:convert';
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/option_label_selector_widget.dart';
 import 'package:algarve_house_hunters_system/agent_listing_screen/widgets/add_more_button.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
+import 'package:algarve_house_hunters_system/assets_controller.dart';
+import 'package:algarve_house_hunters_system/break_points.dart';
 import 'package:algarve_house_hunters_system/global_widgets/border_button.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_filed.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
 import 'package:algarve_house_hunters_system/global_widgets/global_widgets.dart';
 import 'package:algarve_house_hunters_system/global_widgets/html_renderer.dart';
+import 'package:algarve_house_hunters_system/global_widgets/manager_bottom_nav_bar.dart';
 import 'package:algarve_house_hunters_system/global_widgets/property_addition_form.dart';
 import 'package:algarve_house_hunters_system/global_widgets/rich_text_editor_dialog_box.dart';
 import 'package:algarve_house_hunters_system/global_widgets/submit_button.dart';
@@ -18,6 +21,7 @@ import 'package:algarve_house_hunters_system/manager_log_in_screen/controller/ma
 import 'package:algarve_house_hunters_system/manager_log_in_screen/view/manager_log_in_screen.dart';
 import 'package:algarve_house_hunters_system/manager_property_management_screen/controller/manager_property_management_screen_controller.dart';
 import 'package:algarve_house_hunters_system/manager_property_management_screen/widgets/manager_property_unit_tile_widget.dart';
+import 'package:algarve_house_hunters_system/manager_property_management_screen/widgets/mobile_property_tile_widget.dart';
 import 'package:algarve_house_hunters_system/manager_property_management_screen/widgets/quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/theme_controller.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -52,6 +56,10 @@ class MangerPropertyManagementScreen extends StatefulWidget {
 
 class _MangerPropertyManagementScreenState
     extends State<MangerPropertyManagementScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final PageController _crmCarouselController =
+      PageController(viewportFraction: 0.92);
+  int _crmCarouselPage = 0;
   CrmOptions crmOption = CrmOptions.addEntry;
   CrmPersonOption crmPersonOption = CrmPersonOption.advocate;
   List<dynamic> crmAdvocate = [];
@@ -360,6 +368,12 @@ class _MangerPropertyManagementScreenState
     setAvailableCrmData();
     getSelectedCrmData();
     getAllEmailTemplates();
+  }
+
+  @override
+  void dispose() {
+    _crmCarouselController.dispose();
+    super.dispose();
   }
 
   Widget getSelectorWidget({
@@ -1617,21 +1631,1116 @@ class _MangerPropertyManagementScreenState
     }
   }
 
+  // NOTE Mobile header banner — same as the dashboard mobile view, with a
+  // drawer (menu) trigger on the left.
+  Widget getMobileHeaderBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 16,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            icon: const Icon(Icons.menu, color: Colors.white),
+          ),
+          Image.asset(
+            AssetsController.mainLogoPath,
+            height: 48,
+            width: 48,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              "Algarve House Hunters",
+              style: ThemeController.normalTextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          ManagerInfoWidget(
+            onProfilePress: () {},
+            managerId: 'MNG-BLR-20250625-0001',
+            textColor: Colors.white,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // NOTE Mobile "List Properties" — vertical property cards.
+  Widget getMobileListProperties() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Properties',
+              style: ThemeController.titleTextStyle(),
+            ),
+            const Spacer(),
+            InkWell(
+              onTap: () {
+                ManagerLogInScreenController.showLoaderDialog(context);
+                ApiController.exportPropertiesWeb(context);
+                ManagerLogInScreenController.hideDialogBox(context);
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Export',
+                    style: ThemeController.normalTextStyle(
+                      fontWeight: FontWeight.w800,
+                      size: 13,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(
+                    Icons.download,
+                    size: 18,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (allProperties.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(40),
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
+            ),
+          )
+        else
+          Column(
+            children: List.generate(
+              allProperties.length,
+              (index) {
+                final property = allProperties[index];
+                final bool hasImages =
+                    (property["propertyImages"] as List?)?.isNotEmpty ?? false;
+                return MobilePropertyTileWidget(
+                  propertyInfo: property,
+                  onViewDetailsPress: () {
+                    context.go(
+                      '/manager-property-info-screen/${property['propertyId']}/${widget.agentId}',
+                    );
+                  },
+                  onImagePress: hasImages
+                      ? () {
+                          final List<String> urls =
+                              (property["propertyImages"] as List)
+                                  .cast<String>();
+                          GlobalWidgets.showImageViewerDialog(
+                            context,
+                            imageUrls: urls,
+                            title: "Property glance",
+                          );
+                        }
+                      : null,
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+
+  // NOTE Shared CRM add-entry submission.
+  Future<void> submitCrmEntry() async {
+    if (firstNameValue.isEmpty) {
+      setFirstNameError("First name cannot be empty");
+    }
+    if (secondNameValue.isEmpty) {
+      setSecondNameError("Second name cannot be empty");
+    }
+    if (emailValue.isEmpty) {
+      setEmailError("email cannot be empty");
+    }
+    if (phoneValue.isEmpty) {
+      setPhoneError("Phone number cannot be empty");
+    }
+    if (firstNameValue.isNotEmpty &&
+        secondNameValue.isNotEmpty &&
+        emailValue.isNotEmpty &&
+        phoneValue.isNotEmpty) {
+      Map<String, dynamic> requestData = {
+        "firstName": firstNameValue,
+        "secondName": secondNameValue,
+        "emailAddress": emailValue,
+        "phoneNumber": phoneValue,
+        "designation": crmPersonOptionToString(crmPersonOption)
+      };
+      ManagerLogInScreenController.showLoaderDialog(context);
+      await ApiController.addCrmData(
+        requestData,
+        onError: (errData) {
+          ManagerLogInScreenController.showError(context, jsonDecode(errData));
+          Future.delayed(const Duration(seconds: 2), () {
+            html.window.location.reload();
+          });
+        },
+        onSuccess: (resData) {
+          ManagerLogInScreenController.showSuccess(
+            context,
+            'Data has been added successfully !!!',
+          );
+          Future.delayed(const Duration(seconds: 2), () {
+            html.window.location.reload();
+          });
+        },
+      );
+    }
+  }
+
+  // NOTE Mobile CRM portal section.
+  Widget _crmTogglePill(String label, bool selected, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        decoration: BoxDecoration(
+          color: selected ? Colors.black : Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(
+            color: selected ? Colors.black : Colors.grey.shade300,
+          ),
+        ),
+        child: Text(
+          label,
+          style: ThemeController.normalTextStyle(
+            color: selected ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w800,
+            size: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getMobileCrmAddForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomTextFormFiled(
+          initialValue: '',
+          labelName: 'First name',
+          placeholderText: 'e.g. Jonathan',
+          errorText: firstNameError,
+          isMandatory: true,
+          onChanged: (data) {
+            clearFirstNameError();
+            firstNameValue = data;
+          },
+        ),
+        const SizedBox(height: 16),
+        CustomTextFormFiled(
+          initialValue: '',
+          labelName: 'Second name',
+          placeholderText: 'e.g. Miller',
+          errorText: secondNameError,
+          isMandatory: true,
+          onChanged: (data) {
+            clearSecondNameError();
+            secondNameValue = data;
+          },
+        ),
+        const SizedBox(height: 16),
+        CustomTextFormFiled(
+          initialValue: '',
+          labelName: 'Email address',
+          placeholderText: 'jonathan.miller@example.com',
+          errorText: emailError,
+          isMandatory: true,
+          onChanged: (data) {
+            clearEmailError();
+            emailValue = data;
+          },
+        ),
+        const SizedBox(height: 16),
+        CustomTextFormFiled(
+          initialValue: '',
+          labelName: 'Phone number',
+          placeholderText: '+1 (555) 000-0000',
+          errorText: phoneNumberError,
+          isMandatory: true,
+          onChanged: (data) {
+            clearPhoneError();
+            phoneValue = data;
+          },
+        ),
+        const SizedBox(height: 16),
+        GlobalWidgets.getTextLabelWidget('Role Designation', isMandatory: true),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+            borderRadius:
+                BorderRadius.circular(ThemeController.textFieldBorderRadius),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<CrmPersonOption>(
+              isExpanded: true,
+              value: crmPersonOption,
+              icon: const Icon(Icons.keyboard_arrow_down),
+              items: [
+                DropdownMenuItem(
+                  value: CrmPersonOption.advocate,
+                  child: Text(crmPersonOptionToString(CrmPersonOption.advocate)),
+                ),
+                DropdownMenuItem(
+                  value: CrmPersonOption.currencyManager,
+                  child: Text(crmPersonOptionToString(
+                      CrmPersonOption.currencyManager)),
+                ),
+                DropdownMenuItem(
+                  value: CrmPersonOption.mortgageBroker,
+                  child: Text(crmPersonOptionToString(
+                      CrmPersonOption.mortgageBroker)),
+                ),
+              ],
+              onChanged: (val) {
+                if (val != null) {
+                  changeCrmPersonOption(val);
+                }
+              },
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        InkWell(
+          onTap: () => submitCrmEntry(),
+          borderRadius: BorderRadius.circular(40),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 18),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Submit",
+                  style: ThemeController.normalTextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    size: 16,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Icon(Icons.send, color: Colors.white, size: 18),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _deleteCrmProfessional(String crmId) async {
+    ManagerLogInScreenController.showLoaderDialog(context);
+    await ApiController.deleteCrmPerson(
+      crmId,
+      onError: (errData) {
+        ManagerLogInScreenController.showError(context, jsonDecode(errData));
+      },
+      onSuccess: (resData) {
+        ManagerLogInScreenController.showSuccess(
+            context, 'Contact has been deleted .');
+        Future.delayed(const Duration(seconds: 2), () {
+          html.window.location.reload();
+        });
+      },
+    );
+  }
+
+  Widget _crmInfoPill(String label, String value) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: ThemeController.smallTextStyle(
+              color: Colors.grey.shade500,
+              fontWeight: FontWeight.w700,
+              size: 11,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: ThemeController.normalTextStyle(
+              fontWeight: FontWeight.w800,
+              size: 14,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _assignProfessionalButton(String role) {
+    return InkWell(
+      onTap: () {
+        // Jump to the Add Entry form with this role pre-selected.
+        changeCrmPersonOption(stringToOption(role));
+        changeCrmOption(CrmOptions.addEntry);
+      },
+      borderRadius: BorderRadius.circular(40),
+      child: Container(
+        width: double.infinity,
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(40),
+        ),
+        child: Text(
+          "Assign New Professional",
+          style: ThemeController.normalTextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            size: 14,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _emptyProfessionalCard(String role) {
+    return DottedBorder(
+      borderType: BorderType.RRect,
+      radius: const Radius.circular(24),
+      dashPattern: const [8, 5],
+      color: Colors.grey.shade400,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: Colors.grey.withOpacity(0.15),
+              child: Icon(
+                Icons.person_off_outlined,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "No Professional Assigned",
+              style: ThemeController.normalTextStyle(
+                fontWeight: FontWeight.w900,
+                size: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Please assign a professional to manage this role and start collaborating.",
+              textAlign: TextAlign.center,
+              style: ThemeController.normalTextStyle(
+                color: Colors.grey.shade600,
+                size: 14,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _assignProfessionalButton(role),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _assignedProfessionalCard(String role, Map<String, dynamic> data) {
+    final String crmId = (data['crmId'] ?? '').toString();
+    final String fullName =
+        "${data['firstName'] ?? ''} ${data['secondName'] ?? ''}".trim();
+    final String email = (data['emailAddress'] ?? '').toString();
+    final String phone = (data['phoneNumber'] ?? '').toString();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "REFERENCE ID",
+                      style: ThemeController.smallTextStyle(
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w700,
+                        size: 11,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      crmId,
+                      style: ThemeController.titleTextStyle(size: 18),
+                    ),
+                  ],
+                ),
+              ),
+              InkWell(
+                onTap: () => _deleteCrmProfessional(crmId),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              InkWell(
+                onTap: () {
+                  // Edit jumps to the Add Entry form with this role selected.
+                  changeCrmPersonOption(stringToOption(role));
+                  changeCrmOption(CrmOptions.addEntry);
+                },
+                borderRadius: BorderRadius.circular(30),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Text(
+                    "Edit",
+                    style: ThemeController.normalTextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      size: 13,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _crmInfoPill("FULL NAME", fullName),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(child: _crmInfoPill("EMAIL", email)),
+              const SizedBox(width: 12),
+              Expanded(child: _crmInfoPill("PHONE", phone)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _assignProfessionalButton(role),
+        ],
+      ),
+    );
+  }
+
+  Widget getMobileSelectedProfessionalsCarousel() {
+    final roles = [
+      {'label': 'Advocate', 'data': selectedAdvocate},
+      {'label': 'Currency Manager', 'data': selectedCurrencyManager},
+      {'label': 'Mortgage Broker', 'data': selectedMortgageBroker},
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 380,
+          child: PageView.builder(
+            controller: _crmCarouselController,
+            itemCount: roles.length,
+            onPageChanged: (i) => setState(() => _crmCarouselPage = i),
+            itemBuilder: (context, index) {
+              final label = roles[index]['label'] as String;
+              final data = roles[index]['data'] as Map<String, dynamic>;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: ThemeController.normalTextStyle(
+                        fontWeight: FontWeight.w900,
+                        size: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: data.isEmpty
+                            ? _emptyProfessionalCard(label)
+                            : _assignedProfessionalCard(label, data),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            roles.length,
+            (i) => AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              height: 8,
+              width: _crmCarouselPage == i ? 20 : 8,
+              decoration: BoxDecoration(
+                color: _crmCarouselPage == i ? Colors.black : Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _assignCrmPerson(Map<String, dynamic> person) async {
+    ManagerLogInScreenController.showLoaderDialog(context);
+    await ApiController.updateCrmStatus(
+      {
+        "crmId": person["crmId"],
+        "designation": person['designation'],
+      },
+      onSuccess: (resData) {
+        ManagerLogInScreenController.showSuccess(
+            context, 'Message has been updated');
+        Future.delayed(const Duration(seconds: 2), () {
+          html.window.location.reload();
+        });
+      },
+      onError: (errData) {
+        ManagerLogInScreenController.showError(context, jsonDecode(errData));
+      },
+    );
+  }
+
+  void _editCrmDialog(Map<String, dynamic> person) {
+    String firstName = (person['firstName'] ?? '').toString();
+    String secondName = (person['secondName'] ?? '').toString();
+    String email = (person['emailAddress'] ?? '').toString();
+    String phone = (person['phoneNumber'] ?? '').toString();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit Contact'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomTextFormFiled(
+                initialValue: firstName,
+                labelName: 'First name',
+                placeholderText: '',
+                isMandatory: true,
+                onChanged: (v) => firstName = v,
+              ),
+              const SizedBox(height: 12),
+              CustomTextFormFiled(
+                initialValue: secondName,
+                labelName: 'Second name',
+                placeholderText: '',
+                isMandatory: true,
+                onChanged: (v) => secondName = v,
+              ),
+              const SizedBox(height: 12),
+              CustomTextFormFiled(
+                initialValue: email,
+                labelName: 'Email address',
+                placeholderText: '',
+                isMandatory: true,
+                onChanged: (v) => email = v,
+              ),
+              const SizedBox(height: 12),
+              CustomTextFormFiled(
+                initialValue: phone,
+                labelName: 'Phone number',
+                placeholderText: '',
+                isMandatory: true,
+                onChanged: (v) => phone = v,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final requestData = {
+                "firstName": firstName,
+                "secondName": secondName,
+                "emailAddress": email,
+                "phoneNumber": phone,
+                "designation": person['designation'],
+                "crmId": person['crmId'],
+              };
+              ManagerLogInScreenController.showLoaderDialog(context);
+              await ApiController.editCrmData(
+                requestData,
+                onError: (errData) {
+                  ManagerLogInScreenController.showError(
+                      context, jsonDecode(errData));
+                  Future.delayed(const Duration(seconds: 2), () {
+                    html.window.location.reload();
+                  });
+                },
+                onSuccess: (resData) {
+                  ManagerLogInScreenController.showSuccess(
+                      context, 'Data has been edited successfully !!!');
+                  Future.delayed(const Duration(seconds: 2), () {
+                    html.window.location.reload();
+                  });
+                },
+              );
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _crmPersonCard(Map<String, dynamic> person) {
+    final bool selected =
+        (person['crmStatus'] ?? 'Not-Selected') != 'Not-Selected';
+    final String name =
+        "${person['firstName'] ?? ''} ${person['secondName'] ?? ''}".trim();
+    final String phone = (person['phoneNumber'] ?? '').toString();
+    final String crmId = (person['crmId'] ?? '').toString();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: selected ? Colors.black : Colors.white,
+        borderRadius: BorderRadius.circular(40),
+        border: selected ? null : Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 22,
+            backgroundColor: selected
+                ? Colors.white.withOpacity(0.2)
+                : Colors.grey.withOpacity(0.2),
+            child: Icon(
+              Icons.person,
+              color: selected ? Colors.white : Colors.grey.shade700,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: ThemeController.normalTextStyle(
+                    color: selected ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.w900,
+                    size: 15,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  phone,
+                  style: ThemeController.smallTextStyle(
+                    color: selected ? Colors.white70 : Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          InkWell(
+            onTap: () => _editCrmDialog(person),
+            child: Icon(
+              Icons.edit,
+              color: selected ? Colors.white : Colors.blue,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          InkWell(
+            onTap: () => _deleteCrmProfessional(crmId),
+            child: Icon(
+              selected ? Icons.delete : Icons.delete_outline,
+              color: selected ? Colors.white : Colors.red,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          if (selected)
+            const CircleAvatar(
+              radius: 14,
+              backgroundColor: Colors.white,
+              child: Icon(Icons.check, color: Colors.black, size: 16),
+            )
+          else
+            InkWell(
+              onTap: () => _assignCrmPerson(person),
+              child: Icon(Icons.chevron_right, color: Colors.grey.shade500),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget getMobileCrmExpansion({
+    required List<dynamic> data,
+    required String title,
+    required IconData icon,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+          title: Row(
+            children: [
+              Icon(icon, color: Colors.black),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: ThemeController.normalTextStyle(
+                  fontWeight: FontWeight.w900,
+                  size: 16,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  data.length.toString(),
+                  style: ThemeController.smallTextStyle(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          children: [
+            if (data.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text(
+                  "No contacts available",
+                  style: ThemeController.normalTextStyle(
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              )
+            else
+              ...data.map<Widget>((person) =>
+                  _crmPersonCard(person as Map<String, dynamic>)),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getMobileCrmListEntries() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        getMobileSelectedProfessionalsCarousel(),
+        const SizedBox(height: 24),
+        Text(
+          "All Entries",
+          style: ThemeController.titleTextStyle(),
+        ),
+        const SizedBox(height: 16),
+        getMobileCrmExpansion(
+          data: crmAdvocate,
+          title: 'Advocates',
+          icon: Icons.gavel,
+        ),
+        getMobileCrmExpansion(
+          data: crmCurrencyManager,
+          title: 'Currency Manager',
+          icon: Icons.currency_exchange,
+        ),
+        getMobileCrmExpansion(
+          data: crmMortgageBroker,
+          title: 'Mortgage Broker',
+          icon: Icons.home_outlined,
+        ),
+      ],
+    );
+  }
+
+  Widget getMobileCrmSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "CRM Portal",
+          style: ThemeController.titleTextStyle(),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            _crmTogglePill(
+              'Add Entry',
+              crmOption == CrmOptions.addEntry,
+              () => changeCrmOption(CrmOptions.addEntry),
+            ),
+            const SizedBox(width: 10),
+            _crmTogglePill(
+              'List entries',
+              crmOption == CrmOptions.listEntry,
+              () => changeCrmOption(CrmOptions.listEntry),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        if (crmOption == CrmOptions.addEntry)
+          getMobileCrmAddForm()
+        else
+          getMobileCrmListEntries(),
+      ],
+    );
+  }
+
+  // NOTE Left navigation drawer (image 2 style).
+  Widget _drawerTile({
+    required IconData icon,
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: selected ? Colors.grey.withOpacity(0.15) : Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 22, color: Colors.black),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: ThemeController.normalTextStyle(
+                fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getMobileDrawer() {
+    return Drawer(
+      backgroundColor: Colors.white,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 12, 8),
+              child: Row(
+                children: [
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: ListView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                children: [
+                  _drawerTile(
+                    icon: Icons.home,
+                    label: 'Add Property',
+                    selected: propertyManagementOption ==
+                        PropertyManagementOption.addProperty,
+                    onTap: () {
+                      changePropertyOption(
+                          PropertyManagementOption.addProperty);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _drawerTile(
+                    icon: Icons.menu,
+                    label: 'List Properties',
+                    selected: propertyManagementOption ==
+                        PropertyManagementOption.listProperty,
+                    onTap: () {
+                      changePropertyOption(
+                          PropertyManagementOption.listProperty);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _drawerTile(
+                    icon: Icons.import_contacts,
+                    label: 'Import Properties',
+                    selected: propertyManagementOption ==
+                        PropertyManagementOption.import,
+                    onTap: () {
+                      changePropertyOption(PropertyManagementOption.import);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _drawerTile(
+                    icon: Icons.person,
+                    label: 'Contacts',
+                    selected: propertyManagementOption ==
+                        PropertyManagementOption.crmPortal,
+                    onTap: () {
+                      changePropertyOption(PropertyManagementOption.crmPortal);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _drawerTile(
+                    icon: Icons.mail,
+                    label: 'Email Template',
+                    selected: propertyManagementOption ==
+                        PropertyManagementOption.emailTemplate,
+                    onTap: () {
+                      changePropertyOption(
+                          PropertyManagementOption.emailTemplate);
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool isMobile =
+        MediaQuery.of(context).size.width < Breakpoints.mobile;
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 10,
-          ),
-          child: Column(
-            children: [
-              Row(
+      drawer: getMobileDrawer(),
+      bottomNavigationBar: isMobile
+          ? const ManagerBottomNavBar(
+              currentOption: ManagerDashboardOption.listings,
+            )
+          : null,
+      body: LayoutBuilder(builder: (context, constraints) {
+        double width = constraints.maxWidth;
+        // NOTE Mobile View
+        if (width < Breakpoints.mobile) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                getMobileHeaderBanner(),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: propertyManagementOption ==
+                          PropertyManagementOption.listProperty
+                      ? getMobileListProperties()
+                      : propertyManagementOption ==
+                              PropertyManagementOption.crmPortal
+                          ? getMobileCrmSection()
+                          : getRightSectionAreaWidget(propertyManagementOption),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        }
+        // NOTE Tablet View
+        else if (width < Breakpoints.tablet) {
+          return Container();
+        }
+        // NOTE Web View
+        else {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
+              child: Column(
                 children: [
-                  const DashboardMainLogoSection(),
+                  Row(
+                    children: [
+                      const DashboardMainLogoSection(),
                   const Spacer(),
                   Row(
                     children: [
@@ -1803,8 +2912,10 @@ class _MangerPropertyManagementScreenState
               ),
             ],
           ),
-        ),
-      ),
+            ),
+          );
+        }
+      }),
     );
   }
 }
