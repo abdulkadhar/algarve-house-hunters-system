@@ -9,7 +9,10 @@ import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/a
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/agent_listing_screen/widgets/add_more_button.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
+import 'package:algarve_house_hunters_system/assets_controller.dart';
+import 'package:algarve_house_hunters_system/break_points.dart';
 import 'package:algarve_house_hunters_system/global_controller/global_controller.dart';
+import 'package:algarve_house_hunters_system/global_widgets/manager_bottom_nav_bar.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_filed.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_option_selector.dart';
@@ -43,6 +46,7 @@ class AgentClientInfoScreen extends StatefulWidget {
 }
 
 class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   ClientTypeOption clientTypeOption = ClientTypeOption.unAssigned;
   List<dynamic>? clientData;
   List<dynamic>? unAssignedClients;
@@ -183,9 +187,9 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
       widget.clientId,
       onSuccess: (responseData) {
         selectedClient = jsonDecode(responseData);
-        if (selectedClient != null) {
-          assignedAgents = selectedClient!['agent_id'];
-        }
+        // NOTE assignedAgents is a List populated by getAvailableAgent().
+        // The client's 'agent_id' is a single id (or null), so assigning it
+        // here threw a type/null error on load — removed.
         currentUserChecklist = null;
         setState(() {});
         print('Data has been loaded');
@@ -2592,8 +2596,1174 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
     }
   }
 
+  // NOTE Mobile header banner with drawer trigger.
+  Widget getMobileHeaderBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            icon: const Icon(Icons.menu, color: Colors.white),
+          ),
+          Image.asset(
+            AssetsController.mainLogoPath,
+            height: 48,
+            width: 48,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              "Algarve House Hunters",
+              style: ThemeController.normalTextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          ManagerInfoWidget(
+            onProfilePress: () {},
+            managerId: 'MNG-BLR-20250625-0001',
+            textColor: Colors.white,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _clientDrawerTile({
+    required IconData icon,
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: selected ? Colors.grey.withOpacity(0.15) : Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 22, color: Colors.black),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: ThemeController.normalTextStyle(
+                fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getMobileDrawer() {
+    return Drawer(
+      backgroundColor: Colors.white,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 12, 4),
+              child: Row(
+                children: [
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: Text(
+                "CLIENT OPTIONS",
+                style: ThemeController.smallTextStyle(
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w800,
+                  size: 12,
+                ),
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: ListView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                children: [
+                  _clientDrawerTile(
+                    icon: Icons.person_outline,
+                    label: 'Basic Info',
+                    selected: optionData == AgentClientInfoOption.basicInfo,
+                    onTap: () {
+                      changeAgentOption(AgentClientInfoOption.basicInfo);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _clientDrawerTile(
+                    icon: Icons.tune,
+                    label: 'Preference Info',
+                    selected:
+                        optionData == AgentClientInfoOption.preferenceInfo,
+                    onTap: () {
+                      changeAgentOption(AgentClientInfoOption.preferenceInfo);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _clientDrawerTile(
+                    icon: Icons.support_agent,
+                    label: 'Agent Info',
+                    selected: optionData == AgentClientInfoOption.agentInfo,
+                    onTap: () {
+                      changeAgentOption(AgentClientInfoOption.agentInfo);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _clientDrawerTile(
+                    icon: Icons.checklist,
+                    label: 'Checklist',
+                    selected:
+                        optionData == AgentClientInfoOption.clientChecklist,
+                    onTap: () {
+                      Navigator.pop(context);
+                      if (selectedClient != null) {
+                        context.push(
+                            '/manager-client-info-screen/${selectedClient!['client_id']}/clientChecklist');
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _clientInitials(String name) {
+    final parts =
+        name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '';
+    if (parts.length == 1) return parts.first[0].toUpperCase();
+    return (parts.first[0] + parts.last[0]).toUpperCase();
+  }
+
+  Widget _clientField(String label, String value) {
+    final bool isEmpty = value.trim().isEmpty;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: ThemeController.smallTextStyle(
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w700,
+              size: 12,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Text(
+              isEmpty ? 'Not provided' : value,
+              style: ThemeController.normalTextStyle(
+                color: isEmpty ? Colors.grey.shade400 : Colors.black,
+                fontWeight: FontWeight.w600,
+                size: 15,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getMobileClientList() {
+    if (clientData == null || unAssignedClients == null) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: CircularProgressIndicator(color: Colors.black),
+        ),
+      );
+    }
+    final bool isUnassigned =
+        clientTypeOption == ClientTypeOption.unAssigned;
+    final String query = isUnassigned ? unassignedQuery : assignedQuery;
+    final List<dynamic> source =
+        isUnassigned ? unAssignedClients! : clientData!;
+    final List<dynamic> list =
+        query.isEmpty ? source : searchClients(source, query);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomTextFormFiled(
+          isMandatory: false,
+          labelName: '',
+          placeholderText: 'Search clients...',
+          onChanged: (data) {
+            if (isUnassigned) {
+              unassignedQuery = data;
+            } else {
+              assignedQuery = data;
+            }
+            setState(() {});
+          },
+        ),
+        const SizedBox(height: 12),
+        Center(child: getClientOptionSelectorWidget()),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 70,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: list.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            itemBuilder: (context, index) {
+              final client = list[index] as Map<String, dynamic>;
+              final String name = (client['client_name'] ?? '').toString();
+              final String email =
+                  (client['client_email_address'] ?? '').toString();
+              final bool selected = selectedClient != null &&
+                  client['client_id'] == selectedClient!['client_id'];
+              return InkWell(
+                onTap: () => context.go(
+                    '/manager-client-info-screen/${client['client_id']}/basicInfo'),
+                borderRadius: BorderRadius.circular(40),
+                child: Container(
+                  width: 220,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: selected ? Colors.black : Colors.white,
+                    borderRadius: BorderRadius.circular(40),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: selected
+                            ? Colors.white.withOpacity(0.2)
+                            : Colors.grey.withOpacity(0.2),
+                        child: Text(
+                          _clientInitials(name),
+                          style: ThemeController.smallTextStyle(
+                            color: selected ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.w800,
+                            size: 12,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: ThemeController.smallTextStyle(
+                                color: selected ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.w800,
+                                size: 13,
+                              ),
+                            ),
+                            Text(
+                              email,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: ThemeController.smallTextStyle(
+                                color: selected
+                                    ? Colors.white70
+                                    : Colors.grey.shade600,
+                                size: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // NOTE Changeable client status chips (reuses the web status logic).
+  Widget getMobileStatusChips() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          OptionLabelSelectorWidget(
+            isEnabled: selectedClient!['approved_status'] == 'in-progress',
+            onPress: () async {
+              ManagerLogInScreenController.showLoaderDialog(context);
+              await ApiController.moveCustomerToInProgress(
+                clientId: selectedClient!['client_id'],
+                onSuccess: (data) async {
+                  ManagerLogInScreenController.showSuccess(context,
+                      'Client has been moved to in progress status');
+                  await Future.delayed(const Duration(seconds: 2), () {
+                    if (context.mounted) {
+                      context.push(
+                          '/manager-client-info-screen/${selectedClient!['client_id']}/basicInfo');
+                    }
+                  });
+                },
+                onError: (errorData) {
+                  ManagerLogInScreenController.showError(
+                      context, jsonDecode(errorData).toString());
+                },
+              );
+            },
+            optionLabel: 'In progress',
+            enabledBorderColor: Colors.blue,
+            enabledTextColor: Colors.blue,
+          ),
+          const SizedBox(width: 10),
+          OptionLabelSelectorWidget(
+            isEnabled: selectedClient!['approved_status'] == 'approved',
+            onPress: () async {
+              ManagerLogInScreenController.showLoaderDialog(context);
+              bool isFirstCallChecked =
+                  await checkFirstCallStatus(selectedClient!['client_id']);
+              if (context.mounted) {
+                ManagerLogInScreenController.hideDialogBox(context);
+                if (!isFirstCallChecked) {
+                  ManagerLogInScreenController.showError(
+                    context,
+                    'Complete first call process to approve.',
+                  );
+                } else {
+                  await GetAlertDialogBox.warningAlertDialogBox(
+                    context,
+                    title: "Approve client",
+                    warningText: "Do you wish to approve the client.",
+                    confirmLabel: "Confirm",
+                    cancelTextWidget: Text(
+                      "Cancel",
+                      style: ThemeController.smallTextStyle(color: Colors.black),
+                    ),
+                    onCancel: () {
+                      Navigator.pop(context);
+                    },
+                    onConfirm: () async {
+                      ManagerLogInScreenController.showLoaderDialog(context);
+                      await ApiController.approveCustomer(
+                        clientId: selectedClient!['client_id'],
+                        msg: "Client has been approved",
+                        onSuccess: (data) async {
+                          ManagerLogInScreenController.showSuccess(
+                              context, 'Client has been approved');
+                          await Future.delayed(const Duration(seconds: 2), () {
+                            if (context.mounted) {
+                              context.push(
+                                  '/manager-client-info-screen/${selectedClient!['client_id']}/basicInfo');
+                            }
+                          });
+                        },
+                        onError: (errorData) {
+                          ManagerLogInScreenController.showError(
+                              context, jsonDecode(errorData).toString());
+                        },
+                      );
+                    },
+                  );
+                }
+              }
+            },
+            optionLabel: 'Approved',
+            enabledBorderColor: Colors.green,
+            enabledTextColor: Colors.green,
+          ),
+          const SizedBox(width: 10),
+          OptionLabelSelectorWidget(
+            isEnabled: selectedClient!['approved_status'] == 'rejected',
+            onPress: () async {
+              await showBlackDialog(
+                context,
+                'Reject client',
+                '',
+                'rejected',
+                selectedClient!['client_id'],
+              );
+            },
+            optionLabel: 'Rejected',
+            enabledBorderColor: Colors.red,
+            enabledTextColor: Colors.red,
+          ),
+          const SizedBox(width: 10),
+          OptionLabelSelectorWidget(
+            isEnabled: selectedClient!['approved_status'] == 'sold',
+            onPress: () async {
+              await showBlackDialog(
+                context,
+                'Update sold status',
+                '',
+                'sold',
+                selectedClient!['client_id'],
+              );
+            },
+            optionLabel: 'Sold',
+            enabledBorderColor: Colors.amber,
+            enabledTextColor: Colors.amber,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getMobileClientBasicInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (selectedClient != null) ...[
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Client Status",
+                  style: ThemeController.normalTextStyle(
+                    fontWeight: FontWeight.w700,
+                    size: 13,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                getMobileStatusChips(),
+              ],
+            ),
+          ),
+        ],
+        getMobileClientList(),
+        const SizedBox(height: 20),
+        if (selectedClient == null)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(40),
+              child: CircularProgressIndicator(color: Colors.black),
+            ),
+          )
+        else ...[
+          // NOTE Client id + status
+          Text(
+            "${selectedClient!['client_first_name'] ?? ''} ${selectedClient!['client_second_name'] ?? ''}"
+                .trim(),
+            style: ThemeController.normalTextStyle(
+              fontWeight: FontWeight.w800,
+              size: 16,
+            ),
+          ),
+          const SizedBox(height: 16),
+          // NOTE Selected client card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.white.withOpacity(0.18),
+                  child: Text(
+                    _clientInitials(
+                        (selectedClient!['client_name'] ?? '').toString()),
+                    style: ThemeController.normalTextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      size: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        (selectedClient!['client_name'] ?? '').toString(),
+                        style: ThemeController.titleTextStyle(
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        "Active Client",
+                        style: ThemeController.smallTextStyle(
+                          color: Colors.white70,
+                          size: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          _clientField(
+              'First Name', (selectedClient!['client_first_name'] ?? '').toString()),
+          _clientField('Second Name',
+              (selectedClient!['client_second_name'] ?? '').toString()),
+          _clientField('Email address',
+              (selectedClient!['client_email_address'] ?? '').toString()),
+          _clientField('Phone number',
+              (selectedClient!['client_phone_number'] ?? '').toString()),
+          _clientField('Location name',
+              (selectedClient!['client_location_name'] ?? '').toString()),
+          _clientField('Designation',
+              (selectedClient!['client_designation'] ?? '').toString()),
+          _clientField('Company name',
+              (selectedClient!['client_company_name'] ?? '').toString()),
+          const SizedBox(height: 8),
+          const Divider(),
+          const SizedBox(height: 12),
+          Text(
+            "Manager info",
+            style: ThemeController.titleTextStyle(size: 18),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: ManagerInfoWidget(
+              onProfilePress: () {},
+              managerId: 'MNG-BLR-20250625-0001',
+              showLogout: false,
+            ),
+          ),
+          const SizedBox(height: 20),
+          // NOTE Notes
+          Row(
+            children: [
+              Text(
+                "Notes",
+                style: ThemeController.titleTextStyle(size: 18),
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () async {
+                  await showNotesDialogBox(
+                    context,
+                    'Add notes',
+                    '',
+                    selectedClient!['client_id'],
+                    (data) async {
+                      await ApiController.addManagerNotes(
+                        {
+                          "client_id": selectedClient!['client_id'],
+                          "notes_value": data
+                        },
+                        onSuccess: (resData) async {
+                          ManagerLogInScreenController.showSuccess(
+                              context, 'Notes has been added !!!');
+                          await Future.delayed(const Duration(seconds: 2), () {
+                            if (!mounted) return;
+                            html.window.location.reload();
+                          });
+                        },
+                        onError: (errData) {
+                          ManagerLogInScreenController.hideDialogBox(context);
+                          ManagerLogInScreenController.showError(
+                              context, jsonDecode(errData));
+                        },
+                      );
+                    },
+                  );
+                },
+                borderRadius: BorderRadius.circular(30),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.add, color: Colors.white, size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        "Add notes",
+                        style: ThemeController.smallTextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (selectedClient!['manager_notes'] != null)
+            ...List.generate(
+              (selectedClient!['manager_notes'] as List).length,
+              (index) {
+                final note = selectedClient!['manager_notes'][index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AgentDashboardScreenController.formatIsoToCustomTime(
+                            note['notes_date']),
+                        style: ThemeController.smallTextStyle(
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w700,
+                          size: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        (note['notes_value'] ?? '').toString(),
+                        style: ThemeController.normalTextStyle(size: 14),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
+      ],
+    );
+  }
+
+  // NOTE Mobile Preference Info section.
+  Widget _prefFieldItem(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: ThemeController.smallTextStyle(
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w600,
+            size: 12,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: ThemeController.normalTextStyle(
+            fontWeight: FontWeight.w700,
+            size: 14,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _prefTwoUp(String l1, String v1, String l2, String v2) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: _prefFieldItem(l1, v1)),
+          const SizedBox(width: 12),
+          Expanded(child: _prefFieldItem(l2, v2)),
+        ],
+      ),
+    );
+  }
+
+  Widget _prefSingle(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: _prefFieldItem(label, value),
+    );
+  }
+
+  Widget _prefContactPill(IconData icon, String label, String value) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: Colors.grey.shade700),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: ThemeController.smallTextStyle(
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w600,
+                    size: 11,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: ThemeController.normalTextStyle(
+                    fontWeight: FontWeight.w700,
+                    size: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _prefCard({
+    required IconData icon,
+    required String title,
+    required List<Widget> children,
+  }) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 18, color: Colors.black),
+              const SizedBox(width: 8),
+              Text(title, style: ThemeController.titleTextStyle(size: 16)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  Widget getMobileClientPreferenceInfo() {
+    if (selectedClient == null) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(40),
+          child: CircularProgressIndicator(color: Colors.black),
+        ),
+      );
+    }
+    // Empty state — client hasn't submitted the jotform.
+    if ((selectedClient!['jot_form_submitted_data'] ?? '').toString() == '') {
+      return Padding(
+        padding: const EdgeInsets.all(40),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(Icons.inbox_outlined, size: 56, color: Colors.grey.shade400),
+              const SizedBox(height: 12),
+              Text(
+                "Client hasn't submitted jotform !!!",
+                textAlign: TextAlign.center,
+                style: ThemeController.normalTextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    final Map<String, dynamic> pd =
+        (selectedClient!['preference_data'] as Map<String, dynamic>?) ?? {};
+    String f(String key) =>
+        GlobalController.getPreferenceFormatter((pd[key] ?? '').toString());
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _prefCard(
+          icon: Icons.home_outlined,
+          title: "Property Preference",
+          children: [
+            _prefTwoUp("Bedroom", f('bedNumber'), "Bathrooms", f('bathNumber')),
+            _prefTwoUp(
+                "M2", f('M2Preference'), "Location", f('locationPreference')),
+            _prefSingle("House Regards", f('houseRegardsPreference')),
+            _prefSingle("Neighbourhood", f('neighborPreference')),
+          ],
+        ),
+        _prefCard(
+          icon: Icons.account_balance_wallet_outlined,
+          title: "Financial Details",
+          children: [
+            _prefTwoUp("Buying Preference", f('buyingPreference'), "Value Spend",
+                f('valueSpendPreference')),
+            _prefTwoUp("Tax Status", f('taxPreference'), "Fiscal Status",
+                f('fiscalStatus')),
+            _prefSingle("Bank Status", f('bankStatus')),
+          ],
+        ),
+        _prefCard(
+          icon: Icons.person_outline,
+          title: "Contact & Personal",
+          children: [
+            _prefContactPill(Icons.mail_outline, "EMAIL", f('email')),
+            _prefContactPill(
+                Icons.phone_outlined, "PHONE NUMBER", f('phoneNumber')),
+            _prefTwoUp("Residence", f('residenceInfo'), "Language",
+                f('languagePreference')),
+          ],
+        ),
+        _prefCard(
+          icon: Icons.access_time,
+          title: "Status & Activity",
+          children: [
+            _prefTwoUp("Viewing", f('viewingPreference'), "Other agent",
+                f('otherAgentsStatus')),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Next appointment",
+                  style: ThemeController.smallTextStyle(
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w600,
+                    size: 12,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          GlobalController.formatAppointment(
+                              (pd['appointmentInfo'] ?? '').toString()),
+                          style: ThemeController.normalTextStyle(
+                            fontWeight: FontWeight.w700,
+                            size: 14,
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.add_circle_outline, color: Colors.grey.shade600),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        _prefCard(
+          icon: Icons.note_outlined,
+          title: "Additional Info",
+          children: [
+            Text(
+              f('additionalInfo'),
+              style: ThemeController.normalTextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade700,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // NOTE Mobile Agent Info section.
+  Widget _agentMobileCard({
+    required String name,
+    required IconData icon,
+    required String label,
+    required VoidCallback onPress,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 22,
+            backgroundColor: Colors.grey.withOpacity(0.2),
+            child: Text(
+              _clientInitials(name),
+              style: ThemeController.smallTextStyle(
+                color: Colors.grey.shade800,
+                fontWeight: FontWeight.w800,
+                size: 13,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              name,
+              style: ThemeController.normalTextStyle(
+                fontWeight: FontWeight.w800,
+                size: 15,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          InkWell(
+            onTap: onPress,
+            borderRadius: BorderRadius.circular(30),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, color: Colors.white, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    label,
+                    style: ThemeController.normalTextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      size: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _assignAgentToClient(Map<String, dynamic> agent) async {
+    final String agentId = agent['agent_id'];
+    final String clientId = selectedClient!['client_id'];
+    ManagerLogInScreenController.showLoaderDialog(context);
+    await ApiController.assignAgent(
+      clientId,
+      agentId,
+      onSuccess: (data) async {
+        ManagerLogInScreenController.showSuccess(
+            context, 'The agent has been assigned successfully !!!');
+        await Future.delayed(const Duration(seconds: 2), () {
+          if (context.mounted) {
+            context.push(
+                '/manager-client-info-screen/${selectedClient!['client_id']}/agentInfo');
+          }
+        });
+      },
+      onError: (data) {},
+    );
+  }
+
+  Future<void> _unAssignAgentFromClient(Map<String, dynamic> agent) async {
+    ManagerLogInScreenController.showLoaderDialog(context);
+    await ApiController.unAssignAgent(
+      agentId: agent['agent_id'],
+      clientId: selectedClient!['client_id'],
+      onSuccess: (resData) {
+        ManagerLogInScreenController.showSuccess(
+            context, 'Agent has been un assigned.');
+        Future.delayed(const Duration(seconds: 2), () {
+          if (context.mounted) {
+            context.push(
+                '/manager-client-info-screen/${selectedClient!['client_id']}/agentInfo');
+          }
+        });
+      },
+      onError: (errData) {
+        ManagerLogInScreenController.hideDialogBox(context);
+        ManagerLogInScreenController.showError(context, jsonDecode(errData));
+      },
+    );
+  }
+
+  Widget getMobileClientAgentInfo() {
+    if (selectedClient == null) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(40),
+          child: CircularProgressIndicator(color: Colors.black),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Assigned Agents",
+          style: ThemeController.titleTextStyle(size: 18),
+        ),
+        const SizedBox(height: 8),
+        if (assignedAgents.isEmpty)
+          Text(
+            "There is no agent has been assigned to the client. Please do assign the agent by pressing the assign button.",
+            style: ThemeController.normalTextStyle(
+              color: Colors.grey.shade600,
+              size: 14,
+            ),
+          )
+        else
+          ...assignedAgents.map<Widget>(
+            (agent) => _agentMobileCard(
+              name: (agent['agent_name'] ?? '').toString(),
+              icon: Icons.close,
+              label: 'Un Assign',
+              onPress: () =>
+                  _unAssignAgentFromClient(agent as Map<String, dynamic>),
+            ),
+          ),
+        const SizedBox(height: 24),
+        Text(
+          "Available Agents",
+          style: ThemeController.titleTextStyle(size: 18),
+        ),
+        const SizedBox(height: 12),
+        if (availableAgents.isEmpty)
+          Text(
+            "No available agents.",
+            style: ThemeController.normalTextStyle(
+              color: Colors.grey.shade600,
+              size: 14,
+            ),
+          )
+        else
+          ...availableAgents.map<Widget>(
+            (agent) => _agentMobileCard(
+              name: (agent['agent_name'] ?? '').toString(),
+              icon: Icons.add,
+              label: 'Assign',
+              onPress: () =>
+                  _assignAgentToClient(agent as Map<String, dynamic>),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool isMobile =
+        MediaQuery.of(context).size.width < Breakpoints.mobile;
+    if (isMobile) {
+      return Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: ThemeController.pageBackgroundColor,
+        drawer: getMobileDrawer(),
+        bottomNavigationBar: const ManagerBottomNavBar(
+          currentOption: ManagerDashboardOption.clients,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              getMobileHeaderBanner(),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: optionData == AgentClientInfoOption.basicInfo
+                    ? getMobileClientBasicInfo()
+                    : optionData == AgentClientInfoOption.preferenceInfo
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              getMobileClientList(),
+                              const SizedBox(height: 20),
+                              getMobileClientPreferenceInfo(),
+                            ],
+                          )
+                        : optionData == AgentClientInfoOption.agentInfo
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  getMobileClientList(),
+                                  const SizedBox(height: 20),
+                                  getMobileClientAgentInfo(),
+                                ],
+                              )
+                            : getMobileClientList(),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: ThemeController.pageBackgroundColor,
       body: SingleChildScrollView(

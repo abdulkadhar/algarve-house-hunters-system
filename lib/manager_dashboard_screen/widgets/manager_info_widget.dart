@@ -11,11 +11,13 @@ class ManagerInfoWidget extends StatefulWidget {
   final String managerId;
   final VoidCallback onProfilePress;
   final Color textColor;
+  final bool showLogout;
   const ManagerInfoWidget({
     super.key,
     required this.onProfilePress,
     required this.managerId,
     this.textColor = Colors.black,
+    this.showLogout = true,
   });
 
   @override
@@ -183,34 +185,36 @@ class _ManagerInfoWidgetState extends State<ManagerInfoWidget> {
               //           ],
               //         ),
               // ),
-              const SizedBox(
-                height: 5,
-              ),
-              InkWell(
-                onTap: () {
-                  context.replace('/manager-log-in-screen');
-                },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.power_settings_new,
-                      color: Colors.red,
-                      size: 14,
-                      weight: 10,
-                    ),
-                    const SizedBox(
-                      width: 2,
-                    ),
-                    Text(
-                      "Logout",
-                      style: ThemeController.smallTextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ],
+              if (widget.showLogout) ...[
+                const SizedBox(
+                  height: 5,
                 ),
-              )
+                InkWell(
+                  onTap: () {
+                    context.replace('/manager-log-in-screen');
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.power_settings_new,
+                        color: Colors.red,
+                        size: 14,
+                        weight: 10,
+                      ),
+                      const SizedBox(
+                        width: 2,
+                      ),
+                      Text(
+                        "Logout",
+                        style: ThemeController.smallTextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ]
             ],
           )
         ],
