@@ -3756,7 +3756,22 @@ class _AgentClientInfoScreenState extends State<AgentClientInfoScreen> {
                                   getMobileClientAgentInfo(),
                                 ],
                               )
-                            : getMobileClientList(),
+                            : optionData ==
+                                    AgentClientInfoOption.clientChecklist
+                                ? (selectedClient == null
+                                    ? const Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.all(40),
+                                          child: CircularProgressIndicator(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      )
+                                    : ChecklistHolderWidget(
+                                        agentId: "MNG-BLR-20250625-0001",
+                                        clientData: selectedClient,
+                                      ))
+                                : getMobileClientList(),
               ),
               const SizedBox(height: 20),
             ],

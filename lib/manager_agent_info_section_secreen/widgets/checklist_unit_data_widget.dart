@@ -3,6 +3,8 @@ import 'dart:html' as html;
 import 'package:algarve_house_hunters_system/agent_customer_property_allocation_screen/widgets/toggle_switch_widget.dart';
 import 'package:algarve_house_hunters_system/agent_listing_screen/widgets/add_more_button.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
+import 'package:algarve_house_hunters_system/break_points.dart';
+import 'package:algarve_house_hunters_system/global_widgets/responsive_row.dart';
 import 'package:algarve_house_hunters_system/global_controller/global_controller.dart';
 import 'package:algarve_house_hunters_system/global_widgets/border_button.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_text_button.dart';
@@ -399,6 +401,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
               horizontal: 20,
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.userData!['action'].length < 1)
                   Column(
@@ -430,7 +433,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Row(
+                            child: ResponsiveRow(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (index == 0)
@@ -439,7 +442,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       // NOTE - Status call widget
-                                      Row(
+                                      ResponsiveRow(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
@@ -606,13 +609,18 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                       ),
 
                                       // NOTE - Initial call widget
-                                      Row(
+                                      ResponsiveRow(
                                         children: [
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "How did they hear about us?",
@@ -636,9 +644,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName: "Where are they from",
                                               placeholderText: "",
@@ -661,9 +674,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "Have you read our reviews?",
@@ -687,13 +705,18 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                       const SizedBox(
                                         height: 20,
                                       ),
-                                      Row(
+                                      ResponsiveRow(
                                         children: [
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "Where do they live now?",
@@ -717,9 +740,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "Are they looking anywhere else?",
@@ -743,9 +771,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "Are they buying alone?",
@@ -769,13 +802,18 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                       const SizedBox(
                                         height: 20,
                                       ),
-                                      Row(
+                                      ResponsiveRow(
                                         children: [
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "How do they plan to purchase?",
@@ -799,9 +837,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName: "Are they in process?",
                                               placeholderText:
@@ -825,9 +868,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "Do we need refer them to a Mortgage broker?",
@@ -851,13 +899,18 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                       const SizedBox(
                                         height: 20,
                                       ),
-                                      Row(
+                                      ResponsiveRow(
                                         children: [
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "Do they need a lawyer recommendation?",
@@ -883,9 +936,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "Do they understand the buying process?",
@@ -910,9 +968,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "Explain if proactively looking to send listings",
@@ -938,13 +1001,18 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                       const SizedBox(
                                         height: 20,
                                       ),
-                                      Row(
+                                      ResponsiveRow(
                                         children: [
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName: "Survey",
                                               placeholderText: "",
@@ -967,9 +1035,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName: "Discuss Exclusivity.",
                                               placeholderText: "",
@@ -994,9 +1067,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName: "send contract",
                                               placeholderText: "",
@@ -1019,13 +1097,18 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                       const SizedBox(
                                         height: 20,
                                       ),
-                                      Row(
+                                      ResponsiveRow(
                                         children: [
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName:
                                                   "Will this be a holiday or permanent home?",
@@ -1049,9 +1132,14 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.2,
+                                                        .size
+                                                        .width <
+                                                    Breakpoints.mobile
+                                                ? double.infinity
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
                                             child: CustomTextFormFiled(
                                               labelName: "Are they in process?",
                                               placeholderText:
@@ -1251,6 +1339,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
               horizontal: 20,
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Align(
                   alignment: Alignment.centerRight,
@@ -1315,7 +1404,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Row(
+                            child: ResponsiveRow(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
@@ -1439,7 +1528,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
         case 2:
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(children: [
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
               if (widget.userData!['action'].isEmpty)
                 Column(
                   children: [
@@ -1532,7 +1621,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Row(
+                              child: ResponsiveRow(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -1591,8 +1680,8 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
         case 3:
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(children: [
-              Row(
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              ResponsiveRow(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   CustomBorderButton(
@@ -1680,7 +1769,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Row(
+                              child: ResponsiveRow(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -1772,7 +1861,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                                       if (widget.userData!['action'][index]
                                               ['data_type'] ==
                                           'call-data')
-                                        Row(
+                                        ResponsiveRow(
                                           children: [
                                             CustomTextButton(
                                               label: "Scheduled",
@@ -2043,6 +2132,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -2114,7 +2204,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -2244,12 +2334,13 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(
                   height: 10,
                 ),
-                Row(
+                ResponsiveRow(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     if (selectedAdvocate.isNotEmpty)
@@ -2470,7 +2561,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Row(
+                            child: ResponsiveRow(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
@@ -2528,6 +2619,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -2599,7 +2691,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -2731,6 +2823,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -2802,7 +2895,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -2934,6 +3027,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -3007,7 +3101,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -3138,6 +3232,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -3211,7 +3306,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -3343,6 +3438,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -3416,7 +3512,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -3548,6 +3644,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -3621,7 +3718,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -3753,6 +3850,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -3826,7 +3924,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -3957,6 +4055,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -4030,7 +4129,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -4161,6 +4260,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -4234,7 +4334,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -4365,6 +4465,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -4438,7 +4539,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -4570,6 +4671,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -4643,7 +4745,7 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
-                                child: Row(
+                                child: ResponsiveRow(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -4790,28 +4892,30 @@ class _CheckListUnitDataWidgetState extends State<CheckListUnitDataWidget> {
         ],
         title: Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.title,
-                  style: ThemeController.normalTextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: _isOn ? Colors.green : Colors.grey,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    style: ThemeController.normalTextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: _isOn ? Colors.green : Colors.grey,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 3,
-                ),
-                Text(
-                  widget.subtitle,
-                  style: ThemeController.smallTextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: _isOn ? Colors.green : Colors.grey),
-                ),
-              ],
+                  const SizedBox(
+                    height: 3,
+                  ),
+                  Text(
+                    widget.subtitle,
+                    style: ThemeController.smallTextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: _isOn ? Colors.green : Colors.grey),
+                  ),
+                ],
+              ),
             ),
-            const Spacer(),
+            const SizedBox(width: 10),
             ToggleSwitchWidget(
               isEnabled: widget.isEnabled,
               isOn: _isOn,
