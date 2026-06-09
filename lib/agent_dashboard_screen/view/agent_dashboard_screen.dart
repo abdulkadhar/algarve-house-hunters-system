@@ -403,14 +403,34 @@ class _AgentDashboardScreenState extends State<AgentDashboardScreen> {
                                             .cast<String>();
                                     GlobalWidgets.showImageViewerDialog(
                                       context,
-                                      imageUrls: urls,
+                                      imageUrls: urls.isEmpty
+                                          ? [
+                                              "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-00001694FC1B.JPG",
+                                              "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016359DAF.JPG",
+                                              "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016945A03.JPG",
+                                              "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016945A04.JPG",
+                                              "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016945A05.JPG",
+                                              "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016945A06.JPG",
+                                              "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016945A07.JPG",
+                                            ]
+                                          : urls,
                                       title: "Property glance",
                                     );
                                   },
                                   // imagePaths: CustomerDashboardScreenController
                                   //     .propertyImagePaths,
-                                  imagePaths:
-                                      latestPropertyData!["propertyImages"],
+                                  imagePaths: latestPropertyData!["propertyImages"]
+                                          .isEmpty
+                                      ? [
+                                          "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-00001694FC1B.JPG",
+                                          "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016359DAF.JPG",
+                                          "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016945A03.JPG",
+                                          "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016945A04.JPG",
+                                          "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016945A05.JPG",
+                                          "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016945A06.JPG",
+                                          "https://images.egorealestate.com/Z640x480/OAYES/S5/C2585/P27440974/TPHOTO/ID4EB7A201-0000-0500-0000-000016945A07.JPG",
+                                        ]
+                                      : latestPropertyData!["propertyImages"],
                                   width: (MediaQuery.of(context).size.width *
                                           0.5) *
                                       0.67,
