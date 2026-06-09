@@ -15,8 +15,42 @@ class PropertyUnitInfoWidget extends StatelessWidget {
     this.onTap,
   });
 
+  // NOTE Fallback tile shown when there is no image or the image fails to load.
+  Widget _imagePlaceholder(String message, IconData icon) {
+    return Container(
+      height: 130,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFEFEF),
+        border: Border.all(
+          color: Colors.grey,
+          width: 0.6,
+        ),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: Colors.grey, size: 28),
+          const SizedBox(height: 6),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: ThemeController.smallTextStyle(
+              color: Colors.grey,
+              fontWeight: FontWeight.w600,
+              size: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final List images =
+        (propertyData['propertyImages'] as List?) ?? const [];
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
@@ -36,12 +70,40 @@ class PropertyUnitInfoWidget extends StatelessWidget {
                 margin: const EdgeInsets.only(
                   bottom: 5,
                 ),
-                child: Image.network(
-                  propertyData['propertyImages'][0],
-                  height: 130,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: images.isEmpty
+                    ? _imagePlaceholder(
+                        'No image available',
+                        Icons.image_not_supported_outlined,
+                      )
+                    : Image.network(
+                        images[0].toString(),
+                        height: 130,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            height: 130,
+                            width: double.infinity,
+                            color: const Color(0xFFEFEFEF),
+                            child: const Center(
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) =>
+                            _imagePlaceholder(
+                          'Something went wrong',
+                          Icons.broken_image_outlined,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(

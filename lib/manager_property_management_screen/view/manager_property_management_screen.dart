@@ -1652,14 +1652,16 @@ class _MangerPropertyManagementScreenState
           ),
           Image.asset(
             AssetsController.mainLogoPath,
-            height: 48,
-            width: 48,
+            height: 40,
+            width: 40,
             color: Colors.white,
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               "Algarve House Hunters",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: ThemeController.normalTextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
@@ -1671,6 +1673,7 @@ class _MangerPropertyManagementScreenState
             onProfilePress: () {},
             managerId: 'MNG-BLR-20250625-0001',
             textColor: Colors.white,
+            compact: true,
           ),
         ],
       ),

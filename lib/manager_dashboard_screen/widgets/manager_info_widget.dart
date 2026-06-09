@@ -12,12 +12,17 @@ class ManagerInfoWidget extends StatefulWidget {
   final VoidCallback onProfilePress;
   final Color textColor;
   final bool showLogout;
+
+  /// Compact mode for mobile headers: shows only an initials avatar and a
+  /// logout button (no name/email), keeping the banner small.
+  final bool compact;
   const ManagerInfoWidget({
     super.key,
     required this.onProfilePress,
     required this.managerId,
     this.textColor = Colors.black,
     this.showLogout = true,
+    this.compact = false,
   });
 
   @override
@@ -73,6 +78,14 @@ class _ManagerInfoWidgetState extends State<ManagerInfoWidget> {
     getManagerData();
   }
 
+  String _initials(String name) {
+    final parts =
+        name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '';
+    if (parts.length == 1) return parts.first[0].toUpperCase();
+    return (parts.first[0] + parts.last[0]).toUpperCase();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (managerData == null) {
@@ -82,6 +95,53 @@ class _ManagerInfoWidgetState extends State<ManagerInfoWidget> {
         child: CircularProgressIndicator(
           color: Colors.black,
         ),
+      );
+    }
+    // NOTE Compact mobile header: initials avatar + logout only.
+    if (widget.compact) {
+      final String name = managerData!["manager_name"]?.toString() ?? '';
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            radius: 22,
+            backgroundColor: Colors.white,
+            child: Text(
+              _initials(name),
+              style: ThemeController.normalTextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w800,
+                size: 14,
+              ),
+            ),
+          ),
+          if (widget.showLogout) ...[
+            const SizedBox(width: 12),
+            InkWell(
+              onTap: () {
+                context.replace('/manager-log-in-screen');
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.power_settings_new,
+                    color: Colors.red,
+                    size: 22,
+                  ),
+                  Text(
+                    "Logout",
+                    style: ThemeController.smallTextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w900,
+                      size: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
       );
     }
     return InkWell(

@@ -12,11 +12,13 @@ class AgentUserInfoWidget extends StatefulWidget {
   final VoidCallback onProfilePress;
   final AgentModel agentData;
   final String agentId;
+  final Color textColor;
   const AgentUserInfoWidget({
     super.key,
     required this.onProfilePress,
     required this.agentData,
     this.agentId = '',
+    this.textColor = Colors.black,
   });
 
   @override
@@ -92,104 +94,114 @@ class _AgentUserInfoWidgetState extends State<AgentUserInfoWidget> {
                 const SizedBox(
                   width: 10,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      // widget.agentData.agentName,
-                      agentInfo!['agent_name'],
-                      style: ThemeController.normalTextStyle(
-                        fontWeight: FontWeight.w900,
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 160),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        // widget.agentData.agentName,
+                        agentInfo!['agent_name'],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: ThemeController.normalTextStyle(
+                          color: widget.textColor,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
-                    ),
-                    Text(
-                      // widget.agentData.agentDesignation,
-                      agentInfo!['agent_email_address'],
-                      style: ThemeController.smallTextStyle(
-                        fontWeight: FontWeight.w400,
+                      Text(
+                        // widget.agentData.agentDesignation,
+                        agentInfo!['agent_email_address'],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: ThemeController.smallTextStyle(
+                          color: widget.textColor,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                    ),
-                    // InkWell(
-                    //   onTap: () {
-                    //     isSetStatus = !isSetStatus;
-                    //     setState(() {});
-                    //   },
-                    //   child: !isSetStatus
-                    //       ? Row(
-                    //           children: [
-                    //             AgentStatusWidget(status: status),
-                    //             const SizedBox(
-                    //               width: 10,
-                    //             ),
-                    //             Text(
-                    //               CustomerDashboardScreenController
-                    //                   .getAgentLabelString(status),
-                    //               style: ThemeController.smallTextStyle(),
-                    //             )
-                    //           ],
-                    //         )
-                    //       : Row(
-                    //           children: [
-                    //             getSelectedStatusWidget(
-                    //               status == AgentStatus.available,
-                    //               AgentStatus.available,
-                    //             ),
-                    //             const SizedBox(
-                    //               width: 5,
-                    //             ),
-                    //             getSelectedStatusWidget(
-                    //               status == AgentStatus.away,
-                    //               AgentStatus.away,
-                    //             ),
-                    //             const SizedBox(
-                    //               width: 5,
-                    //             ),
-                    //             getSelectedStatusWidget(
-                    //               status == AgentStatus.offline,
-                    //               AgentStatus.offline,
-                    //             ),
-                    //             const SizedBox(
-                    //               width: 5,
-                    //             ),
-                    //             InkWell(
-                    //               onTap: () {
-                    //                 isSetStatus = !isSetStatus;
-                    //                 setState(() {});
-                    //               },
-                    //               child: Icon(
-                    //                 Icons.cancel_presentation_outlined,
-                    //                 color: Colors.black,
-                    //               ),
-                    //             )
-                    //           ],
-                    //         ),
-                    // ),
-                    InkWell(
-                      onTap: () {
-                        context.replace('/agent-login-screen');
-                      },
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.power_settings_new,
-                            color: Colors.red,
-                            size: 14,
-                            weight: 10,
-                          ),
-                          const SizedBox(
-                            width: 2,
-                          ),
-                          Text(
-                            "Logout",
-                            style: ThemeController.smallTextStyle(
+                      // InkWell(
+                      //   onTap: () {
+                      //     isSetStatus = !isSetStatus;
+                      //     setState(() {});
+                      //   },
+                      //   child: !isSetStatus
+                      //       ? Row(
+                      //           children: [
+                      //             AgentStatusWidget(status: status),
+                      //             const SizedBox(
+                      //               width: 10,
+                      //             ),
+                      //             Text(
+                      //               CustomerDashboardScreenController
+                      //                   .getAgentLabelString(status),
+                      //               style: ThemeController.smallTextStyle(),
+                      //             )
+                      //           ],
+                      //         )
+                      //       : Row(
+                      //           children: [
+                      //             getSelectedStatusWidget(
+                      //               status == AgentStatus.available,
+                      //               AgentStatus.available,
+                      //             ),
+                      //             const SizedBox(
+                      //               width: 5,
+                      //             ),
+                      //             getSelectedStatusWidget(
+                      //               status == AgentStatus.away,
+                      //               AgentStatus.away,
+                      //             ),
+                      //             const SizedBox(
+                      //               width: 5,
+                      //             ),
+                      //             getSelectedStatusWidget(
+                      //               status == AgentStatus.offline,
+                      //               AgentStatus.offline,
+                      //             ),
+                      //             const SizedBox(
+                      //               width: 5,
+                      //             ),
+                      //             InkWell(
+                      //               onTap: () {
+                      //                 isSetStatus = !isSetStatus;
+                      //                 setState(() {});
+                      //               },
+                      //               child: Icon(
+                      //                 Icons.cancel_presentation_outlined,
+                      //                 color: Colors.black,
+                      //               ),
+                      //             )
+                      //           ],
+                      //         ),
+                      // ),
+                      InkWell(
+                        onTap: () {
+                          context.replace('/agent-login-screen');
+                        },
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.power_settings_new,
                               color: Colors.red,
-                              fontWeight: FontWeight.w900,
+                              size: 14,
+                              weight: 10,
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                            const SizedBox(
+                              width: 2,
+                            ),
+                            Text(
+                              "Logout",
+                              style: ThemeController.smallTextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 )
               ],
             ),

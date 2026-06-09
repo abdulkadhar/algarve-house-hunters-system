@@ -10,7 +10,11 @@ import 'package:algarve_house_hunters_system/agent_dashboard_screen/controller/a
 import 'package:algarve_house_hunters_system/agent_dashboard_screen/widgets/client_quick_action_widget.dart';
 import 'package:algarve_house_hunters_system/agent_listing_screen/controller/agent_listing_screen_controller.dart';
 import 'package:algarve_house_hunters_system/api_controller.dart';
+import 'package:algarve_house_hunters_system/assets_controller.dart';
+import 'package:algarve_house_hunters_system/break_points.dart';
+import 'package:algarve_house_hunters_system/global_controller/global_controller.dart';
 import 'package:algarve_house_hunters_system/global_model/customer_data_model.dart';
+import 'package:algarve_house_hunters_system/global_widgets/agent_bottom_nav_bar.dart';
 import 'package:algarve_house_hunters_system/global_widgets/agent_user_info_widget.dart';
 import 'package:algarve_house_hunters_system/global_widgets/custom_text_form_filed.dart';
 import 'package:algarve_house_hunters_system/global_widgets/dashboard_main_logo_section.dart';
@@ -37,6 +41,8 @@ class AgentCustomerPropertyAllocationScreen extends StatefulWidget {
 
 class _AgentCustomerPropertyAllocationScreenState
     extends State<AgentCustomerPropertyAllocationScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  Map<String, dynamic>? agentInfo;
   List<dynamic>? assignedClients;
   Map<String, dynamic>? selectedUser;
 
@@ -2008,163 +2014,743 @@ class _AgentCustomerPropertyAllocationScreenState
     );
   }
 
+  void getAgentProfileData() async {
+    await ApiController.getAgentInfoById(
+      widget.agentId,
+      onError: (data) {},
+      onSuccess: (data) {
+        agentInfo = jsonDecode(data);
+        setState(() {});
+      },
+    );
+  }
+
+  String _agentInitials() {
+    final String name = (agentInfo?['agent_name'] ?? '').toString();
+    final parts =
+        name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '';
+    if (parts.length == 1) return parts.first[0].toUpperCase();
+    return (parts.first[0] + parts.last[0]).toUpperCase();
+  }
+
+  // NOTE Mobile header banner — compact, with a drawer (menu) trigger.
+  Widget getMobileHeaderBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            icon: const Icon(Icons.menu, color: Colors.white),
+          ),
+          Image.asset(
+            AssetsController.mainLogoPath,
+            height: 40,
+            width: 40,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              "Algarve House Hunters",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: ThemeController.normalTextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: Colors.white,
+            child: Text(
+              _agentInitials(),
+              style: ThemeController.normalTextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w800,
+                size: 13,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          InkWell(
+            onTap: () {
+              context.replace('/agent-login-screen');
+            },
+            child: const Icon(
+              Icons.power_settings_new,
+              color: Colors.red,
+              size: 22,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _clientDrawerTile({
+    required IconData icon,
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: selected ? Colors.grey.withOpacity(0.15) : Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 22, color: Colors.black),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: ThemeController.normalTextStyle(
+                fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // NOTE Mobile drawer — the in-page allocation options.
+  Widget getMobileDrawer() {
+    return Drawer(
+      backgroundColor: Colors.white,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 12, 4),
+              child: Row(
+                children: [
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: Text(
+                "CLIENT OPTIONS",
+                style: ThemeController.smallTextStyle(
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w800,
+                  size: 12,
+                ),
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: ListView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                children: [
+                  _clientDrawerTile(
+                    icon: Icons.tune,
+                    label: 'User Preferences',
+                    selected: optionsData == PropertyAllocationOption.userPref,
+                    onTap: () {
+                      Navigator.pop(context);
+                      changePropertyAllocationOption(
+                          PropertyAllocationOption.userPref);
+                    },
+                  ),
+                  _clientDrawerTile(
+                    icon: Icons.real_estate_agent_outlined,
+                    label: 'Assign Property',
+                    selected:
+                        optionsData == PropertyAllocationOption.assignProperty,
+                    onTap: () {
+                      Navigator.pop(context);
+                      changePropertyAllocationOption(
+                          PropertyAllocationOption.assignProperty);
+                    },
+                  ),
+                  _clientDrawerTile(
+                    icon: Icons.checklist,
+                    label: 'Check List',
+                    selected: optionsData == PropertyAllocationOption.checklist,
+                    onTap: () {
+                      Navigator.pop(context);
+                      if (selectedUser != null) {
+                        getCurrentUserCheckListData(selectedUser!['client_id']);
+                      }
+                      changePropertyAllocationOption(
+                          PropertyAllocationOption.checklist);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // NOTE Mobile "User Preferences" — exact preference cards ported from the
+  // agent client info screen.
+  Widget _prefFieldItem(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: ThemeController.smallTextStyle(
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w600,
+            size: 12,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: ThemeController.normalTextStyle(
+            fontWeight: FontWeight.w700,
+            size: 14,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _prefTwoUp(String l1, String v1, String l2, String v2) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: _prefFieldItem(l1, v1)),
+          const SizedBox(width: 12),
+          Expanded(child: _prefFieldItem(l2, v2)),
+        ],
+      ),
+    );
+  }
+
+  Widget _prefSingle(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: _prefFieldItem(label, value),
+    );
+  }
+
+  Widget _prefContactPill(IconData icon, String label, String value) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: Colors.grey.shade700),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: ThemeController.smallTextStyle(
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w600,
+                    size: 11,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: ThemeController.normalTextStyle(
+                    fontWeight: FontWeight.w700,
+                    size: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _prefCard({
+    required IconData icon,
+    required String title,
+    required List<Widget> children,
+  }) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 18, color: Colors.black),
+              const SizedBox(width: 8),
+              Text(title, style: ThemeController.titleTextStyle(size: 16)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobilePreferences() {
+    if (selectedUser == null) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(40),
+          child: CircularProgressIndicator(color: Colors.black),
+        ),
+      );
+    }
+    final Map<String, dynamic> pd =
+        (selectedUser!['preference_data'] as Map<String, dynamic>?) ?? {};
+    if (pd.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(40),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(Icons.inbox_outlined, size: 56, color: Colors.grey.shade400),
+              const SizedBox(height: 12),
+              Text(
+                "Client hasn't submitted jotform !!!",
+                textAlign: TextAlign.center,
+                style: ThemeController.normalTextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    String f(String key) =>
+        GlobalController.getPreferenceFormatter((pd[key] ?? '').toString());
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _prefCard(
+          icon: Icons.home_outlined,
+          title: "Property Preference",
+          children: [
+            _prefTwoUp("Bedroom", f('bedNumber'), "Bathrooms", f('bathNumber')),
+            _prefTwoUp(
+                "M2", f('M2Preference'), "Location", f('locationPreference')),
+            _prefSingle("House Regards", f('houseRegardsPreference')),
+            _prefSingle("Neighbourhood", f('neighborPreference')),
+          ],
+        ),
+        _prefCard(
+          icon: Icons.account_balance_wallet_outlined,
+          title: "Financial Details",
+          children: [
+            _prefTwoUp("Buying Preference", f('buyingPreference'),
+                "Value Spend", f('valueSpendPreference')),
+            _prefTwoUp("Tax Status", f('taxPreference'), "Fiscal Status",
+                f('fiscalStatus')),
+            _prefSingle("Bank Status", f('bankStatus')),
+          ],
+        ),
+        _prefCard(
+          icon: Icons.person_outline,
+          title: "Contact & Personal",
+          children: [
+            _prefContactPill(Icons.mail_outline, "EMAIL", f('email')),
+            _prefContactPill(
+                Icons.phone_outlined, "PHONE NUMBER", f('phoneNumber')),
+            _prefTwoUp("Residence", f('residenceInfo'), "Language",
+                f('languagePreference')),
+          ],
+        ),
+        _prefCard(
+          icon: Icons.access_time,
+          title: "Status & Activity",
+          children: [
+            _prefTwoUp("Viewing", f('viewingPreference'), "Other agent",
+                f('otherAgentsStatus')),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Next appointment",
+                  style: ThemeController.smallTextStyle(
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w600,
+                    size: 12,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          GlobalController.formatAppointment(
+                              (pd['appointmentInfo'] ?? '').toString()),
+                          style: ThemeController.normalTextStyle(
+                            fontWeight: FontWeight.w700,
+                            size: 14,
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.add_circle_outline,
+                          color: Colors.grey.shade600),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        _prefCard(
+          icon: Icons.note_outlined,
+          title: "Additional Info",
+          children: [
+            Text(
+              f('additionalInfo'),
+              style: ThemeController.normalTextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade700,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // NOTE Assign a listed property to the selected client (shared web + mobile).
+  Future<void> _assignPropertyToClient(String propertyId) async {
+    if (selectedUser == null) return;
+    ManagerLogInScreenController.showLoaderDialog(context);
+    await ApiController.assignProperty(
+      propertyId: propertyId,
+      customerId: selectedUser!['client_id'],
+      onSuccess: (resData) async {
+        ManagerLogInScreenController.showSuccess(
+            context, 'Property has been assigned to the user !!!!');
+        await Future.delayed(const Duration(seconds: 2), () {
+          if (!mounted) {
+            return;
+          }
+          html.window.location.reload();
+        });
+        ManagerLogInScreenController.hideDialogBox(context);
+      },
+      onError: (errData) {
+        ManagerLogInScreenController.showError(
+          context,
+          jsonDecode(errData),
+        );
+        ManagerLogInScreenController.hideDialogBox(context);
+      },
+    );
+  }
+
+  // NOTE Mobile client selector — dropdown of assigned clients.
+  Widget getMobileClientSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              "ASSIGNED CLIENTS",
+              style: ThemeController.smallTextStyle(
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w800,
+                size: 12,
+              ),
+            ),
+            const Spacer(),
+            InkWell(
+              onTap: () =>
+                  context.go('/agent-add-user-screen/${widget.agentId}'),
+              child: const Icon(Icons.add),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (assignedClients == null)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(color: Colors.black),
+            ),
+          )
+        else
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                isExpanded: true,
+                dropdownColor: Colors.white,
+                value: selectedUser == null
+                    ? null
+                    : selectedUser!['client_id']?.toString(),
+                hint: Text(
+                  "Select a client",
+                  style: ThemeController.normalTextStyle(
+                    color: Colors.grey.shade500,
+                    size: 14,
+                  ),
+                ),
+                icon: const Icon(Icons.keyboard_arrow_down),
+                items: assignedClients!.map<DropdownMenuItem<String>>((client) {
+                  return DropdownMenuItem<String>(
+                    value: client['client_id'].toString(),
+                    child: Text(
+                      (client['client_name'] ?? '').toString(),
+                      style: ThemeController.normalTextStyle(
+                        fontWeight: FontWeight.w700,
+                        size: 14,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value == null) return;
+                  final client = assignedClients!.firstWhere(
+                    (c) => c['client_id'].toString() == value,
+                  );
+                  selectedUser = client;
+                  changePropertyAllocationOption(
+                      PropertyAllocationOption.userPref);
+                  setState(() {});
+                },
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     getAssignedClients();
+    getAgentProfileData();
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool isMobile =
+        MediaQuery.of(context).size.width < Breakpoints.mobile;
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: ThemeController.pageBackgroundColor,
+      drawer: isMobile ? getMobileDrawer() : null,
+      bottomNavigationBar: isMobile
+          ? AgentBottomNavBar(
+              currentOption: AgentDashboardOption.customer,
+              agentId: widget.agentId,
+              agentInfo: agentInfo,
+              assignedClients: assignedClients,
+            )
+          : null,
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 16 : 20,
             vertical: 10,
           ),
           child: Column(
             children: [
-              Row(
-                children: [
-                  const DashboardMainLogoSection(),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      DashboardOptionSelector(
-                        isEnabled:
-                            dashboardOption == AgentDashboardOption.dashboard,
-                        iconData: Icons.dashboard,
-                        optionLabel: 'Dashboard',
-                        onTap: () {
-                          // changeDashboardOption(
-                          //   AgentDashboardOption.dashboard,
-                          // );
-                          context
-                              .go('/agent-dashboard-screen/${widget.agentId}');
-                        },
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      DashboardOptionSelector(
-                        isEnabled:
-                            dashboardOption == AgentDashboardOption.listings,
-                        iconData: Icons.list,
-                        optionLabel: 'Listings',
-                        onTap: () {
-                          // context.go('/agent-listing-screen');
-                        },
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      DashboardOptionSelector(
-                        isEnabled:
-                            dashboardOption == AgentDashboardOption.calendar,
-                        iconData: Icons.document_scanner,
-                        optionLabel: 'Onboarding Document',
-                        onTap: () {
-                          context.go(
-                              '/agent-onboarding-document-screen/${widget.agentId}');
-                        },
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      DashboardOptionSelector(
-                        isEnabled:
-                            dashboardOption == AgentDashboardOption.customer,
-                        iconData: Icons.dashboard_customize_rounded,
-                        optionLabel: 'Client',
-                        onTap: () {
-                          changeDashboardOption(
-                            AgentDashboardOption.customer,
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  AgentUserInfoWidget(
-                    agentData:
-                        AgentDashboardScreenController.getSampleAgentModel(),
-                    onProfilePress: () {},
-                  ),
-                ],
-              ),
+              if (isMobile) getMobileHeaderBanner(),
+              if (isMobile) const SizedBox(height: 20),
+              if (isMobile) getMobileClientSelector(),
+              if (!isMobile)
+                Row(
+                  children: [
+                    const DashboardMainLogoSection(),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        DashboardOptionSelector(
+                          isEnabled:
+                              dashboardOption == AgentDashboardOption.dashboard,
+                          iconData: Icons.dashboard,
+                          optionLabel: 'Dashboard',
+                          onTap: () {
+                            // changeDashboardOption(
+                            //   AgentDashboardOption.dashboard,
+                            // );
+                            context.go(
+                                '/agent-dashboard-screen/${widget.agentId}');
+                          },
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        DashboardOptionSelector(
+                          isEnabled:
+                              dashboardOption == AgentDashboardOption.listings,
+                          iconData: Icons.list,
+                          optionLabel: 'Listings',
+                          onTap: () {
+                            // context.go('/agent-listing-screen');
+                          },
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        DashboardOptionSelector(
+                          isEnabled:
+                              dashboardOption == AgentDashboardOption.calendar,
+                          iconData: Icons.document_scanner,
+                          optionLabel: 'Onboarding Document',
+                          onTap: () {
+                            context.go(
+                                '/agent-onboarding-document-screen/${widget.agentId}');
+                          },
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        DashboardOptionSelector(
+                          isEnabled:
+                              dashboardOption == AgentDashboardOption.customer,
+                          iconData: Icons.dashboard_customize_rounded,
+                          optionLabel: 'Client',
+                          onTap: () {
+                            changeDashboardOption(
+                              AgentDashboardOption.customer,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    AgentUserInfoWidget(
+                      agentData:
+                          AgentDashboardScreenController.getSampleAgentModel(),
+                      onProfilePress: () {},
+                    ),
+                  ],
+                ),
               const SizedBox(
                 height: 20,
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.2,
-                    height: MediaQuery.of(context).size.height * 0.86,
-                    decoration: BoxDecoration(
-                      color: ThemeController.pageBackgroundSecondaryColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: ListView(
-                      padding: const EdgeInsets.all(15),
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              'Assigned Clients',
-                              style: ThemeController.normalTextStyle(
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                            const Spacer(),
-                            InkWell(
-                              onTap: () {
-                                context.go(
-                                    '/agent-add-user-screen/${widget.agentId}');
-                              },
-                              child: Icon(
-                                Icons.add,
-                                color: Colors.black,
-                                size: 18,
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        if (assignedClients != null)
-                          Column(
-                            children: List.generate(
-                              assignedClients!.length,
-                              (index) => ClientQuickActionWidget(
-                                userData: assignedClients![index],
-                                isSelected: assignedClients![index]
-                                        ["client_id"] ==
-                                    selectedUser!["client_id"],
-                                onProfilePress: () {
-                                  selectedUser = assignedClients![index];
-                                  changePropertyAllocationOption(
-                                      PropertyAllocationOption.userPref);
-                                  setState(() {});
-                                },
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  // NOTE Empty Space
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.01,
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
+                  if (!isMobile)
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      height: MediaQuery.of(context).size.height * 0.86,
                       decoration: BoxDecoration(
                         color: ThemeController.pageBackgroundSecondaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: ListView(
+                        padding: const EdgeInsets.all(15),
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Assigned Clients',
+                                style: ThemeController.normalTextStyle(
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              const Spacer(),
+                              InkWell(
+                                onTap: () {
+                                  context.go(
+                                      '/agent-add-user-screen/${widget.agentId}');
+                                },
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.black,
+                                  size: 18,
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          if (assignedClients != null)
+                            Column(
+                              children: List.generate(
+                                assignedClients!.length,
+                                (index) => ClientQuickActionWidget(
+                                  userData: assignedClients![index],
+                                  isSelected: assignedClients![index]
+                                          ["client_id"] ==
+                                      selectedUser!["client_id"],
+                                  onProfilePress: () {
+                                    selectedUser = assignedClients![index];
+                                    changePropertyAllocationOption(
+                                        PropertyAllocationOption.userPref);
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  // NOTE Empty Space
+                  if (!isMobile)
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.01,
+                    ),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(isMobile ? 0 : 20),
+                      decoration: BoxDecoration(
+                        color: isMobile
+                            ? Colors.white
+                            : ThemeController.pageBackgroundSecondaryColor,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Column(
@@ -2173,53 +2759,58 @@ class _AgentCustomerPropertyAllocationScreenState
                           const SizedBox(
                             height: 10,
                           ),
-                          Row(
-                            children: [
-                              OptionLabelSelectorWidget(
-                                isEnabled: optionsData ==
-                                    PropertyAllocationOption.userPref,
-                                onPress: () {
-                                  changePropertyAllocationOption(
-                                    PropertyAllocationOption.userPref,
-                                  );
-                                },
-                                optionLabel: 'User Preferences',
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              OptionLabelSelectorWidget(
-                                isEnabled: optionsData ==
-                                    PropertyAllocationOption.assignProperty,
-                                onPress: () {
-                                  changePropertyAllocationOption(
-                                    PropertyAllocationOption.assignProperty,
-                                  );
-                                },
-                                optionLabel: 'Assign Property',
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              OptionLabelSelectorWidget(
-                                isEnabled: optionsData ==
-                                    PropertyAllocationOption.checklist,
-                                onPress: () {
-                                  getCurrentUserCheckListData(
-                                    selectedUser!['client_id'],
-                                  );
-                                  changePropertyAllocationOption(
-                                    PropertyAllocationOption.checklist,
-                                  );
-                                },
-                                optionLabel: 'Check List',
-                              )
-                            ],
-                          ),
+                          if (!isMobile)
+                            Row(
+                              children: [
+                                OptionLabelSelectorWidget(
+                                  isEnabled: optionsData ==
+                                      PropertyAllocationOption.userPref,
+                                  onPress: () {
+                                    changePropertyAllocationOption(
+                                      PropertyAllocationOption.userPref,
+                                    );
+                                  },
+                                  optionLabel: 'User Preferences',
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                OptionLabelSelectorWidget(
+                                  isEnabled: optionsData ==
+                                      PropertyAllocationOption.assignProperty,
+                                  onPress: () {
+                                    changePropertyAllocationOption(
+                                      PropertyAllocationOption.assignProperty,
+                                    );
+                                  },
+                                  optionLabel: 'Assign Property',
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                OptionLabelSelectorWidget(
+                                  isEnabled: optionsData ==
+                                      PropertyAllocationOption.checklist,
+                                  onPress: () {
+                                    getCurrentUserCheckListData(
+                                      selectedUser!['client_id'],
+                                    );
+                                    changePropertyAllocationOption(
+                                      PropertyAllocationOption.checklist,
+                                    );
+                                  },
+                                  optionLabel: 'Check List',
+                                )
+                              ],
+                            ),
                           const SizedBox(
                             height: 20,
                           ),
-                          if (optionsData == PropertyAllocationOption.userPref)
+                          if (isMobile &&
+                              optionsData == PropertyAllocationOption.userPref)
+                            _buildMobilePreferences(),
+                          if (!isMobile &&
+                              optionsData == PropertyAllocationOption.userPref)
                             Column(
                               children: [
                                 UserPreferenceValuesDisplayWidget(
@@ -2448,24 +3039,41 @@ class _AgentCustomerPropertyAllocationScreenState
                                   ),
                                 if (assignedPropertyList != null &&
                                     assignedPropertyList!.isNotEmpty)
-                                  SizedBox(
-                                    child: GridView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: assignedPropertyList!.length,
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 4, // 2 columns
-                                        crossAxisSpacing: 12,
-                                        mainAxisSpacing: 12,
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        return PropertyUnitInfoWidget(
-                                          propertyData:
-                                              assignedPropertyList![index],
-                                        );
-                                      },
-                                    ),
-                                  ),
+                                  isMobile
+                                      ? Column(
+                                          children: List.generate(
+                                            assignedPropertyList!.length,
+                                            (index) => Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 12),
+                                              child: PropertyUnitInfoWidget(
+                                                propertyData:
+                                                    assignedPropertyList![
+                                                        index],
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : SizedBox(
+                                          child: GridView.builder(
+                                            shrinkWrap: true,
+                                            itemCount:
+                                                assignedPropertyList!.length,
+                                            gridDelegate:
+                                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 4,
+                                              crossAxisSpacing: 12,
+                                              mainAxisSpacing: 12,
+                                            ),
+                                            itemBuilder: (context, index) {
+                                              return PropertyUnitInfoWidget(
+                                                propertyData:
+                                                    assignedPropertyList![
+                                                        index],
+                                              );
+                                            },
+                                          ),
+                                        ),
                               ],
                             ),
                           if (optionsData ==
@@ -2502,70 +3110,54 @@ class _AgentCustomerPropertyAllocationScreenState
                                   ),
                                 if (unAssignedPropertyList != null &&
                                     unAssignedPropertyList!.isNotEmpty)
-                                  SizedBox(
-                                    child: GridView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: unAssignedPropertyList!.length,
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 4, // 2 columns
-                                        crossAxisSpacing: 12,
-                                        mainAxisSpacing: 12,
-                                        childAspectRatio: 0.85,
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        return PropertyUnitInfoWidget(
-                                          propertyData:
-                                              unAssignedPropertyList![index],
-                                          isAssignButton: true,
-                                          onTap: () async {
-                                            ManagerLogInScreenController
-                                                .showLoaderDialog(context);
-                                            if (unAssignedPropertyList !=
-                                                    null &&
-                                                selectedUser != null) {
-                                              await ApiController
-                                                  .assignProperty(
-                                                propertyId:
+                                  isMobile
+                                      ? Column(
+                                          children: List.generate(
+                                            unAssignedPropertyList!.length,
+                                            (index) => Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 12),
+                                              child: PropertyUnitInfoWidget(
+                                                propertyData:
                                                     unAssignedPropertyList![
-                                                        index]['propertyId'],
-                                                customerId:
-                                                    selectedUser!['client_id'],
-                                                onSuccess: (resData) async {
-                                                  ManagerLogInScreenController
-                                                      .showSuccess(context,
-                                                          'Property has been assigned to the user !!!!');
-                                                  await Future.delayed(
-                                                    const Duration(seconds: 2),
-                                                    () {
-                                                      print(
-                                                          "This runs after 2 seconds");
-                                                      if (!mounted) {
-                                                        return;
-                                                      }
-                                                      html.window.location
-                                                          .reload();
-                                                    },
-                                                  );
-                                                  ManagerLogInScreenController
-                                                      .hideDialogBox(context);
-                                                },
-                                                onError: (errData) {
-                                                  ManagerLogInScreenController
-                                                      .showError(
-                                                    context,
-                                                    jsonDecode(errData),
-                                                  );
-                                                  ManagerLogInScreenController
-                                                      .hideDialogBox(context);
-                                                },
+                                                        index],
+                                                isAssignButton: true,
+                                                onTap: () =>
+                                                    _assignPropertyToClient(
+                                                        unAssignedPropertyList![
+                                                                index]
+                                                            ['propertyId']),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : SizedBox(
+                                          child: GridView.builder(
+                                            shrinkWrap: true,
+                                            itemCount:
+                                                unAssignedPropertyList!.length,
+                                            gridDelegate:
+                                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 4,
+                                              crossAxisSpacing: 12,
+                                              mainAxisSpacing: 12,
+                                              childAspectRatio: 0.85,
+                                            ),
+                                            itemBuilder: (context, index) {
+                                              return PropertyUnitInfoWidget(
+                                                propertyData:
+                                                    unAssignedPropertyList![
+                                                        index],
+                                                isAssignButton: true,
+                                                onTap: () =>
+                                                    _assignPropertyToClient(
+                                                        unAssignedPropertyList![
+                                                                index]
+                                                            ['propertyId']),
                                               );
-                                            }
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ),
+                                            },
+                                          ),
+                                        ),
                               ],
                             ),
                           if (optionsData == PropertyAllocationOption.checklist)
